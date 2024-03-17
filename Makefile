@@ -1,6 +1,6 @@
 # Makefile
 
-SDK_PATH = Blueprint/SDK/iPhoneOS15.6.sdk
+SDK_PATH = Blueprint/SDK/iPhoneOS15.6.sdk 
 OUTPUT_DIR = Blueprint/SparkCode-rootless/var/jb/Applications/FridaCodeManager.app
 SWIFT := $(shell find ./ -name '*.swift')
 SHELL := /var/jb/bin/sh
