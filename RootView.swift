@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Binding var hello: UUID
-    @AppStorage("sdk") var sdk: String = "iPhoneOS16.5.sdk"
+    @AppStorage("sdk") var sdk: String = "iPhoneOS15.6.sdk"
     @AppStorage("bsl") var bsl: Bool = true
     @AppStorage("fontname") var fname: String = "Menlo"
     @State private var font: CGFloat = {
