@@ -17,7 +17,8 @@ create_payload:
 	mkdir -p $(OUTPUT_DIR)
 
 deb:
-	./Blueprint/make-rootless.sh
+	dpkg-deb -b Blueprint/SparkCode-rootless Product/sparkcode-rootless.deb
+	rm Blueprint/SparkCode-rootless/var/jb/Applications/FridaCodeManager.app/swifty
 
 clean:
 	rm -rf $(OUTPUT_DIR) $(OUTPUT_IPA)
