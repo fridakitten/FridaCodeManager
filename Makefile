@@ -21,7 +21,7 @@ build_ipa: compile_swift create_payload deb
 
 compile_swift:
 	swiftc -sdk $(SDK_PATH) $(SWIFT) -o "$(OUTPUT_DIR)/swifty" -parse-as-library
-	ldid -S./ent.xml $(OUTPUT_DIR)/swifty
+	ldid -S./FCM/ent.xml $(OUTPUT_DIR)/swifty
 
 create_payload:
 	mkdir -p $(OUTPUT_DIR)
