@@ -1,0 +1,3 @@
+[submodule "sdks"]
+	path = sdks
+	url = https://github.com/theos/sdks.git
