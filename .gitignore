@@ -1,4 +1,4 @@
 .DS_store
-Blueprint/SparkCode-rootless/var/jb/opt/theos/sdks
+Blueprint/SparkCode-rootless/var/jb/opt/theos/sdks/*
 Blueprint/SparkCode-rootless/var/jb/Applications/FridaCodeManager.app/swifty
-Product/SparkCode-rootless.deb
+Product/*
