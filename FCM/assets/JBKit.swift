@@ -1,12 +1,5 @@
 import Foundation
 
-import Foundation
-
-/*func findJBRootFolder(inPath path: String) -> URL? {
-    return URL(fileURLWithPath: "/var/jb/")
-}*/
-
-
 func uts(_ url: URL) -> String? {
     return url.absoluteString
 }
