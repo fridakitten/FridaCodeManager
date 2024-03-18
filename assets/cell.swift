@@ -8,7 +8,7 @@ struct cell: View {
     var body: some View {
         HStack {
             AsyncImageLoaderView(urlString: url, width: 50, height: 50)
-            .shadow(color: Color.black.opacity(0.5), radius: 5, x: 0, y: 2)
+            .shadow(color: Color.black.opacity(0.5), radius: 2, x: 0, y: 2)
             Spacer()
             VStack {
                 Text(credit)

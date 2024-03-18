@@ -14,7 +14,7 @@ struct textset: View {
                 Toggle("Seperation Layer", isOn: $bsl)
             }
         }
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
         .navigationTitle("Code Editor")
         .navigationBarTitleDisplayMode(.inline)
     }

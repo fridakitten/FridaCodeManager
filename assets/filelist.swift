@@ -30,6 +30,7 @@ Bool
                         NavigationLink(destination: FileList(directoryPath: item.path,font: $font, nv: item.lastPathComponent, buildv: $buildv, builda: false)) {
                             HStack {
                                 Image(systemName: "folder.fill")
+    .foregroundColor(.primary)
                                 Text(item.lastPathComponent)
                             }
                         }
@@ -53,6 +54,7 @@ fbool = true
 HStack {                                 
 ZStack {
     Image(systemName: "doc.fill")
+        .foregroundColor(gcolor(item: item.lastPathComponent))
     VStack {
     Spacer().frame(height: 8)
     Text(gsymbol(item: item.lastPathComponent))
@@ -83,7 +85,7 @@ rename = true
             loadFiles()
         }
         .disabled(isRenaming)
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
         .navigationTitle(nv)
         .navigationBarTitleDisplayMode(.inline)
         .fileImporter(isPresented: $showfile,allowedContentTypes: [.all]) { result in
@@ -189,8 +191,28 @@ RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPa
                 return ""
         }
     }
+    func gcolor(item: String) -> Color {
+        let suffix = gsuffix(from: item)
+        switch(suffix) {
+            case "m":
+                return Color.orange
+            case "c":
+                return Color.blue
+            case "mm":
+                return Color.yellow
+            case "cpp":
+                return Color.green
+            case "swift":
+                return Color.red
+            case "h":
+                return Color.secondary
+            default:
+                return Color.primary
+        }
+    }
     func gsuffix(from fileName: String) -> String {
-        let suffix = URL(string: fileName)?.pathExtension
+        let trimmedFileName = fileName.replacingOccurrences(of: " ", with: "")
+        let suffix = URL(string: trimmedFileName)?.pathExtension
         return suffix ?? ""
     }
     func gsize(item: String) -> Int {
@@ -318,7 +340,7 @@ Button( action: {
             loadFiles()
         }
         .accentColor(.primary)
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
         .navigationTitle("SDKs")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -359,7 +381,7 @@ struct PKG: View {
         .onAppear {
             loadFiles()
         }
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
         .navigationTitle("Packages")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -428,7 +450,7 @@ addview = false
         .onAppear {
             loadFiles()
         }
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
         .navigationTitle("Frameworks")
         .navigationBarTitleDisplayMode(.inline)
     }

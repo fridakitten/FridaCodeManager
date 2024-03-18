@@ -16,8 +16,8 @@ struct BottomPopupView<Content: View>: View {
                     .padding(.bottom , geometry.safeAreaInsets.bottom)
                     .background {
 VStack {
-FluidGradient(blobs: [.orange, .primary, .yellow],
-                      highlights: [.orange, .primary, .yellow],
+FluidGradient(blobs: [.orange, .primary, .purple],
+                      highlights: [.orange, .primary, .purple],
                       speed: 1.0,
                       blur: 0.75)
           .ignoresSafeArea()

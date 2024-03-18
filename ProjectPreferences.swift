@@ -25,7 +25,7 @@ NavigationLink(destination: Frameprefs(ProjectName: $ProjectName, FrameworkPath:
                 }
             }
             .accentColor(.primary)
-            .listStyle(GroupedListStyle())
+            .listStyle(InsetGroupedListStyle())
             .navigationTitle("\(rname)")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
@@ -89,7 +89,7 @@ struct PrefsInfo: View {
                 MIOS = (rplist(forKey: "MinimumOSVersion", plistPath: PlistPath) ?? "")
                 rfresh = UUID()
         }
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
         .navigationTitle("App Information")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -149,7 +149,7 @@ struct Appeareance: View {
             }
           }
         }
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
         .onAppear {
             config()
         }
@@ -236,7 +236,7 @@ struct asksdk: View {
             sdk = (rplist(forKey: "SDK", plistPath: "\(projpath)/Resources/DontTouchMe.plist") ?? "")
           }
         }
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
         .navigationTitle("SDK")
         .navigationBarTitleDisplayMode(.inline)
     }

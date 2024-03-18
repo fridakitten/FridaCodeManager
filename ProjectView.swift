@@ -94,7 +94,7 @@ Button(action: {
                       dismissButton: .none)
             }
             .id(hello)
-            .listStyle(GroupedListStyle())
+            .listStyle(InsetGroupedListStyle())
             .navigationTitle("Projects")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $Prefs) {

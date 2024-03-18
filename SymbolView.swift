@@ -25,10 +25,9 @@ NavigationLink( destination: SFSymbolListView(symbols: gnature())) {
             }
             }
         }
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
         .navigationBarTitle("SFSymbols")
         .navigationBarTitleDisplayMode(.inline)
-        .listStyle(GroupedListStyle())
     }
 }
 
@@ -49,7 +48,7 @@ struct SFSymbolListView: View {
             }
             .navigationBarTitle("SFSymbols")
             .navigationBarTitleDisplayMode(.inline)
-            .listStyle(GroupedListStyle())
+            .listStyle(InsetGroupedListStyle())
     }
     private func copyToPasteboard(_ symbolName: String) {
         UIPasteboard.general.string = symbolName

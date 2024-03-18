@@ -16,7 +16,7 @@ struct CodeEditorGreat: View {
             TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0))
         ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b\\w+\\s*(?=\\{)", options: []), formattingRules: [
             TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0))
-        ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(Int|UInt|Int8|UInt8|Int16|UInt16|Int32|UInt32|Int64|UInt64|Float|Double|Bool|Character|String|CGFloat|CGRect|CGPoint)\\b", options: []), formattingRules: [
+        ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b((Int|UInt)(|8|16|32|64)?|Float|Double|Bool|Character|String|CGFloat|CGRect|CGPoint|\\w+_t)\\b", options: []), formattingRules: [
             TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0)) 
         ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(-?\\d+(\\.\\d+)?|true|false)\\b", options: []), formattingRules: [
             TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.7569, green: 0.2039, blue: 0.3882, alpha: 1.0))

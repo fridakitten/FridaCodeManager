@@ -33,7 +33,7 @@ struct StatsView: View {
                 Text("No Projects found")
                 }
             }
-            .listStyle(GroupedListStyle())
+            .listStyle(InsetGroupedListStyle())
             .onAppear {
                 updateFileSizes()
                 graph = UUID()

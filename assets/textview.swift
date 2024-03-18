@@ -7,6 +7,19 @@ struct CodeEditorView: View {
     @State var code: String = " "
     @State var save: Bool = true
     @State var opened: Bool = false
+    init(quar: Binding<Bool>,filePath: Binding<String>, font: Binding<CGFloat>) {
+        _quar = quar
+        _filePath = filePath
+        _font = font
+        if #available(iOS 15.0, *) { 
+            let navigationBarAppearance = UINavigationBarAppearance()
+
+navigationBarAppearance.configureWithDefaultBackground() 
+    UINavigationBar.appearance().standardAppearance = navigationBarAppearance 
+    UINavigationBar.appearance().compactAppearance = navigationBarAppearance 
+    UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
+        }
+    }
     var body: some View {
         NavigationView {
             VStack {
@@ -17,6 +30,28 @@ struct CodeEditorView: View {
             }
             .navigationBarItems(leading:
                 Button("Close") {
+// Create a new instance of UINavigationBarAppearance
+let navigationBarAppearance = UINavigationBarAppearance()
+
+// Set background color
+navigationBarAppearance.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.9) // Adjust alpha as needed
+
+// Set title text attributes
+let titleAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label] // Using label color
+navigationBarAppearance.titleTextAttributes = titleAttributes
+
+// Set button styles
+let buttonAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white] // Set button color to white
+navigationBarAppearance.buttonAppearance.normal.titleTextAttributes = buttonAttributes
+
+let backItemAppearance = UIBarButtonItemAppearance()
+backItemAppearance.normal.titleTextAttributes = [.foregroundColor : UIColor.label] // fix text color
+navigationBarAppearance.backButtonAppearance = backItemAppearance
+
+// Apply the appearance to the navigation bar
+UINavigationBar.appearance().standardAppearance = navigationBarAppearance
+UINavigationBar.appearance().compactAppearance = navigationBarAppearance
+UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
                     code = ""
                     quar = false
                 }

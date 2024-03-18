@@ -20,6 +20,15 @@ VStack {
 Spacer().frame(height: 10)
 ScrollView {
                     Text("""
+1.1 (Redesign)
+-Changed name
+-Changed icon
+-Changed lists to be inset
+-Added Color to FileManagement
+-Changed the base design
+-Added Credits
+-Added variable detection to Highlighting engine
+
 1.0.1 (Fixup)
 -added loading indication to the build view
 -removed some unused or duplicated functions
@@ -151,7 +160,7 @@ Spacer()
                 showProj = true
                 hellnah = UUID()
             }){
-                listItem(label: "Create Project", systemImageName: "+", text: "Creates a FridaCodeManager Project")
+                listItem(label: "Create Project", systemImageName: "+", text: "Creates a FCM Project")
             }
             Button( action: {
                 $fileimporter.trampolineIfNeeded(to: true)
@@ -168,8 +177,8 @@ Spacer()
                 Frida(hello: $hello)
             }
             }
-            .listStyle(GroupedListStyle())
-            .navigationTitle("FCM")
+            .listStyle(InsetGroupedListStyle())
+            .navigationTitle("FridaCodeManager")
             .navigationBarTitleDisplayMode(.inline)
             .fileImporter(isPresented: $fileimporter,allowedContentTypes: [.project]) { result in
             do {
@@ -201,7 +210,7 @@ hellnah = UUID()
             Spacer()
             ZStack {
                 Rectangle()
-                    .foregroundColor(.primary)
+                    .foregroundColor(.secondary)
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 30, height: 30)
                     .cornerRadius(4)
@@ -225,30 +234,6 @@ hellnah = UUID()
         print("Error handling file import: \(error.localizedDescription)")
     }
   }
-}
-
-struct table_button: View {
-    @State var text: String
-    @State var icon: String
-    let screenHeight = UIScreen.main.bounds.height
-    let screenWidth = UIScreen.main.bounds.width
-    var body: some View {
-    ZStack {
-        Rectangle()
-            .frame(width: screenWidth / 2.4, height: screenWidth / 2.4)
-            .border(.primary, width: 3)
-            .background(Color.clear)
-            .foregroundColor(.secondary)
-            .cornerRadius(8)
-        VStack {
-            Image(systemName: icon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: screenWidth / 12, height: screenWidth / 12)
-            Text(text)
-        }
-    }
-}
 }
 
 extension UTType {
