@@ -1,10 +1,3 @@
-//
-//  UITextView.swift
-//
-//
-//  Created by Kyle Nazario on 11/13/20.
-//
-
 #if os(iOS)
 import Foundation
 import UIKit
