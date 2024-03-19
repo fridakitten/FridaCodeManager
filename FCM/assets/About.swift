@@ -7,7 +7,7 @@ struct Frida: View {
         NavigationView {
             List {
                 Section(header: Text("About")) {
-                    Text("FridaCodeManager 1.0.1")
+                    Text("FridaCodeManager 1.1")
                 }
                 Section(header: Text("Credits")) {
                     cell(credit: "Frida", role: "main deveveloper", url: "https://github.com/fridakitten.png")

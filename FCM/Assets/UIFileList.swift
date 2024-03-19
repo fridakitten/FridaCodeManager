@@ -210,11 +210,6 @@ RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPa
                 return Color.primary
         }
     }
-    func gsuffix(from fileName: String) -> String {
-        let trimmedFileName = fileName.replacingOccurrences(of: " ", with: "")
-        let suffix = URL(string: trimmedFileName)?.pathExtension
-        return suffix ?? ""
-    }
     func gsize(item: String) -> Int {
         let suffix = gsuffix(from: item)
         switch(suffix) {

@@ -23,7 +23,7 @@ navigationBarAppearance.configureWithDefaultBackground()
     var body: some View {
         NavigationView {
             VStack {
-                CodeEditorGreat(text: $code, font: font)
+                CodeEditorGreat(text: $code, font: font, suffix: gsuffix(from: filePath))
                 .onAppear {
                     loadCode()
                 }

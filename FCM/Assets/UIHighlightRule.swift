@@ -1,10 +1,3 @@
-//
-//  HighlightingTextEditor.swift
-//
-//
-//  Created by Kyle Nazario on 8/31/20.
-//
-
 import SwiftUI
 import UIKit
 

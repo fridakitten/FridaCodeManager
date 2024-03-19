@@ -12,3 +12,8 @@ func guif() -> [String] {
     }
     return fontFamilies
 }
+func gsuffix(from fileName: String) -> String {
+    let trimmedFileName = fileName.replacingOccurrences(of: " ", with: "")
+    let suffix = URL(string: trimmedFileName)?.pathExtension
+    return suffix ?? ""
+}

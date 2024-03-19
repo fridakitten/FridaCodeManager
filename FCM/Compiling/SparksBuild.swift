@@ -11,21 +11,19 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
     let ClangBridge = "\(ProjectInfo.ProjectPath)/bridge.h"
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
     let MFiles = (findObjCFilesStack(ProjectInfo.ProjectPath) ?? [""])
-    let Extension: String = load("\(ProjectInfo.ProjectPath)/extension.txt")
-    let Object: ext = api(Extension,ProjectInfo)
     //compiler setup
     var EXEC = ""
     if SwiftFiles != "" {
         if !fe(ClangBridge) {
-            EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -suppress-warnings \(Object.flag) -target arm64-apple-ios\(ProjectInfo.TG)"
+            EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
         } else {
             if MFiles != [] {
                 for mFile in MFiles {
                 EXEC += "clang -w -isysroot '\(SDKPath)' -framework UIKit -framework Foundation -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(ProjectInfo.ProjectPath)/clang/\(UUID()).o'; "
                 }
-                EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) clang/*.o -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -import-objc-header '\(ClangBridge)' -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG) \(Object.flag)"
+                EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) clang/*.o -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -import-objc-header '\(ClangBridge)' -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
             } else {
-            EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -import-objc-header '\(ClangBridge)' -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG) \(Object.flag)"
+            EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -import-objc-header '\(ClangBridge)' -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
             }
         }
     } else if MFiles != [""] {
@@ -40,9 +38,8 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
     let ZIPEXEC = "zip -r9q ./ts.ipa ./Payload"
     let INSTALL = "\(RootPath)/usr/bin/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa'"
-    shell("\(CDEXEC) && \(Object.before)")
     //compiler start
-    print("FridaCodeManager 1.0.1\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
+    print("FridaCodeManager 1.1\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
     cfolder(atPath: PayloadPath)
     cfolder(atPath: AppPath)
     cfolder(atPath: ClangPath)
@@ -64,7 +61,6 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
         shell("killall '\(ProjectInfo.Executable)' > /dev/null 2>&1")
         OpenApp(ProjectInfo.BundleID)
     }
-    shell("\(CDEXEC) && \(Object.after)")
     return 0
 }
 
