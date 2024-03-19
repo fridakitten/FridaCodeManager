@@ -1,7 +1,7 @@
 # Makefile
 
 SDK_PATH = sdks/iPhoneOS15.6.sdk
-OUTPUT_DIR = Blueprint/SparkCode-rootless/var/jb/Applications/FridaCodeManager.app
+OUTPUT_DIR = Blueprint/FridaCodeManager-rootless/var/jb/Applications/FridaCodeManager.app
 SWIFT := $(shell find ./ -name '*.swift')
 SHELL := /var/jb/bin/sh
 
@@ -27,9 +27,9 @@ create_payload:
 	mkdir -p $(OUTPUT_DIR)
 
 deb:
-	cp -r sdks/iPhoneOS15.6.sdk Blueprint/SparkCode-rootless/var/jb/opt/theos/sdks/iPhoneOS15.6.sdk
-	dpkg-deb -b Blueprint/SparkCode-rootless Product/sparkcode-rootless.deb
-	rm Blueprint/SparkCode-rootless/var/jb/Applications/FridaCodeManager.app/swifty
+	cp -r sdks/iPhoneOS15.6.sdk Blueprint/FridaCodeManager-rootless/var/jb/opt/theos/sdks/iPhoneOS15.6.sdk
+	dpkg-deb -b Blueprint/FridaCodeManager-rootless Product/sparkcode-rootless.deb
+	rm Blueprint/FridaCodeManager-rootless/var/jb/Applications/FridaCodeManager.app/swifty
 
 clean:
 	rm -rf $(OUTPUT_DIR) $(OUTPUT_IPA)
