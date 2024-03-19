@@ -27,6 +27,7 @@ create_payload:
 	mkdir -p $(OUTPUT_DIR)
 
 deb:
+	mkdir -p Blueprint/FridaCodeManager-rootless/var/jb/opt/theos/sdks/iPhoneOS15.6.sdk
 	cp -r sdks/iPhoneOS15.6.sdk Blueprint/FridaCodeManager-rootless/var/jb/opt/theos/sdks/iPhoneOS15.6.sdk
 	dpkg-deb -b Blueprint/FridaCodeManager-rootless Product/sparkcode-rootless.deb
 	rm Blueprint/FridaCodeManager-rootless/var/jb/Applications/FridaCodeManager.app/swifty
