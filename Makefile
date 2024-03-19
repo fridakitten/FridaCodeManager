@@ -4,6 +4,15 @@ SDK_PATH = sdks/iPhoneOS15.6.sdk
 OUTPUT_DIR = Blueprint/FridaCodeManager-rootless/var/jb/Applications/FridaCodeManager.app
 SWIFT := $(shell find ./ -name '*.swift')
 
+ifeq ($(wildcard /bin/sh),)
+ifeq ($(wildcard /var/jb/bin/sh),)
+$(error "Neither /bin/sh nor /var/jb/bin/sh found.")
+endif
+SHELL := /var/jb/bin/sh
+else
+SHELL := /bin/sh
+endif
+
 ifeq ($(wildcard $(SDK_PATH)),)
 sdk_marker := .sdk_not_exists
 .PHONY: create
