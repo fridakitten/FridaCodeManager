@@ -24,7 +24,7 @@ import Foundation
 import UIKit
 
 func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
-    let RootPath = "/var/jb"
+    let RootPath = findroot()
     let PayloadPath = "\(ProjectInfo.ProjectPath)/Payload"
     let AppPath = "\(PayloadPath)/\(ProjectInfo.Executable).app"
     let Resources = "\(ProjectInfo.ProjectPath)/Resources"

@@ -243,10 +243,11 @@ struct Appeareance: View {
 struct asksdk: View {
     @State var projpath: String
     @State var sdk: String = ""
+    @State var RootPath: String = findroot()
     var body: some View {
       List {
         Text("\(sdk)")
-        NavigationLink(destination: SDKList(directoryPath: "/var/jb/opt/theos/sdks" ,sdk: $sdk)) {
+        NavigationLink(destination: SDKList(directoryPath: "\(RootPath)/opt/theos/sdks" ,sdk: $sdk)) {
     Text("Change")
 }
         }

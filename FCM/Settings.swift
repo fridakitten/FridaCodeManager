@@ -27,12 +27,13 @@ struct Settings: View {
     @Binding var font: CGFloat
     @Binding var bsl: Bool
     @Binding var fname: String
+    @State var RootPath: String = findroot()
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("default sdk"), footer: Text("The sdk gets used when you create a new project.")) {
                     Text(sdk)
-                    NavigationLink(destination: SDKList(directoryPath: "var/jb/opt/theos/sdks" ,sdk: $sdk)) {
+                    NavigationLink(destination: SDKList(directoryPath: "\(RootPath)/opt/theos/sdks" ,sdk: $sdk)) {
                         Text("Change")
                     }
                 }
