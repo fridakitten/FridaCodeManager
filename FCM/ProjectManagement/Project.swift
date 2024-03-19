@@ -10,16 +10,17 @@ struct Project: Identifiable {
     var ProjectPath: String
     var Executable: String
     var SDK: String
+    var TG: String
 }
 
 func GetProjects() -> [Project] {
     do {
         var Projects: [Project] = []
         for Item in try FileManager.default.contentsOfDirectory(atPath: ProjectsPath) {
-            if let Info = NSDictionary(contentsOfFile: "\(ProjectsPath)/\(Item)/Resources/Info.plist"), let BundleID = Info["CFBundleIdentifier"] as? String, let Version = Info["CFBundleVersion"] as? String, let Executable = Info["CFBundleExecutable"] as? String {
+            if let Info = NSDictionary(contentsOfFile: "\(ProjectsPath)/\(Item)/Resources/Info.plist"), let BundleID = Info["CFBundleIdentifier"] as? String, let Version = Info["CFBundleVersion"] as? String, let Executable = Info["CFBundleExecutable"] as? String, let TG = Info["MinimumOSVersion"] as? String {
 
            if let Info2 = NSDictionary(contentsOfFile: "\(ProjectsPath)/\(Item)/Resources/DontTouchMe.plist"), let SDK = Info2["SDK"] as? String, let Name = Info2["ProjectName"] as? String {
-                Projects.append(Project(Name: Name, BundleID: BundleID, Version: Version, ProjectPath: "\(ProjectsPath)/\(Item)", Executable: Executable, SDK: SDK))
+                Projects.append(Project(Name: Name, BundleID: BundleID, Version: Version, ProjectPath: "\(ProjectsPath)/\(Item)", Executable: Executable, SDK: SDK, TG: TG))
                 }
             }
         }
