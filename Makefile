@@ -28,6 +28,7 @@ all: build_ipa
 build_ipa: compile_swift create_payload deb
 
 compile_swift:
+	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n"
 	swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) -o "$(OUTPUT_DIR)/swifty" -parse-as-library -target arm64-apple-ios15.0
 	ldid -S./FCM/ent.xml $(OUTPUT_DIR)/swifty
 
