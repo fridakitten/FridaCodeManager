@@ -1,4 +1,4 @@
-.DS_store
+**/.DS_store
 sdks
 Blueprint/FridaCodeManager-rootless/var/jb/opt/theos/sdks/*
 Blueprint/FridaCodeManager-rootless/var/jb/Applications/FridaCodeManager.app/swifty
