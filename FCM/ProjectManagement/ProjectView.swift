@@ -26,7 +26,6 @@ import QuickLook
 
 struct ProjectView: View {
     @Binding var sdk: String
-    @Binding var font: CGFloat
     @Binding var hello: UUID
     @State var Prefs: Bool = false
     @State var projname: String = ""
@@ -41,7 +40,7 @@ struct ProjectView: View {
             List {
                 Section {
                     ForEach(GetProjects()) { Project in
-                        NavigationLink(destination: CodeSpace(ProjectInfo: Project, sdk: $sdk, font: $font)) {
+                        NavigationLink(destination: CodeSpace(ProjectInfo: Project, sdk: $sdk)) {
 HStack {
 PubImg(projpath: "\(doc)/\(Project.Name)")
 Spacer().frame(width: 15)
@@ -141,12 +140,11 @@ viewController.present(activityViewController, animated: true, completion: nil)
 struct CodeSpace: View {
     @State var ProjectInfo: Project
     @Binding var sdk: String
-    @Binding var font: CGFloat
     @State var buildv: Bool = false
     @State var fcreate: Bool = false
     @State var builda: Bool = true
     var body: some View {
-        FileList(directoryPath: ProjectInfo.ProjectPath, font: $font, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda)
+        FileList(directoryPath: ProjectInfo.ProjectPath, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda)
         .fullScreenCover(isPresented: $buildv) {
     buildView(ProjectInfo: ProjectInfo, sdk: $sdk, buildv: $buildv)
         }

@@ -24,24 +24,26 @@ import SwiftUI
 
 struct Settings: View {
     @Binding var sdk: String
-    @Binding var font: CGFloat
     @Binding var bsl: Bool
     @Binding var fname: String
-    @State var RootPath: String = findroot()
+    @State var fontstate: CGFloat = {
+        if let savedFont = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
+            return savedFont
+        } else {
+            return 15.0
+        }
+    }()
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("default sdk"), footer: Text("The sdk gets used when you create a new project.")) {
                     Text(sdk)
-                    NavigationLink(destination: SDKList(directoryPath: "\(RootPath)/opt/theos/sdks" ,sdk: $sdk)) {
+                    NavigationLink(destination: SDKList(directoryPath: "\(jbroot)/opt/theos/sdks" ,sdk: $sdk)) {
                         Text("Change")
                     }
                 }
-                .onChange(of: font) { _ in
-                    save()
-                }
                 Section(header: Text("Advanced")) {
-                    NavigationLink(destination: textset(font: $font, bsl: $bsl, fname: $fname)) {
+                    NavigationLink(destination: textset(bsl: $bsl, fname: $fname,fontstate: $fontstate)) {
                         Text("Code Editor")
                     }
                 }
@@ -58,8 +60,5 @@ struct Settings: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         }
-    }
-    func save() {
-        UserDefaults.standard.set(font, forKey: "savedfont")
     }
 }

@@ -22,6 +22,8 @@
     
 import SwiftUI
 
+let jbroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
+
 @main
 struct MyApp: App {
     @State var hello: UUID = UUID()

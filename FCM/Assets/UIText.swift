@@ -25,14 +25,19 @@ import SwiftUI
 struct CodeEditorView: View {
     @Binding var quar: Bool
     @Binding var filePath: String
-    @Binding var font: CGFloat
+    @State var font: CGFloat = {
+        if let savedFont = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
+            return savedFont
+        } else {
+            return 15.0
+        }
+    }()
     @State var code: String = " "
     @State var save: Bool = true
     @State var opened: Bool = false
-    init(quar: Binding<Bool>,filePath: Binding<String>, font: Binding<CGFloat>) {
+    init(quar: Binding<Bool>,filePath: Binding<String>) {
         _quar = quar
         _filePath = filePath
-        _font = font
         if #available(iOS 15.0, *) { 
             let navigationBarAppearance = UINavigationBarAppearance()
 

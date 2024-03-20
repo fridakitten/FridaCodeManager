@@ -23,14 +23,17 @@
 import SwiftUI
 
 struct textset: View {
-    @Binding var font: CGFloat
     @Binding var bsl: Bool
     @Binding var fname: String
+    @Binding var fontstate: CGFloat
     var body: some View {
         List {
             Section(header: Text("Font")) {
                 FontPickerView(fname: $fname)
-                Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
+                Stepper("Font Size: \(String(Int(fontstate)))", value: $fontstate, in: 0...20)
+                .onChange(of: fontstate) { _ in
+                    save()
+                }
             }
             Section(header: Text("Appearance")) {
                 Toggle("Seperation Layer", isOn: $bsl)
@@ -39,6 +42,9 @@ struct textset: View {
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("Code Editor")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    func save() {
+        UserDefaults.standard.set(fontstate, forKey: "savedfont")
     }
 }
 

@@ -24,11 +24,10 @@ import Foundation
 import UIKit
 
 func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
-    let RootPath = findroot()
     let PayloadPath = "\(ProjectInfo.ProjectPath)/Payload"
     let AppPath = "\(PayloadPath)/\(ProjectInfo.Executable).app"
     let Resources = "\(ProjectInfo.ProjectPath)/Resources"
-    let SDKPath = "\(RootPath)/opt/theos/sdks/\(ProjectInfo.SDK)"
+    let SDKPath = "\(jbroot)/opt/theos/sdks/\(ProjectInfo.SDK)"
     let ClangPath = "\(ProjectInfo.ProjectPath)/clang"
     let ClangBridge = "\(ProjectInfo.ProjectPath)/bridge.h"
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
@@ -59,7 +58,7 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
     let RMEXEC = "rm '\(ProjectInfo.ProjectPath)/ts.ipa'"
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
     let ZIPEXEC = "zip -r9q ./ts.ipa ./Payload"
-    let INSTALL = "\(RootPath)/usr/bin/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa'"
+    let INSTALL = "\(jbroot)/usr/bin/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa'"
     //compiler start
     print("FridaCodeManager 1.1\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
     cfolder(atPath: PayloadPath)

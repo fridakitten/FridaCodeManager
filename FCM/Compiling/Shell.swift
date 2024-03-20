@@ -35,7 +35,7 @@ func posix_spawnattr_set_persona_uid_np(_ attr: UnsafeMutablePointer<posix_spawn
 @_silgen_name("posix_spawnattr_set_persona_gid_np")
 func posix_spawnattr_set_persona_gid_np(_ attr: UnsafeMutablePointer<posix_spawnattr_t?>, _ persona_id: uid_t)
 
-func runCommand(_ command: String, _ args: [String], _ uid: uid_t, _ rootPath: String = "/var/jb") -> Int {
+func runCommand(_ command: String, _ args: [String], _ uid: uid_t, _ rootPath: String = jbroot) -> Int {
     var pid: pid_t = 0
     let args: [String] = [String(command.split(separator: "/").last!)] + args
     let argv: [UnsafeMutablePointer<CChar>?] = args.map { $0.withCString(strdup) }

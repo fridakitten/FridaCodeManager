@@ -25,7 +25,6 @@ import Foundation
 
 struct FileList: View {
     @State var directoryPath: String
-    @Binding var font: CGFloat
     @State private var files: [URL] = []
     @State private var folders: [URL] = []
     @State private var quar: Bool = false
@@ -49,7 +48,7 @@ Bool
             Section {
                 ForEach(folders + files, id: \.self) { item in
                     if isDirectory(item) {
-                        NavigationLink(destination: FileList(directoryPath: item.path,font: $font, nv: item.lastPathComponent, buildv: $buildv, builda: false)) {
+                        NavigationLink(destination: FileList(directoryPath: item.path, nv: item.lastPathComponent, buildv: $buildv, builda: false)) {
                             HStack {
                                 Image(systemName: "folder.fill")
     .foregroundColor(.primary)
@@ -161,7 +160,7 @@ RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPa
              }
          }
         .fullScreenCover(isPresented: $quar) {
-            CodeEditorView(quar: $quar, filePath: $selpath, font: $font)
+            CodeEditorView(quar: $quar, filePath: $selpath)
         }
         .fullScreenCover(isPresented: $fbool) {
             ImageView(imagePath: $selpath, fbool: $fbool)
