@@ -41,71 +41,71 @@ struct ProjectView: View {
                 Section {
                     ForEach(GetProjects()) { Project in
                         NavigationLink(destination: CodeSpace(ProjectInfo: Project, sdk: $sdk)) {
-HStack {
-PubImg(projpath: "\(doc)/\(Project.Name)")
-Spacer().frame(width: 15)
-                            VStack(alignment: .leading) {
-                                Text(Project.Executable)
-                                .font(.system(size: 16))
-                                Text(Project.BundleID)
-                                .font(.system(size: 12))
-                                .opacity(0.5)
+                            HStack {
+                                PubImg(projpath: "\(doc)/\(Project.Name)")
+                                Spacer().frame(width: 15)
+                                VStack(alignment: .leading) {
+                                    Text(Project.Executable)
+                                        .font(.system(size: 16))
+                                    Text(Project.BundleID)
+                                        .font(.system(size: 12))
+                                        .opacity(0.5)
+                                }
                             }
-}
-.contextMenu {
-Section {
-Button(action: {
-DispatchQueue.global(qos: .utility).async {
-   ShowAlert(UIAlertController(title: "Building \(Project.Executable)...", message: "", preferredStyle: .alert))
-    build(Project, sdk, false)
-    DismissAlert()
-    DispatchQueue.main.async {
-    let doc = docsDir()
-    let path = "\(doc)/ts.ipa"
-    shell("rm '\(path)'")
-    shell("mv '\(doc)/\(Project.Name)/ts.ipa' \(path)")
-    if let fileURL = URL(string: "file://" + path) {
-    fuck(url: fileURL)
-    print("File URL: \(fileURL)")
-} else {
-    print("Invalid file path")
-}
-    }
-  }
-}){
-    Label("Export App", systemImage: "app.dashed")
-}
-Button(action: {
-    exportProj(Project)
-    let doc = docsDir()
-    let target = "\(doc)/\(Project.Executable).sproj"
-    if let fileURL = URL(string: "file://" + target) {
-    fuck(url: fileURL)
-    print("File URL: \(fileURL)")
-    } else {
-    print("Invalid file path")
-    }
-}){
-    Label("Export Project", systemImage: "archivebox")
-}
-}
-Button(action: {
-    projname = Project.Name
-    projrname = Project.Executable
-    Prefs = true
-}){
-    Label("Project Preferences", systemImage: "gear")
-}
-}
-                        }
-                    }
-                    .onDelete { indexSet in
-                        // Handle delete action here
-                        if let firstIndex = indexSet.first {
-                            let ProjectName = GetProjects()[firstIndex].Name
-                            let ProjectPath = docsDir() + "/" + ProjectName
-                            shell("rm -rf '\(ProjectPath)'")
-                            hello = UUID()
+                            .contextMenu {
+                                Section {
+                                    Button(action: {
+                                        DispatchQueue.global(qos: .utility).async {
+                                            ShowAlert(UIAlertController(title: "Building \(Project.Executable)...", message: "", preferredStyle: .alert))
+                                            build(Project, sdk, false)
+                                            DispatchQueue.main.async {
+                                                let doc = docsDir()
+                                                let path = "\(doc)/ts.ipa"
+                                                shell("rm '\(path)'")
+                                                shell("mv '\(doc)/\(Project.Name)/ts.ipa' \(path)")
+                                                if let fileURL = URL(string: "file://" + path) {
+                                                    DismissAlert()
+                                                    fuck(url: fileURL)
+                                                    print("File URL: \(fileURL)")
+                                                } else {
+                                                    print("Invalid file path")
+                                                }
+                                            }
+                                        }
+                                    }){
+                                        Label("Export App", systemImage: "app.dashed")
+                                    }
+                                    Button(action: {
+                                        exportProj(Project)
+                                        let doc = docsDir()
+                                        let target = "\(doc)/\(Project.Executable).sproj"
+                                        if let fileURL = URL(string: "file://" + target) {
+                                            fuck(url: fileURL)
+                                            print("File URL: \(fileURL)")
+                                        } else {
+                                            print("Invalid file path")
+                                        }
+                                    }){
+                                        Label("Export Project", systemImage: "archivebox")
+                                    }
+                                }
+                                Button(action: {
+                                    projname = Project.Name
+                                    projrname = Project.Executable
+                                    Prefs = true
+                                }){
+                                    Label("Project Preferences", systemImage: "gear")
+                                }
+                                Section {
+                                    Button(role: .destructive, action: {
+                                        let ProjectPath = "\(docsDir())/\(Project.Name)"
+                                        shell("rm -rf '\(ProjectPath)'")
+                                        hello = UUID()
+                                    }){
+                                        Label("Remove", systemImage: "trash")
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -129,11 +129,10 @@ ProjPreferences(ProjectName: $projname, hello: $hello, rname: $projrname)
 func fuck(url: URL) {
     let activityViewController =
 UIActivityViewController(activityItems: [url], applicationActivities: nil)
-    if let viewController =
-UIApplication.shared.windows.first?.rootViewController {
-viewController.present(activityViewController, animated: true, completion: nil)
-}
-}
+    if let viewController = UIApplication.shared.windows.first?.rootViewController {
+        viewController.present(activityViewController, animated: true, completion: nil)
+    }
+    }
 }
 
 //Codespace
