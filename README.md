@@ -11,7 +11,9 @@ Was successfully compiled on
 
 iPhone 11, iOS 16.5
 
-iPhone X, iOS 15.6
+iPhone X, iOS 15.3
+
+iPhone X, iOS 15.0
 
 ## Credits
 Frida - Main Developer
