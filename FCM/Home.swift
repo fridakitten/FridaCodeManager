@@ -42,7 +42,7 @@ VStack {
 Spacer().frame(height: 10)
 ScrollView {
                     Text("""
-1.1 (Redesign)
+1.1 (Renew)
 -Changed name
 -Changed icon
 -Changed lists to be inset
@@ -50,6 +50,10 @@ ScrollView {
 -Changed the base design
 -Added Credits
 -Added variable detection to Highlighting engine
+-Implement libroot to get rootpath efficiently
+-Added HighlightRule cases
+-Updated Credits
+
 
 1.0.1 (Fixup)
 -added loading indication to the build view

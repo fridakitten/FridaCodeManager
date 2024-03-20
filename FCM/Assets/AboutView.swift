@@ -32,10 +32,12 @@ struct Frida: View {
                     Text("FridaCodeManager 1.1")
                 }
                 Section(header: Text("Credits")) {
-                    cell(credit: "Frida", role: "main deveveloper", url: "https://github.com/fridakitten.png")
-                    cell(credit: "AppInstaller iOS", role: "compiling genius", url: "https://github.com/AppInstalleriOSGH.png")
-                    cell(credit: "HAHALOSAH", role: "helping hand", url: "https://github.com/HAHALOSAH.png")
-                    cell(credit: "MudSplasher", role: "icon designer", url: "https://github.com/MudSplasher.png")
+                    cell(credit: "Frida", role: "Main Deveveloper", url: "https://github.com/fridakitten.png")
+                    cell(credit: "AppInstaller iOS", role: "Compiling Genius", url: "https://github.com/AppInstalleriOSGH.png")
+                    cell(credit: "meighler", role: "Licensor", url: "https://github.com/meighler.png")
+                    cell(credit: "HAHALOSAH", role: "Helping Hand", url: "https://github.com/HAHALOSAH.png")
+                    cell(credit: "dleovl", role: "Helping Hand", url: "https://github.com/dleovl.png")
+                    cell(credit: "MudSplasher", role: "Icon Designer", url: "https://github.com/MudSplasher.png")
                 }
             }
             .id(hello)
