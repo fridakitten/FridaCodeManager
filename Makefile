@@ -2,7 +2,7 @@
 
 SDK_PATH = sdks/iPhoneOS15.6.sdk
 OUTPUT_DIR = Blueprint/FridaCodeManager-rootless/var/jb/Applications/FridaCodeManager.app
-SWIFT := $(shell find ./ -name '*.swift')
+SWIFT := $(shell find ./FCM/ -name '*.swift')
 
 ifeq ($(wildcard /bin/sh),)
 ifeq ($(wildcard /var/jb/bin/sh),)
@@ -41,6 +41,7 @@ deb:
 	cp -r sdks/iPhoneOS15.6.sdk Blueprint/FridaCodeManager-rootless/var/jb/opt/theos/sdks/iPhoneOS15.6.sdk
 	dpkg-deb -b Blueprint/FridaCodeManager-rootless Product/FridaCodeManager-rootless.deb
 	rm Blueprint/FridaCodeManager-rootless/var/jb/Applications/FridaCodeManager.app/swifty
+	rm -rf Blueprint/FridaCodeManager-rootless/var/jb/opt
 
 clean:
 	rm -rf $(OUTPUT_DIR) $(OUTPUT_IPA)
