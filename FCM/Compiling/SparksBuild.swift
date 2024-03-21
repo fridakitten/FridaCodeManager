@@ -59,6 +59,11 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
     let ZIPEXEC = "zip -r9q ./ts.ipa ./Payload"
     let INSTALL = "\(jbroot)/usr/bin/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa'"
+    let Extension = load("\(ProjectInfo.ProjectPath)/api.txt")
+    let ApiExt: ext = api(Extension,ProjectInfo)
+    if ApiExt.before != "" {
+        shell("\(CDEXEC) && \(ApiExt.before)")
+    }
     //compiler start
     print("FridaCodeManager 1.1\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
     cfolder(atPath: PayloadPath)
@@ -70,6 +75,9 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
         print("+++++++++++++++++++++++++++\n \n+++++++++ error +++++++++++\ncompiling \(ProjectInfo.Executable) failed\n+++++++++++++++++++++++++++")
         shell(CLEANEXEC)
         return 1
+    }
+    if ApiExt.after != "" {
+        shell("\(CDEXEC) && \(ApiExt.after)")
     }
     print("+++++++++++++++++++++++++++\n \n+++++ install-stage +++++++")
     shell(LDIDEXEC)

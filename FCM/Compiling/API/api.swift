@@ -24,11 +24,14 @@ import Foundation
 
 func apicall(_ text: String,_ proj:Project) -> String {
     var ret = text
-    ret = ret.replacingOccurrences(of: "<ver>", with: "1.0.1")
-    ret = ret.replacingOccurrences(of: "<bundle>", with: Bundle.main.bundlePath)
-    ret = ret.replacingOccurrences(of: "<actionpath>", with: docsDir())
-    ret = ret.replacingOccurrences(of: "<projpath>", with: "\(docsDir())/\(proj.Name)")
+    ret = ret.replacingOccurrences(of: "<apiver>", with: "0.1")
+    ret = ret.replacingOccurrences(of: "<fcmver>", with: "1.1")
+    ret = ret.replacingOccurrences(of: "<bundle>", with: "\(proj.BundleID)")
     ret = ret.replacingOccurrences(of: "<app>", with: "\(proj.Executable)")
+    ret = ret.replacingOccurrences(of: "<host>", with: ghost())
+    ret = ret.replacingOccurrences(of: "<model>", with: gmodel())
+    ret = ret.replacingOccurrences(of: "<osname>", with: gos())
+    ret = ret.replacingOccurrences(of: "<osver>", with: gosver())
     ret = repla(ret)
     ret = rsc(ret)
     return ret
