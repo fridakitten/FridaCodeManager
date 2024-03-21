@@ -1,5 +1,5 @@
  /* 
- RenamePopupView.swift 
+ ProjPopupView.swift 
 
  Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
  Copyright (C) 2024 fridakitten 
@@ -21,15 +21,12 @@
  */
 
 import SwiftUI
-import Foundation
 
-struct RenamePopupView: View {
-    
-    @State var new: String = ""
+struct RemovalPopup: View {
     @Binding var isPresented: Bool
-    @Binding var old: String
-    @Binding var directoryPath: String
-
+    @Binding var name: String
+    @Binding var exec: String
+    @Binding var hellnah: UUID
     var body: some View {
      ZStack {
         /*FluidGradient(blobs: [.orange, .primary, .yellow],
@@ -41,8 +38,8 @@ struct RenamePopupView: View {
           .background(.quaternary)*/
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Rename")
-                    .font(.system(size: 25, weight: .bold, design: .default))
+                Text("Remove \"\(name)\"?")
+                    .font(.system(size: 20, weight: .bold, design: .default))
                     .foregroundColor(.primary)
                 Spacer()
                 Button(action: {
@@ -56,22 +53,25 @@ struct RenamePopupView: View {
                         .foregroundColor(.primary)
                 })
             }
-            TextField("Filename", text: $new)
-                .frame(height: 36)
-                .padding([.leading, .trailing], 10)
-                .background(Color(.systemBackground).opacity(0.5))
-                .cornerRadius(10)
-                .onAppear {
-                    new = old
-                }
+            Spacer().frame(height:30)
             HStack {
-                Spacer()
                 Button(action: {
-                    let oldpath = "\(directoryPath)/\(old)"
-                    try? renameFile(atPath: oldpath, to: new)
                     isPresented = false
                 }, label: {
-                    Text("Submit")
+                    Text("Cancel")
+                })
+                .frame(width: 80, height: 36)
+                .background(Color(.systemBackground).opacity(0.5))
+                .foregroundColor(.primary)
+                .cornerRadius(10)
+                Spacer()
+                Button(action: {
+                    let ProjectPath = "\(docsDir())/\(exec)"
+                    shell("rm -rf '\(ProjectPath)'")
+                    hellnah = UUID()
+                    isPresented = false
+                }, label: {
+                    Text("Confirm")
                 })
                 .frame(width: 80, height: 36)
                 .background(Color(.systemBackground).opacity(0.5))

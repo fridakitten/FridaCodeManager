@@ -28,6 +28,7 @@ struct ProjectView: View {
     @Binding var sdk: String
     @Binding var hello: UUID
     @State var Prefs: Bool = false
+    @State var Removal: Bool = false
     @State var projname: String = ""
     @State var projrname: String = ""
     @State var ql: Bool = false
@@ -98,10 +99,10 @@ struct ProjectView: View {
                                 }
                                 Section {
                                     Button(role: .destructive, action: {
-                                        let ProjectPath = "\(docsDir())/\(Project.Name)"
-                                        shell("rm -rf '\(ProjectPath)'")
-                                        hello = UUID()
-                                    }){
+projname = Project.Executable
+projrname = Project.Name
+Removal = true
+}){
                                         Label("Remove", systemImage: "trash")
                                     }
                                 }
@@ -124,6 +125,12 @@ ProjPreferences(ProjectName: $projname, hello: $hello, rname: $projrname)
                     hello = UUID()
                 }
             }
+            .sheet(isPresented: $Removal) {
+                BottomPopupView {
+                   RemovalPopup(isPresented: $Removal, name: $projname, exec: $projrname, hellnah: $hello)
+                }
+                .background(BackgroundClearView())
+        }
     }
 }
 func fuck(url: URL) {
