@@ -24,6 +24,8 @@ meighler - Licensor
 
 MudSplasher - Icon Designer
 
+cxdxn1 - UI Improvements
+
 HAHALOSAH - Helping Hand
 
 dleovl - Helping Hand
