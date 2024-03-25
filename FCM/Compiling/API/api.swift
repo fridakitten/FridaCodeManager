@@ -29,6 +29,8 @@ func apicall(_ text: String,_ proj:Project) -> String {
     ret = ret.replacingOccurrences(of: "<bundle>", with: "\(proj.BundleID)")
     ret = ret.replacingOccurrences(of: "<app>", with: "\(proj.Executable)")
     ret = ret.replacingOccurrences(of: "<host>", with: ghost())
+    ret = ret.replacingOccurrences(of: "<cpu>", with: gcpu())
+    ret = ret.replacingOccurrences(of: "<arch>", with: garch())
     ret = ret.replacingOccurrences(of: "<model>", with: gmodel())
     ret = ret.replacingOccurrences(of: "<osname>", with: gos())
     ret = ret.replacingOccurrences(of: "<osver>", with: gosver())
