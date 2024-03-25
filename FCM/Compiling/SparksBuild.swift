@@ -82,7 +82,7 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
     print("+++++++++++++++++++++++++++\n \n+++++ install-stage +++++++")
     shell(LDIDEXEC)
     shell("\(CDEXEC) && \(ZIPEXEC)")
-    shell(INSTALL, uid: 0)
+    shellroot(INSTALL)
     shell(CLEANEXEC)
     print("+++++++++++++++++++++++++++\n \n++++++++++ done +++++++++++")
     if erase == true {
