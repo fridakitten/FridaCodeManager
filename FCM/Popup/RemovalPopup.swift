@@ -42,16 +42,6 @@ struct RemovalPopup: View {
                     .font(.system(size: 20, weight: .bold, design: .default))
                     .foregroundColor(.primary)
                 Spacer()
-                Button(action: {
-                    isPresented = false
-                }, label: {
-                    Image(systemName: "xmark")
-                        .imageScale(.small)
-                        .frame(width: 32, height: 32)
-                        .background(Color.black.opacity(0.06))
-                        .cornerRadius(16)
-                        .foregroundColor(.primary)
-                })
             }
             Spacer().frame(height:30)
             HStack {
