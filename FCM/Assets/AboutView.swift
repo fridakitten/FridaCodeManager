@@ -40,7 +40,7 @@ struct Frida: View {
                     cell(credit: "MudSplasher", role: "Icon Designer", url: "https://github.com/MudSplasher.png")
                 }
                 Section(header: Text("Side Credits")) {
-                    cell(credit: "Opa334", role: "trollstore helper", url: "https://github.com/opa334.png")
+                    cell(credit: "Opa334", role: "Trollstore Helper", url: "https://github.com/opa334.png")
                 }
             }
             .id(hello)

@@ -45,6 +45,9 @@ ScrollView {
 1.2(New Horizon)
 -added progress status
 -added fixed icon setter appeareance issues
+-made application version globally
+-added a forgotten credit :3
+-added forgotten highlights in code editor
 
 1.1 (Renew)
 -changed name
