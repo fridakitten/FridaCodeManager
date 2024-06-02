@@ -22,7 +22,10 @@
     
 import SwiftUI
 
+
+//global environment
 let jbroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
+let version: String = "v1.2"
 
 @main
 struct MyApp: App {

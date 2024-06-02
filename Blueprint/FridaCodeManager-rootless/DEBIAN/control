@@ -1,6 +1,6 @@
 Package: com.sparklechan.swifty
 Name: FridaCodeManager
-Version: 1.0.1
+Version: 1.2
 Architecture: iphoneos-arm64
 Description: .
 Depends: swift-5.7.2, swift, zip, ldid, git, unzip, clang

@@ -88,7 +88,7 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool,_ status: Binding
         }
     }
     //compiler start
-    print("FridaCodeManager 1.1\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
+    print("FridaCodeManager \(version)\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
     usleep(100000)
     DispatchQueue.main.async {
         if let status = status {
