@@ -22,8 +22,9 @@
     
 import Foundation
 import UIKit
+import SwiftUI
 
-func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
+func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool,_ status: Binding<String>?,_ progress: Binding<Double>?) -> Int {
     let PayloadPath = "\(ProjectInfo.ProjectPath)/Payload"
     let AppPath = "\(PayloadPath)/\(ProjectInfo.Executable).app"
     let Resources = "\(ProjectInfo.ProjectPath)/Resources"
@@ -33,6 +34,17 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
     let MFiles = (findObjCFilesStack(ProjectInfo.ProjectPath) ?? [""])
     //compiler setup
+    usleep(100000)
+    DispatchQueue.main.async {
+        if let status = status {
+            status.wrappedValue = "setting up compiler"
+        }
+        if let progress = progress {
+            withAnimation {
+                progress.wrappedValue = 0.0
+            }
+        }
+    }
     var EXEC = ""
     if SwiftFiles != "" {
         if !fe(ClangBridge) {
@@ -64,13 +76,57 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
     if ApiExt.before != "" {
         shell("\(CDEXEC) && \(ApiExt.before)")
     }
+    usleep(100000)
+    DispatchQueue.main.async {
+        if let status = status {
+            status.wrappedValue = "preparing compiler"
+        }
+        if let progress = progress {
+            withAnimation {
+                progress.wrappedValue = 0.05
+            }
+        }
+    }
     //compiler start
     print("FridaCodeManager 1.1\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
+    usleep(100000)
+    DispatchQueue.main.async {
+        if let status = status {
+            status.wrappedValue = "creating folders"
+        }
+        if let progress = progress {
+            withAnimation {
+                progress.wrappedValue = 0.1
+            }
+        }
+    }
     cfolder(atPath: PayloadPath)
     cfolder(atPath: AppPath)
     cfolder(atPath: ClangPath)
+    usleep(100000)
+    DispatchQueue.main.async {
+        if let status = status {
+            status.wrappedValue = "copying app resources to folders"
+        }
+        if let progress = progress {
+            withAnimation {
+                progress.wrappedValue = 0.15
+            }
+        }
+    }
     try? copyc(from: Resources, to: AppPath)
     print("+++++ compiler-stage ++++++")
+    usleep(100000)
+    DispatchQueue.main.async {
+        if let status = status {
+            status.wrappedValue = "compiling \(ProjectInfo.Executable)"
+        }
+        if let progress = progress {
+            withAnimation {
+                progress.wrappedValue = 0.2
+            }
+        }
+    }
     if shell("\(CDEXEC) && \(EXEC)") != 0 {
         print("+++++++++++++++++++++++++++\n \n+++++++++ error +++++++++++\ncompiling \(ProjectInfo.Executable) failed\n+++++++++++++++++++++++++++")
         shell(CLEANEXEC)
@@ -80,9 +136,53 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool) -> Int {
         shell("\(CDEXEC) && \(ApiExt.after)")
     }
     print("+++++++++++++++++++++++++++\n \n+++++ install-stage +++++++")
+    usleep(100000)
+    DispatchQueue.main.async {
+        if let status = status {
+            status.wrappedValue = "giving entitlements to app"
+        }
+        if let progress = progress {
+            withAnimation {
+                progress.wrappedValue = 0.7
+            }
+        }
+    }
     shell(LDIDEXEC)
+    usleep(100000)
+    DispatchQueue.main.async {
+        if let status = status {
+            status.wrappedValue = "compressing app into .ipa archive"
+        }
+        if let progress = progress {
+            withAnimation {
+                progress.wrappedValue = 0.75
+            }
+        }
+    }
     shell("\(CDEXEC) && \(ZIPEXEC)")
+    usleep(100000)
+    DispatchQueue.main.async {
+        if let status = status {
+            status.wrappedValue = "installing \(ProjectInfo.Executable)"
+        }
+        if let progress = progress {
+            withAnimation {
+                progress.wrappedValue = 0.9
+            }
+        }
+    }
     shell(INSTALL, uid: 0)
+    usleep(100000)
+    DispatchQueue.main.async {
+        if let status = status {
+            status.wrappedValue = "clean up"
+        }
+        if let progress = progress {
+            withAnimation {
+                progress.wrappedValue = 1.0
+            }
+        }
+    }
     shell(CLEANEXEC)
     print("+++++++++++++++++++++++++++\n \n++++++++++ done +++++++++++")
     if erase == true {

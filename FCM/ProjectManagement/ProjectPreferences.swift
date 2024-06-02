@@ -159,9 +159,11 @@ struct Appeareance: View {
     @State var restrict: Bool = false
     @State var potrait: Bool = false
     @State var landscape: Bool = false
+    @State var iconid: UUID = UUID()
     var body: some View {
         List {
-            ImgView(projpath: projpath)
+            ImgView(projpath: projpath,iconid: $iconid)
+                .id(iconid)
             Section(header: Text("Orientation")) {
             Toggle("Restrict Orientation", isOn: $restrict)
             .tint(.orange)

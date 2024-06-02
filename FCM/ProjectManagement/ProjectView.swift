@@ -58,7 +58,7 @@ struct ProjectView: View {
                                     Button(action: {
                                         DispatchQueue.global(qos: .utility).async {
                                             ShowAlert(UIAlertController(title: "Building \(Project.Executable)...", message: "", preferredStyle: .alert))
-                                            build(Project, sdk, false)
+                                            build(Project, sdk, false, nil, nil)
                                             DispatchQueue.main.async {
                                                 let doc = docsDir()
                                                 let path = "\(doc)/ts.ipa"
@@ -173,6 +173,8 @@ struct buildView: View {
     @Binding var buildv: Bool
     @State var compiling: Bool = false
     @State var console: Bool = false
+    @State var status: String = ""
+    @State private var progress = 0.0
     var body: some View {
         VStack {
             LogView(show: $console)
@@ -191,14 +193,19 @@ ZStack {
 }
 .frame(width: UIScreen.main.bounds.width / 1.2, height: 50)
         } else {
-            ProgressView()
+            Text("\(status)")
+                .font(.system(size: 11, weight: .semibold))
+            Spacer().frame(height: 10)
+            ProgressView(value: progress, total: 1.0)
+                .progressViewStyle(LinearProgressViewStyle())
+                .frame(width: 250)
         }
         }
         .disabled(compiling)
         .onAppear {
       DispatchQueue.global(qos: .utility).async {
                 compiling = true
-                let result = build(ProjectInfo, sdk, true)
+                let result = build(ProjectInfo, sdk, true, $status, $progress)
                 if result != 0 {
                     withAnimation {
                         console = true

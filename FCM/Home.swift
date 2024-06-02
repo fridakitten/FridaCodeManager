@@ -42,17 +42,21 @@ VStack {
 Spacer().frame(height: 10)
 ScrollView {
                     Text("""
+1.2(New Horizon)
+-added progress status
+-added fixed icon setter appeareance issues
+
 1.1 (Renew)
--Changed name
--Changed icon
--Changed lists to be inset
--Added Color to FileManagement
--Changed the base design
--Added Credits
--Added variable detection to Highlighting engine
--Implement libroot to get rootpath efficiently
--Added HighlightRule cases
--Updated Credits
+-changed name
+-changed icon
+-changed lists to be inset
+-added Color to FileManagement
+-changed the base design
+-added Credits
+-added variable detection to Highlighting engine
+-implement libroot to get rootpath efficiently
+-added HighlightRule cases
+-updated Credits
 
 
 1.0.1 (Fixup)

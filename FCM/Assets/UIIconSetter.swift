@@ -83,6 +83,7 @@ struct ImgView: View {
     @State var selectedImage: UIImage?
     @State var isImagePickerPresented: Bool = false
     @State var imageloaded: Bool = false
+    @Binding var iconid: UUID
 
     var body: some View {
             Section(header: Text("icon")) {
@@ -99,12 +100,13 @@ struct ImgView: View {
                 
                 Button("Assign Icon") {
                     saveImage(image)
+                    iconid = UUID()
                 }
             } else {
-                Text("No Image Selected")
+                Text("App does not have a Icon")
             }
 
-            Button("Select Image") {
+            Button("Add Icon") {
 imageloaded = true
                 self.isImagePickerPresented.toggle()
             }
@@ -116,6 +118,7 @@ imageloaded = true
                 Section {
                     Button("Remove Icon") {
                         remove()
+                        iconid = UUID()
                     }
                     .accentColor(Color.red)
                 }
