@@ -8,6 +8,7 @@ Its meant to be compiled on jailbroken iOS devices in terminal,
 compiling it using macos can cause certain anomalies with UI, etc
 
 You need `swift`,`clang`,`git` and `make`. Run `make all` to compile and package it as a .deb
+To compile package for roothide use `make roothide`
 
 Was successfully compiled on
 
