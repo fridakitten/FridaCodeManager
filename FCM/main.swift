@@ -24,8 +24,17 @@ import SwiftUI
 
 
 //global environment
-let jbroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
-let version: String = "v1.2"
+let jbroot: String = {
+    let preroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
+    if !fe(preroot) {
+        if let altroot = altroot(inPath: "/var/containers/Bundle/Application")?.path {
+            return altroot
+        }
+    }
+    return preroot
+}()
+let global_sdkpath: String = "\(Bundle.main.bundlePath)/sdk"
+let global_version: String = "v1.2"
 
 @main
 struct MyApp: App {

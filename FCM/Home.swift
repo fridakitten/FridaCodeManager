@@ -48,6 +48,7 @@ ScrollView {
 -made application version globally
 -added a forgotten credit :3
 -added forgotten highlights in code editor
+-added roothide support
 
 1.1 (Renew)
 -changed name

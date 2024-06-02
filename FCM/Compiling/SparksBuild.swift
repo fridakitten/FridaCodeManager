@@ -28,7 +28,7 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool,_ status: Binding
     let PayloadPath = "\(ProjectInfo.ProjectPath)/Payload"
     let AppPath = "\(PayloadPath)/\(ProjectInfo.Executable).app"
     let Resources = "\(ProjectInfo.ProjectPath)/Resources"
-    let SDKPath = "\(jbroot)/opt/theos/sdks/\(ProjectInfo.SDK)"
+    let SDKPath = "\(global_sdkpath)/\(ProjectInfo.SDK)"
     let ClangPath = "\(ProjectInfo.ProjectPath)/clang"
     let ClangBridge = "\(ProjectInfo.ProjectPath)/bridge.h"
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
@@ -70,7 +70,7 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool,_ status: Binding
     let RMEXEC = "rm '\(ProjectInfo.ProjectPath)/ts.ipa'"
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
     let ZIPEXEC = "zip -r9q ./ts.ipa ./Payload"
-    let INSTALL = "\(jbroot)/usr/bin/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa'"
+    let INSTALL = "\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa'"
     let Extension = load("\(ProjectInfo.ProjectPath)/api.txt")
     let ApiExt: ext = api(Extension,ProjectInfo)
     if ApiExt.before != "" {
@@ -88,7 +88,7 @@ func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool,_ status: Binding
         }
     }
     //compiler start
-    print("FridaCodeManager \(version)\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
+    print("FridaCodeManager \(global_version)\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
     usleep(100000)
     DispatchQueue.main.async {
         if let status = status {

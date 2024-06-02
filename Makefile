@@ -1,7 +1,7 @@
 # Makefile
 
 SDK_PATH = sdks/iPhoneOS15.6.sdk
-OUTPUT_DIR = Blueprint/FridaCodeManager-rootless/var/jb/Applications/FridaCodeManager.app
+OUTPUT_DIR = Blueprint/FridaCodeManager.app
 SWIFT := $(shell find ./FCM/ -name '*.swift')
 
 ifeq ($(wildcard /bin/sh),)
@@ -23,25 +23,39 @@ create:
 endif
 
 # initial
-all: build_ipa
-
-build_ipa: compile_swift create_payload deb
+all: compile_swift package deb clean
+roothide: compile_swift package_roothide deb clean
 
 compile_swift:
 	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n"
 	swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libroot/libroot.a FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -target arm64-apple-ios15.0
 	ldid -S./FCM/ent.xml $(OUTPUT_DIR)/swifty
 
-create_payload:
-	mkdir -p $(OUTPUT_DIR)
+package:
+	find . -type f -name ".DS_Store" -delete
+	-rm -rf .package
+	mkdir .package
+	mkdir -p .package/var/jb/Applications/FridaCodeManager.app
+	cp -r Blueprint/FridaCodeManager.app/* .package/var/jb/Applications/FridaCodeManager.app
+	mkdir -p .package/var/jb/Applications/FridaCodeManager.app/sdk
+	cp -r sdks/iPhoneOS15.6.sdk .package/var/jb/Applications/FridaCodeManager.app/sdk/iPhoneOS15.6.sdk
+	mkdir -p .package/DEBIAN
+	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: 1.2\nArchitecture: iphoneos-arm64\nDescription: .\nDepends: swift-5.7.2, swift, zip, ldid, git, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
+
+package_roothide:
+	find . -type f -name ".DS_Store" -delete
+	-rm -rf .package
+	mkdir .package
+	mkdir -p .package/Applications/FridaCodeManager.app
+	cp -r Blueprint/FridaCodeManager.app/* .package/Applications/FridaCodeManager.app
+	mkdir -p .package/Applications/FridaCodeManager.app/sdk
+	cp -r sdks/iPhoneOS15.6.sdk .package/Applications/FridaCodeManager.app/sdk/iPhoneOS15.6.sdk
+	mkdir -p .package/DEBIAN
+	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: 1.2\nArchitecture: iphoneos-arm64e\nDescription: .\nDepends: swift-5.7.2, swift, zip, ldid, git, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
 
 deb:
-	find . -type f -name ".DS_Store" -delete
-	mkdir -p Blueprint/FridaCodeManager-rootless/var/jb/opt/theos/sdks
-	cp -r sdks/iPhoneOS15.6.sdk Blueprint/FridaCodeManager-rootless/var/jb/opt/theos/sdks/iPhoneOS15.6.sdk
-	dpkg-deb -b Blueprint/FridaCodeManager-rootless Product/FridaCodeManager-rootless.deb
-	rm Blueprint/FridaCodeManager-rootless/var/jb/Applications/FridaCodeManager.app/swifty
-	rm -rf Blueprint/FridaCodeManager-rootless/var/jb/opt
+	-rm -rf Product/FridaCodeManager.deb
+	dpkg-deb -b .package Product/FridaCodeManager.deb
 
 clean:
-	rm -rf $(OUTPUT_DIR) $(OUTPUT_IPA)
+	rm -rf $(OUTPUT_DIR)/swifty .package

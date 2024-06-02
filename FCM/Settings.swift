@@ -38,7 +38,7 @@ struct Settings: View {
             List {
                 Section(header: Text("default sdk"), footer: Text("The sdk gets used when you create a new project.")) {
                     Text(sdk)
-                    NavigationLink(destination: SDKList(directoryPath: "\(jbroot)/opt/theos/sdks" ,sdk: $sdk)) {
+                    NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
                         Text("Change")
                     }
                 }

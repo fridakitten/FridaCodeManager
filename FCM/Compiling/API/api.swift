@@ -25,7 +25,7 @@ import Foundation
 func apicall(_ text: String,_ proj:Project) -> String {
     var ret = text
     ret = ret.replacingOccurrences(of: "<apiver>", with: "0.1")
-    ret = ret.replacingOccurrences(of: "<fcmver>", with: "\(version)")
+    ret = ret.replacingOccurrences(of: "<fcmver>", with: "\(global_version)")
     ret = ret.replacingOccurrences(of: "<bundle>", with: "\(proj.BundleID)")
     ret = ret.replacingOccurrences(of: "<app>", with: "\(proj.Executable)")
     ret = ret.replacingOccurrences(of: "<host>", with: ghost())
