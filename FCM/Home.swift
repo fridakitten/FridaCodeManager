@@ -49,6 +49,7 @@ ScrollView {
 -added a forgotten credit :3
 -added forgotten highlights in code editor
 -added roothide support
+-fixed remark: issue
 
 1.1 (Renew)
 -changed name
