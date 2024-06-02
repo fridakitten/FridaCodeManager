@@ -7,6 +7,8 @@ Dont bully me for the Initial Code, bully SparkleChan
 Its meant to be compiled on jailbroken iOS devices in terminal,
 compiling it using macos can cause certain anomalies with UI, etc
 
+You need `swift`,`clang`,`git` and `make`. Run `make all` to compile and package it as a .deb
+
 Was successfully compiled on
 
 iPhone 11, iOS 16.5
