@@ -33,6 +33,10 @@ let jbroot: String = {
     }
     return preroot
 }()
+let global_documents: String = {
+    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+    return paths[0].path
+}()
 let global_sdkpath: String = "\(Bundle.main.bundlePath)/sdk"
 let global_version: String = "v1.2"
 

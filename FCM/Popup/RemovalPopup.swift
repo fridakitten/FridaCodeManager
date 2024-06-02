@@ -56,7 +56,7 @@ struct RemovalPopup: View {
                 .cornerRadius(10)
                 Spacer()
                 Button(action: {
-                    let ProjectPath = "\(docsDir())/\(exec)"
+                    let ProjectPath = "\(global_documents)/\(exec)"
                     shell("rm -rf '\(ProjectPath)'")
                     hellnah = UUID()
                     isPresented = false

@@ -49,6 +49,6 @@ struct PubImg: View {
                 if selectedImage == nil {
                     selectedImage = loadImage(fromPath: "\(projpath)/Resources/AppIcon.png")
                 }
-            }
-      }
+        }
+    }
 }

@@ -39,11 +39,6 @@ func cfile(atPath path: String, withContent content: String) {
     }
 }
 
-public func docsDir() -> String {
-    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-    return paths[0].path
-}
-
 func copyc(from sp: String, to dp: String) throws {
     let sourcePath = sp
     let destinationPath = dp

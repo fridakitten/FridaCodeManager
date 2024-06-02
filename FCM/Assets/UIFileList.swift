@@ -23,6 +23,9 @@
 import SwiftUI
 import Foundation
 
+let screenHeight = UIScreen.main.bounds.height
+let screenWidth = UIScreen.main.bounds.width
+
 struct FileList: View {
     @State var directoryPath: String
     @State private var files: [URL] = []
@@ -38,11 +41,9 @@ struct FileList: View {
     @State private var rename: Bool = false
     @State private var fbool: Bool = false
     @State var nv: String
-    @Binding var buildv:
-Bool
+    @Binding var buildv: Bool
     @State var builda: Bool
     @State var showfile: Bool = false
-
     var body: some View {
         List {
             Section {
@@ -51,49 +52,49 @@ Bool
                         NavigationLink(destination: FileList(directoryPath: item.path, nv: item.lastPathComponent, buildv: $buildv, builda: false)) {
                             HStack {
                                 Image(systemName: "folder.fill")
-    .foregroundColor(.primary)
+                                    .foregroundColor(.primary)
                                 Text(item.lastPathComponent)
                             }
                         }
-.contextMenu {
-Button("Rename") {
-selfile = item.lastPathComponent
-rename = true
-}
-}
+                        .contextMenu {
+                            Button("Rename") {
+                                selfile = item.lastPathComponent
+                                rename = true
+                            }
+                        }
                     } else {
                         HStack {
                             Button(action: {
-selpath = item.path
-if !gtypo(item: item.lastPathComponent) {
-quar = true
-} else {
-fbool = true
-}
+                                selpath = item.path
+                                if !gtypo(item: item.lastPathComponent) {
+                                    quar = true
+                                } else {
+                                    fbool = true
+                                }
                             }) {
                                 HStack {
-HStack {                                 
-ZStack {
-    Image(systemName: "doc.fill")
-        .foregroundColor(gcolor(item: item.lastPathComponent))
-    VStack {
-    Spacer().frame(height: 8)
-    Text(gsymbol(item: item.lastPathComponent))
-        .font(.system(size: CGFloat(gsize(item: item.lastPathComponent)), weight: .bold))
-        .foregroundColor(Color(.systemBackground))
-    }
-}
-                                    Text(item.lastPathComponent)
-Spacer()
-Text("\(gfilesize(atPath: item.path)) KB")
-    .font(.system(size: 10, weight: .semibold))
-}
+                                    HStack {
+                                        ZStack {
+                                            Image(systemName: "doc.fill")
+                                                .foregroundColor(gcolor(item: item.lastPathComponent))
+                                            VStack {
+                                                Spacer().frame(height: 8)
+                                                Text(gsymbol(item: item.lastPathComponent))
+                                                    .font(.system(size: CGFloat(gsize(item: item.lastPathComponent)), weight: .bold))
+                                                    .foregroundColor(Color(.systemBackground))
+                                            }
+                                        }
+                                        Text(item.lastPathComponent)
+                                        Spacer()
+                                        Text("\(gfilesize(atPath: item.path)) KB")
+                                            .font(.system(size: 10, weight: .semibold))
+                                    }
                                 }
                             }
                             .contextMenu {
-                                Button("Rename") {   
-selfile = item.lastPathComponent
-rename = true
+                                Button("Rename") {
+                                    selfile = item.lastPathComponent
+                                    rename = true
                                 }
                             }
                         }
@@ -109,36 +110,24 @@ rename = true
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(nv)
         .navigationBarTitleDisplayMode(.inline)
-        .fileImporter(isPresented: $showfile,allowedContentTypes: [.all]) { result in
-            do {
-                let fileURL = try result.get()
-try FileManager.default.copyItem(at: fileURL, to: (URL(string: directoryPath)) ?? fileURL)
-loadFiles()
-            } catch {
-                print("Error importing file: \(error.localizedDescription)")
-            }
-        }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-Menu {
-    if builda == true {
-        Section {
-            Button(action: { buildv = true }) {
-                Label("Build", systemImage: "play.fill")
-            }
-        }
-    }
-    Section {
-        Button(action: { showAlertmod = true }) {
-            Label("Create File", systemImage: "doc.fill.badge.plus")
-        }
-        /*Button(action: { showfile = true }) {
-            Label("Import File", systemImage: "arrow.down.doc.fill")
-        }*/
-    }
-} label: {
-    Label("", systemImage: "ellipsis.circle")
-}
+                Menu {
+                    if builda == true {
+                        Section {
+                            Button(action: { buildv = true }) {
+                                Label("Build", systemImage: "play.fill")
+                            }
+                        }
+                    }
+                    Section {
+                        Button(action: { showAlertmod = true }) {
+                            Label("Create File", systemImage: "doc.fill.badge.plus")
+                        }
+                    }
+                } label: {
+                    Label("", systemImage: "ellipsis.circle")
+                }
             }
         }
         .sheet(isPresented: $showAlertmod) {
@@ -151,14 +140,14 @@ Menu {
             }
         }
         .sheet(isPresented: $rename) {
-             BottomPopupView {
-RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPath)
-             }
-             .background(BackgroundClearView())
-             .onDisappear {
-                 loadFiles()
-             }
-         }
+            BottomPopupView {
+                RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPath)
+            }
+            .background(BackgroundClearView())
+            .onDisappear {
+                loadFiles()
+            }
+        }
         .fullScreenCover(isPresented: $quar) {
             CodeEditorView(quar: $quar, filePath: $selpath)
         }
@@ -175,23 +164,6 @@ RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPa
             print("File copied successfully!")
         } catch {
             print("Error copying file: \(error.localizedDescription)")
-        }
-    }
-    func gtypo(item: String) -> Bool {
-        let suffix = gsuffix(from: item)
-        switch(suffix) {
-            case "png":
-                return true
-            case "jpg":
-                return true
-            case "jpeg":
-                return true
-            case "PNG":
-                return true
-            case "JPG":
-                return true
-            default:
-                return false
         }
     }
 
@@ -248,15 +220,13 @@ RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPa
                 return 0
         }
     }
-
     func loadFiles() {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
-
         do {
             let fileURLs = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
             let fileURLsOnly = fileURLs.filter { url in
-    !isDirectory(url) && url.lastPathComponent != "DontTouchMe.plist"}
+            !isDirectory(url) && url.lastPathComponent != "DontTouchMe.plist"}
             let folderURLs = fileURLs.filter { isDirectory($0) }
             folders = folderURLs
             files = fileURLsOnly
@@ -264,7 +234,6 @@ RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPa
             print("Error loading files: \(error.localizedDescription)")
         }
     }
-
     func deleteItems(at offsets: IndexSet) {
         for index in offsets {
             let itemURL = (folders + files)[index]
@@ -276,49 +245,40 @@ RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPa
         }
         loadFiles()
     }
-
     func renameFile(atPath filePath: String, to newFileName: String) throws {
-    let fileManager = FileManager.default
-    let directoryPath = (filePath as NSString).deletingLastPathComponent
-    let newFilePath = (directoryPath as NSString).appendingPathComponent(newFileName)
-
-    try fileManager.moveItem(atPath: filePath, toPath: newFilePath)
-}
-
-
+        let fileManager = FileManager.default
+        let directoryPath = (filePath as NSString).deletingLastPathComponent
+        let newFilePath = (directoryPath as NSString).appendingPathComponent(newFileName)
+        try fileManager.moveItem(atPath: filePath, toPath: newFilePath)
+    }
 }
 
 struct ImageView: View {
     @Binding var imagePath: String
     @Binding var fbool: Bool
-
-    let screenHeight = UIScreen.main.bounds.height
-    let screenWidth = UIScreen.main.bounds.width
-
     var body: some View {
         NavigationView {
-          ZStack {
-           Color(UIColor.systemGray6)
-               .ignoresSafeArea()
-            VStack {
-                Image(uiImage: loadImage())
-                    .resizable()
-                    .scaledToFit()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: screenWidth)
-            }
-            .navigationBarTitle("Image Viewer", displayMode: .inline)
-            .navigationBarItems(leading:
-                Button(action: {
-                    fbool = false
-                }) {
-                    Text("Close")
+            ZStack {
+                Color(UIColor.systemGray6)
+                    .ignoresSafeArea()
+                VStack {
+                    Image(uiImage: loadImage())
+                        .resizable()
+                        .scaledToFit()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: screenWidth)
                 }
-            )
+                .navigationBarTitle("Image Viewer", displayMode: .inline)
+                .navigationBarItems(leading:
+                    Button(action: {
+                        fbool = false
+                    }) {
+                        Text("Close")
+                    }
+                )
+            }
         }
-      }
     }
-
     private func loadImage() -> UIImage {
         guard let image = UIImage(contentsOfFile: imagePath) else {
             return UIImage(systemName: "photo")!
@@ -327,30 +287,25 @@ struct ImageView: View {
     }
 }
 
-
-
 struct SDKList: View {
     @State private var files: [URL] = []
     @State private var folders: [URL] = []
     @State var directoryPath: String
-
     @Binding var sdk: String
-    
     var body: some View {
         List {
             Section() {
                 ForEach(folders, id: \.self) { folder in
-   
-Button( action: {
-    sdk = folder.lastPathComponent
-}){
-                    HStack {
-                        Image(systemName: "sdcard.fill")
-                        Text(folder.lastPathComponent)
+                    Button( action: {
+                        sdk = folder.lastPathComponent
+                    }){
+                        HStack {
+                            Image(systemName: "sdcard.fill")
+                            Text(folder.lastPathComponent)
+                        }
+                    }
                 }
-}
-              }
-           }
+            }
         }
         .onAppear {
             loadFiles()
@@ -360,11 +315,9 @@ Button( action: {
         .navigationTitle("SDKs")
         .navigationBarTitleDisplayMode(.inline)
     }
-
     func loadFiles() {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
-        
         do {
             let fileURLs = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
             let fileURLsOnly = fileURLs.filter { !isDirectory($0) }
@@ -381,7 +334,6 @@ struct PKG: View {
     @State private var files: [URL] = []
     @State private var folders: [URL] = []
     @State var directoryPath: String
-    
     var body: some View {
         List {
             Section() {
@@ -389,10 +341,10 @@ struct PKG: View {
                     HStack {
                         Image(systemName: "tray.fill")
                         Text(folder.lastPathComponent)
+                    }
                 }
-              }
-              .onDelete(perform: deleteItems)
-           }
+                .onDelete(perform: deleteItems)
+            }
         }
         .onAppear {
             loadFiles()
@@ -401,11 +353,9 @@ struct PKG: View {
         .navigationTitle("Packages")
         .navigationBarTitleDisplayMode(.inline)
     }
-
     func loadFiles() {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
-        
         do {
             let fileURLs = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
             let fileURLsOnly = fileURLs.filter { !isDirectory($0) }
@@ -415,8 +365,7 @@ struct PKG: View {
         } catch {
             print("Error loading files: \(error.localizedDescription)")
         }
-    } 
-
+    }
     func deleteItems(at offsets: IndexSet) {
         for index in offsets {
             let itemURL = (folders + files)[index]
@@ -434,34 +383,29 @@ struct PKGSelect: View {
     @State private var files: [URL] = []
     @State private var folders: [URL] = []
     @State var directoryPath: String
-    
     @Binding var ProjectName: String
-    
     @Binding var addview: Bool
     var body: some View {
         List {
             Section() {
                 ForEach(folders, id: \.self) { folder in
-   
-Button( action: {
-let Framework = folder.lastPathComponent
-let doc = docsDir()
-                let frameworks = "\(doc)/frameworks"
-                let app_frameworks = "\(doc)/\(ProjectName)/Frameworks"
-                cfolder(atPath: app_frameworks)
-                shell("cd '\(app_frameworks)' && cp -r '\(frameworks)/\(Framework)' ./")
-
-addview = false
-}){
-                    HStack {
-                        Image(systemName: "tray.fill")
-                        Text(folder.lastPathComponent)
+                    Button( action: {
+                        let Framework = folder.lastPathComponent
+                        let frameworks = "\(global_documents)/frameworks"
+                        let app_frameworks = "\(global_documents)/\(ProjectName)/Frameworks"
+                        cfolder(atPath: app_frameworks)
+                        shell("cd '\(app_frameworks)' && cp -r '\(frameworks)/\(Framework)' ./")
+                        addview = false
+                        }){
+                            HStack {
+                            Image(systemName: "tray.fill")
+                            Text(folder.lastPathComponent)
+                        }
+                    }
+                    .foregroundColor(.primary)
+                    .accentColor(.primary)
                 }
-}
-.foregroundColor(.primary)
-.accentColor(.primary)
-              }
-           }
+            }
         }
         .onAppear {
             loadFiles()
@@ -470,11 +414,9 @@ addview = false
         .navigationTitle("Frameworks")
         .navigationBarTitleDisplayMode(.inline)
     }
-
     func loadFiles() {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
-        
         do {
             let fileURLs = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
             let fileURLsOnly = fileURLs.filter { !isDirectory($0) }
@@ -500,7 +442,6 @@ addview = false
 
 func gfilesize(atPath filePath: String) -> String {
     let fileURL = URL(fileURLWithPath: filePath)
-
     do {
         let attributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
         if let fileSize = attributes[FileAttributeKey.size] as? Int64 {
@@ -513,9 +454,26 @@ func gfilesize(atPath filePath: String) -> String {
         return "0.00" // Error occurred while getting file attributes or file doesn't exist
     }
 }
-
 func isDirectory(_ fileURL: URL) -> Bool {
-    var isDirectory: ObjCBool = false         
+    var isDirectory: ObjCBool = false
     FileManager.default.fileExists(atPath: fileURL.path, isDirectory: &isDirectory)
     return isDirectory.boolValue
+}
+
+func gtypo(item: String) -> Bool {
+    let suffix = gsuffix(from: item)
+    switch(suffix) {
+        case "png":
+            return true
+        case "jpg":
+            return true
+        case "jpeg":
+            return true
+        case "PNG":
+            return true
+        case "JPG":
+            return true
+        default:
+            return false
+    }
 }

@@ -75,7 +75,7 @@ struct ProjPopupView: View {
                     Text("Swift/ObjC App").tag(3)
             }
             .pickerStyle(MenuPickerStyle())
-                    }
+                }
                 Spacer()
                 }
                 .frame(height: 36)
@@ -85,17 +85,17 @@ struct ProjPopupView: View {
                 .cornerRadius(10)
                 Spacer().frame(width: 10)
                 Button(action: {
-                    let docs = "\(docsDir())/\(AppName)"
+                    let docs = "\(global_documents)/\(AppName)"
                     if AppName != "" {
                     if BundleID != "" {
                     if !fe(docs) {
-isPresented = false
-                    MakeApplicationProject(AppName, BundleID,SDK: SDK, type: type)
-AppName = ""
-BundleID = ""
-hellnah = UUID()
-                            }
-                        }
+                        isPresented = false
+                        MakeApplicationProject(AppName, BundleID,SDK: SDK, type: type)
+                        AppName = ""
+                        BundleID = ""
+                        hellnah = UUID()
+                    }
+                 }
                     }
                 }, label: {
                     Text("Submit")

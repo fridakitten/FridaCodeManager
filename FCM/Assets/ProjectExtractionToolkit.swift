@@ -1,5 +1,5 @@
  /* 
-ProjectExtractionToolkit.swift 
+ ProjectExtractionToolkit.swift 
 
  Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
  Copyright (C) 2024 fridakitten 
@@ -23,19 +23,17 @@ ProjectExtractionToolkit.swift
 import Foundation
 
 func exportProj(_ project: Project) {
-    let doc = docsDir()
-    let target = "\(doc)/\(project.Executable).sproj"
+    let target = "\(global_documents)/\(project.Executable).sproj"
     if fileExists(path: target) {
-        shell("rm '\(doc)/\(project.Executable).sproj'")
+        shell("rm '\(global_documents)/\(project.Executable).sproj'")
     }
-    shell("cd '\(doc)' && zip -r '\(project.Executable).sproj' '\(project.Name)'")
+    shell("cd '\(global_documents)' && zip -r '\(project.Executable).sproj' '\(project.Name)'")
 }
 
 func importProj() {
-    let doc = docsDir()
-    let target = "\(doc)/target.sproj"
+    let target = "\(global_documents)/target.sproj"
     if fileExists(path: target) {
-        shell("cd '\(doc)' && unzip '\(target)'")
+        shell("cd '\(global_documents)' && unzip '\(target)'")
         shell("rm '\(target)'")
     }
 }

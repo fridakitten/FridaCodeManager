@@ -26,24 +26,22 @@ struct ProjPreferences: View {
     @Binding var ProjectName: String
     @Binding var hello: UUID
     @Binding var rname: String
-    @State var FrameworkPath = "\(docsDir())/frameworks"
+    @State var FrameworkPath = "\(global_documents)/frameworks"
     @State var ProjectPath = ""
     var body: some View {
         NavigationView {
             List {
                 NavigationLink(destination: PrefsInfo(ProjectName: $ProjectName, hello: $hello)) {
-                Label("App Information", systemImage: "list.bullet.rectangle")
+                    Label("App Information", systemImage: "list.bullet.rectangle")
                 }
-                NavigationLink(destination: Appeareance(projname: ProjectName,projpath: "\(docsDir())/\(ProjectName)")) {
-                Label("Appeareance", systemImage: "paintbrush")
-            }
-
-NavigationLink(destination: asksdk(projpath: "\(docsDir())/\(ProjectName)")) {
-                Label("SDK", systemImage: "sdcard")
-}
-
-NavigationLink(destination: Frameprefs(ProjectName: $ProjectName, FrameworkPath: $FrameworkPath, ProjectPath: $ProjectPath)) {
-                Label("Frameworks", systemImage: "tray.2")
+                NavigationLink(destination: Appeareance(projname: ProjectName,projpath: "\(global_documents)/\(ProjectName)")) {
+                    Label("Appeareance", systemImage: "paintbrush")
+                }
+                NavigationLink(destination: asksdk(projpath: "\(global_documents)/\(ProjectName)")) {
+                    Label("SDK", systemImage: "sdcard")
+                }
+                NavigationLink(destination: Frameprefs(ProjectName: $ProjectName, FrameworkPath: $FrameworkPath, ProjectPath: $ProjectPath)) {
+                    Label("Frameworks", systemImage: "tray.2")
                 }
             }
             .accentColor(.primary)
@@ -51,7 +49,7 @@ NavigationLink(destination: Frameprefs(ProjectName: $ProjectName, FrameworkPath:
             .navigationTitle("\(rname)")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
-                ProjectPath = "\(docsDir())/\(ProjectName)/Frameworks"
+                ProjectPath = "\(global_documents)/\(ProjectName)/Frameworks"
             }
         }
     }
@@ -102,27 +100,26 @@ struct PrefsInfo: View {
         }
         .id(rfresh)
         .onAppear {
-                let doc = docsDir()
-                PlistPath = "\(doc)/\(ProjectName)/Resources/Info.plist"
-                AppName = (rplist(forKey: "CFBundleName", plistPath: PlistPath) ?? "")
-                AppliName = (rplist(forKey: "CFBundleExecutable", plistPath: PlistPath) ?? "")
-                BundleID = (rplist(forKey: "CFBundleIdentifier", plistPath: PlistPath) ?? "")
-                Version = (rplist(forKey: "CFBundleVersion", plistPath: PlistPath) ?? "")
-                MIOS = (rplist(forKey: "MinimumOSVersion", plistPath: PlistPath) ?? "")
-                rfresh = UUID()
+            PlistPath = "\(global_documents)/\(ProjectName)/Resources/Info.plist"
+            AppName = (rplist(forKey: "CFBundleName", plistPath: PlistPath) ?? "")
+            AppliName = (rplist(forKey: "CFBundleExecutable", plistPath: PlistPath) ?? "")
+            BundleID = (rplist(forKey: "CFBundleIdentifier", plistPath: PlistPath) ?? "")
+            Version = (rplist(forKey: "CFBundleVersion", plistPath: PlistPath) ?? "")
+            MIOS = (rplist(forKey: "MinimumOSVersion", plistPath: PlistPath) ?? "")
+            rfresh = UUID()
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("App Information")
         .navigationBarTitleDisplayMode(.inline)
     }
     func save() {
-                    wplist(value: AppName, forKey: "CFBundleName", plistPath: PlistPath)
-                    wplist(value: AppliName, forKey: "CFBundleExecutable", plistPath: PlistPath)
-                    wplist(value: BundleID, forKey: "CFBundleIdentifier", plistPath: PlistPath)
-                    wplist(value: Version, forKey: "CFBundleVersion", plistPath: PlistPath)
-                    wplist(value: Version, forKey: "CFBundleShortVersionString", plistPath: PlistPath)
-                    wplist(value: MIOS, forKey: "MinimumOSVersion", plistPath: PlistPath)
-    hello = UUID()
+        wplist(value: AppName, forKey: "CFBundleName", plistPath: PlistPath)
+        wplist(value: AppliName, forKey: "CFBundleExecutable", plistPath: PlistPath)
+        wplist(value: BundleID, forKey: "CFBundleIdentifier", plistPath: PlistPath)
+        wplist(value: Version, forKey: "CFBundleVersion", plistPath: PlistPath)
+        wplist(value: Version, forKey: "CFBundleShortVersionString", plistPath: PlistPath)
+        wplist(value: MIOS, forKey: "MinimumOSVersion", plistPath: PlistPath)
+        hello = UUID()
     }
 }
 
@@ -138,19 +135,19 @@ struct Frameprefs: View {
             .id(puuid)
         }
         .navigationBarItems(trailing: Button(action: {
-addview = true
-            }) {
-                Image(systemName: "plus")
-            })
+            addview = true
+        }) {
+            Image(systemName: "plus")
+        })
         .sheet(isPresented: $addview) {
             PKGSelect(directoryPath: FrameworkPath, ProjectName: $ProjectName, addview: $addview)
-.onDisappear {
-    puuid = UUID()
-}
-    }
-    .navigationTitle("Frameworks")
+                .onDisappear {
+                    puuid = UUID()
+                }
+            }
+            .navigationTitle("Frameworks")
             .navigationBarTitleDisplayMode(.inline)
-  }
+        }
 }
 
 struct Appeareance: View {
@@ -190,8 +187,7 @@ struct Appeareance: View {
         .navigationBarTitleDisplayMode(.inline)
     }
     func update() {
-        let doc = docsDir()
-        let proj = "\(doc)/\(projname)"
+        let proj = "\(global_documents)/\(projname)"
         let plist = "\(proj)/Resources/Info.plist"
         let array = "UISupportedInterfaceOrientations"
         var items: [String] = []
@@ -206,7 +202,6 @@ struct Appeareance: View {
                  rmaplist(aname: array, path: plist)
             }
             caplist(aname: array, path: plist, arrayData: items)
-            
         } else {
             if paeplist(aname: array, path: plist) {
                  rmaplist(aname: array, path: plist)
@@ -215,8 +210,7 @@ struct Appeareance: View {
     }
 
     func config() {
-        let doc = docsDir()
-        let proj = "\(doc)/\(projname)"
+        let proj = "\(global_documents)/\(projname)"
         let plist = "\(proj)/Resources/Info.plist"
         let array = "UISupportedInterfaceOrientations"
         if paeplist(aname: array, path: plist) {

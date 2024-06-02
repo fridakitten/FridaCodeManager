@@ -60,27 +60,27 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         return textView
     }
 
-public func updateUIView(_ uiView: UITextView, context: Context) {
-    guard !context.coordinator.updatingUIView else { return } // Skip unnecessary updates
+    public func updateUIView(_ uiView: UITextView, context: Context) {
+        guard !context.coordinator.updatingUIView else { return } // Skip unnecessary updates
 
-    let highlightedText = HighlightedTextEditor.getHighlightedText(
-        text: text,
-        highlightRules: highlightRules
-    )
+        let highlightedText = HighlightedTextEditor.getHighlightedText(
+            text: text,
+            highlightRules: highlightRules
+        )
 
-    if let range = uiView.markedTextNSRange {
-        uiView.setAttributedMarkedText(highlightedText, selectedRange: range)
-    } else {
-        // Only set attributedText if it has changed
-        if uiView.attributedText != highlightedText {
-            uiView.attributedText = highlightedText
+        if let range = uiView.markedTextNSRange {
+            uiView.setAttributedMarkedText(highlightedText, selectedRange: range)
+        } else {
+            // Only set attributedText if it has changed
+            if uiView.attributedText != highlightedText {
+                uiView.attributedText = highlightedText
+            }
         }
-    }
 
-    updateTextViewModifiers(uiView)
-    runIntrospect(uiView)
-    uiView.selectedTextRange = context.coordinator.selectedTextRange
-}
+        updateTextViewModifiers(uiView)
+        runIntrospect(uiView)
+        uiView.selectedTextRange = context.coordinator.selectedTextRange
+    }
 
     private func runIntrospect(_ textView: UITextView) {
         guard let introspect = introspect else { return }

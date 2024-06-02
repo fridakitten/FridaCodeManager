@@ -35,7 +35,6 @@ struct ProjectView: View {
     @State var qls: String = ""
     @State var building: Bool = false
     @State var current: String = ""
-    @State var doc: String = docsDir()
     var body: some View {
         NavigationView {
             List {
@@ -43,7 +42,7 @@ struct ProjectView: View {
                     ForEach(GetProjects()) { Project in
                         NavigationLink(destination: CodeSpace(ProjectInfo: Project, sdk: $sdk)) {
                             HStack {
-                                PubImg(projpath: "\(doc)/\(Project.Name)")
+                                PubImg(projpath: "\(global_documents)/\(Project.Name)")
                                 Spacer().frame(width: 15)
                                 VStack(alignment: .leading) {
                                     Text(Project.Executable)
@@ -56,31 +55,9 @@ struct ProjectView: View {
                             .contextMenu {
                                 Section {
                                     Button(action: {
-                                        DispatchQueue.global(qos: .utility).async {
-                                            ShowAlert(UIAlertController(title: "Building \(Project.Executable)...", message: "", preferredStyle: .alert))
-                                            build(Project, sdk, false, nil, nil)
-                                            DispatchQueue.main.async {
-                                                let doc = docsDir()
-                                                let path = "\(doc)/ts.ipa"
-                                                shell("rm '\(path)'")
-                                                shell("mv '\(doc)/\(Project.Name)/ts.ipa' \(path)")
-                                                if let fileURL = URL(string: "file://" + path) {
-                                                    DismissAlert()
-                                                    fuck(url: fileURL)
-                                                    print("File URL: \(fileURL)")
-                                                } else {
-                                                    print("Invalid file path")
-                                                }
-                                            }
-                                        }
-                                    }){
-                                        Label("Export App", systemImage: "app.dashed")
-                                    }
-                                    Button(action: {
                                         exportProj(Project)
-                                        let doc = docsDir()
-                                        let target = "\(doc)/\(Project.Executable).sproj"
-                                        if let fileURL = URL(string: "file://" + target) {
+                                        let target = "\(global_documents)/\(Project.Executable).sproj"
+                                        if let fileURL = URL(string: "file:/\("/")\(target.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed))") {
                                             fuck(url: fileURL)
                                             print("File URL: \(fileURL)")
                                         } else {
@@ -99,10 +76,10 @@ struct ProjectView: View {
                                 }
                                 Section {
                                     Button(role: .destructive, action: {
-projname = Project.Executable
-projrname = Project.Name
-Removal = true
-}){
+                                        projname = Project.Executable
+                                        projrname = Project.Name
+                                        Removal = true
+                                    }){
                                         Label("Remove", systemImage: "trash")
                                     }
                                 }
@@ -120,25 +97,24 @@ Removal = true
             .navigationTitle("Projects")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $Prefs) {
-ProjPreferences(ProjectName: $projname, hello: $hello, rname: $projrname)
-                .onDisappear {
-                    hello = UUID()
-                }
+                ProjPreferences(ProjectName: $projname, hello: $hello, rname: $projrname)
+                    .onDisappear {
+                        hello = UUID()
+                    }
             }
             .sheet(isPresented: $Removal) {
                 BottomPopupView {
                    RemovalPopup(isPresented: $Removal, name: $projname, exec: $projrname, hellnah: $hello)
                 }
                 .background(BackgroundClearView())
+            }
         }
     }
-}
-func fuck(url: URL) {
-    let activityViewController =
-UIActivityViewController(activityItems: [url], applicationActivities: nil)
-    if let viewController = UIApplication.shared.windows.first?.rootViewController {
-        viewController.present(activityViewController, animated: true, completion: nil)
-    }
+    func fuck(url: URL) {
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        if let viewController = UIApplication.shared.windows.first?.rootViewController {
+            viewController.present(activityViewController, animated: true, completion: nil)
+        }
     }
 }
 
@@ -151,21 +127,21 @@ struct CodeSpace: View {
     @State var builda: Bool = true
     var body: some View {
         FileList(directoryPath: ProjectInfo.ProjectPath, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda)
-        .fullScreenCover(isPresented: $buildv) {
-    buildView(ProjectInfo: ProjectInfo, sdk: $sdk, buildv: $buildv)
+            .fullScreenCover(isPresented: $buildv) {
+                buildView(ProjectInfo: ProjectInfo, sdk: $sdk, buildv: $buildv)
+            }
         }
-      }
     }
-func ShowAlert(_ Alert: UIAlertController) {
-    DispatchQueue.main.async {
-        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.present(Alert, animated: true, completion: nil)
+    func ShowAlert(_ Alert: UIAlertController) {
+        DispatchQueue.main.async {
+            UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.present(Alert, animated: true, completion: nil)
+        }
     }
-}
-func DismissAlert() {
-    DispatchQueue.main.async {
-        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.dismiss(animated: true)
+    func DismissAlert() {
+        DispatchQueue.main.async {
+            UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.dismiss(animated: true)
+        }
     }
-}
 
 struct buildView: View {
     @State var ProjectInfo: Project
