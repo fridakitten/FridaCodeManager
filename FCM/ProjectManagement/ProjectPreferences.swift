@@ -242,7 +242,7 @@ struct asksdk: View {
     var body: some View {
       List {
         Text("\(sdk)")
-        NavigationLink(destination: SDKList(directoryPath: "\(jbroot)/opt/theos/sdks" ,sdk: $sdk)) {
+        NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
     Text("Change")
 }
         }
