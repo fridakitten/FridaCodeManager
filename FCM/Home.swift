@@ -51,6 +51,7 @@ ScrollView {
 -added roothide support
 -fixed remark: issue
 -stopped DontTouchMe.plist to copy over to App
+-fixed export buttons
 
 1.1 (Renew)
 -changed name

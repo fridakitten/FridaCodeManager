@@ -18,27 +18,28 @@
 
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
+ */
 
 import Foundation
 
 func exportProj(_ project: Project) {
-    let target = "\(global_documents)/\(project.Executable).sproj"
-    if fileExists(path: target) {
-        shell("rm '\(global_documents)/\(project.Executable).sproj'")
+    let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
+    shell("rm '\(global_documents)/\(modname).sproj'")
+    shell("cd '\(global_documents)' && zip -r \(modname).sproj '\(project.Name)'")
+}
+
+func exportApp(_ project: Project) {
+    let result = build(project, false, nil, nil)
+    let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
+    if result == 0 {
+        shell("mv '\(global_documents)/\(project.Name)/ts.ipa' '\(global_documents)/\(modname).ipa'")
     }
-    shell("cd '\(global_documents)' && zip -r '\(project.Executable).sproj' '\(project.Name)'")
 }
 
 func importProj() {
     let target = "\(global_documents)/target.sproj"
-    if fileExists(path: target) {
+    if fe(target) {
         shell("cd '\(global_documents)' && unzip '\(target)'")
         shell("rm '\(target)'")
     }
-}
-
-func fileExists(path: String) -> Bool {
-    let fileManager = FileManager.default
-    return fileManager.fileExists(atPath: path)
 }

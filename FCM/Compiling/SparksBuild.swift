@@ -24,7 +24,7 @@ import Foundation
 import UIKit
 import SwiftUI
 
-func build(_ ProjectInfo: Project, _ SDK: String,_ erase: Bool,_ status: Binding<String>?,_ progress: Binding<Double>?) -> Int {
+func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ progress: Binding<Double>?) -> Int {
     let PayloadPath = "\(ProjectInfo.ProjectPath)/Payload"
     let AppPath = "\(PayloadPath)/\(ProjectInfo.Executable).app"
     let Resources = "\(ProjectInfo.ProjectPath)/Resources"

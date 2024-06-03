@@ -82,6 +82,7 @@ UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
                     code = ""
                     quar = false
                 }
+                .accentColor(.primary)
             )
             .navigationBarItems(trailing:
                 Button("Save") {
@@ -90,6 +91,7 @@ UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
                     save = true
                 }
                 .disabled(save)
+                .accentColor(.primary)
             )
             .navigationTitle(findFilename())
             .navigationBarTitleDisplayMode(.inline)

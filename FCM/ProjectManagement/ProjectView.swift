@@ -55,13 +55,23 @@ struct ProjectView: View {
                             .contextMenu {
                                 Section {
                                     Button(action: {
+                                        DispatchQueue.global(qos: .utility).async {
+                                            ShowAlert(UIAlertController(title: "Building \(Project.Executable)", message: "", preferredStyle: .alert))
+                                            exportApp(Project)
+                                            DismissAlert()
+                                            let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
+                                            if let stabURL = URL(string: "file://\(global_documents)/\(modname).ipa") {
+                                                fuck(url: stabURL)
+                                            }
+                                        }
+                                    }){
+                                        Label("Export App", systemImage: "app")
+                                    }
+                                    Button(action: {
+                                        let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
                                         exportProj(Project)
-                                        let target = "\(global_documents)/\(Project.Executable).sproj"
-                                        if let fileURL = URL(string: "file:/\("/")\(target.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed))") {
-                                            fuck(url: fileURL)
-                                            print("File URL: \(fileURL)")
-                                        } else {
-                                            print("Invalid file path")
+                                        if let stabURL = URL(string: "file://\(global_documents)/\(modname).sproj") {
+                                            fuck(url: stabURL)
                                         }
                                     }){
                                         Label("Export Project", systemImage: "archivebox")
@@ -175,13 +185,14 @@ ZStack {
             ProgressView(value: progress, total: 1.0)
                 .progressViewStyle(LinearProgressViewStyle())
                 .frame(width: 250)
+                .accentColor(.primary)
         }
         }
         .disabled(compiling)
         .onAppear {
       DispatchQueue.global(qos: .utility).async {
                 compiling = true
-                let result = build(ProjectInfo, sdk, true, $status, $progress)
+                let result = build(ProjectInfo, true, $status, $progress)
                 if result != 0 {
                     withAnimation {
                         console = true
