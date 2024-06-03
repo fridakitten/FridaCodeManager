@@ -2,6 +2,7 @@
 SDK_PATH = sdks/iPhoneOS15.6.sdk
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
 SWIFT := $(shell find ./FCM/ -name '*.swift')
+VERSION = 1.2.1
 
 ifeq ($(wildcard /bin/sh),)
 ifeq ($(wildcard /var/jb/bin/sh),)
@@ -41,7 +42,7 @@ package:
 	mkdir -p .package/var/jb/Applications/FridaCodeManager.app/sdk
 	cp -r sdks/iPhoneOS15.6.sdk .package/var/jb/Applications/FridaCodeManager.app/sdk/iPhoneOS15.6.sdk
 	mkdir -p .package/DEBIAN
-	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: 1.2\nArchitecture: iphoneos-arm64\nDescription: .\nDepends: swift-5.7.2, swift, zip, ldid, git, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
+	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: iphoneos-arm64\nDescription: .\nDepends: swift-5.7.2, swift, zip, ldid, git, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
 
 package_roothide:
 	find . -type f -name ".DS_Store" -delete
@@ -52,7 +53,7 @@ package_roothide:
 	mkdir -p .package/Applications/FridaCodeManager.app/sdk
 	cp -r sdks/iPhoneOS15.6.sdk .package/Applications/FridaCodeManager.app/sdk/iPhoneOS15.6.sdk
 	mkdir -p .package/DEBIAN
-	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: 1.2\nArchitecture: iphoneos-arm64e\nDescription: .\nDepends: swift-5.7.2, swift, zip, ldid, git, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
+	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: iphoneos-arm64e\nDescription: .\nDepends: swift-5.7.2, swift, zip, ldid, git, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
 
 deb:
 	-rm -rf Product/*
