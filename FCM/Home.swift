@@ -50,6 +50,7 @@ ScrollView {
 -added forgotten highlights in code editor
 -added roothide support
 -fixed remark: issue
+-stopped DontTouchMe.plist to copy over to App
 
 1.1 (Renew)
 -changed name
