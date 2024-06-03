@@ -55,7 +55,7 @@ package_roothide:
 	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: 1.2\nArchitecture: iphoneos-arm64e\nDescription: .\nDepends: swift-5.7.2, swift, zip, ldid, git, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
 
 deb:
-	-rm -rf Product/FridaCodeManager.deb
+	-rm -rf Product/*
 	dpkg-deb -b .package Product/FridaCodeManager.deb
 
 clean:

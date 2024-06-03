@@ -140,18 +140,18 @@ struct CodeSpace: View {
             .fullScreenCover(isPresented: $buildv) {
                 buildView(ProjectInfo: ProjectInfo, sdk: $sdk, buildv: $buildv)
             }
-        }
     }
-    func ShowAlert(_ Alert: UIAlertController) {
-        DispatchQueue.main.async {
-            UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.present(Alert, animated: true, completion: nil)
-        }
+}
+func ShowAlert(_ Alert: UIAlertController) {
+    DispatchQueue.main.async {
+        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.present(Alert, animated: true, completion: nil)
     }
-    func DismissAlert() {
-        DispatchQueue.main.async {
-            UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.dismiss(animated: true)
-        }
+}
+func DismissAlert() {
+    DispatchQueue.main.async {
+        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.dismiss(animated: true)
     }
+}
 
 struct buildView: View {
     @State var ProjectInfo: Project
@@ -165,32 +165,32 @@ struct buildView: View {
         VStack {
             LogView(show: $console)
             Spacer().frame(height: 25)
-        if console == true {
-            Button( action: {
-buildv = false
-}){
-ZStack {
-    Rectangle()
-        .foregroundColor(compiling ? .gray : .blue)
-        .cornerRadius(15)
-    Text("Close")
-        .foregroundColor(.white)
-}
-}
-.frame(width: UIScreen.main.bounds.width / 1.2, height: 50)
-        } else {
-            Text("\(status)")
-                .font(.system(size: 11, weight: .semibold))
-            Spacer().frame(height: 10)
-            ProgressView(value: progress, total: 1.0)
-                .progressViewStyle(LinearProgressViewStyle())
-                .frame(width: 250)
-                .accentColor(.primary)
-        }
+            if console == true {
+                Button( action: {
+                    buildv = false
+                }){
+                    ZStack {
+                        Rectangle()
+                            .foregroundColor(compiling ? .gray : .blue)
+                            .cornerRadius(15)
+                        Text("Close")
+                            .foregroundColor(.white)
+                    }
+                }
+                .frame(width: UIScreen.main.bounds.width / 1.2, height: 50)
+            } else {
+                ProgressView(value: progress, total: 1.0)
+                    .progressViewStyle(LinearProgressViewStyle())
+                    .frame(width: 250)
+                    .accentColor(.primary)
+                Spacer().frame(height: 10)
+                Text("\(status)")
+                    .font(.system(size: 11, weight: .semibold))
+            }
         }
         .disabled(compiling)
         .onAppear {
-      DispatchQueue.global(qos: .utility).async {
+            DispatchQueue.global(qos: .utility).async {
                 compiling = true
                 let result = build(ProjectInfo, true, $status, $progress)
                 if result != 0 {

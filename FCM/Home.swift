@@ -38,10 +38,14 @@ struct Home: View {
         NavigationView {
             List {
                 Section(header: Text("changelog")) {
-VStack {
-Spacer().frame(height: 10)
-ScrollView {
-                    Text("""
+                    VStack {
+                        Spacer().frame(height: 10)
+                            ScrollView {
+                                Text("""
+1.2.1(Bug fixes)
+-improved a bit the Home View
+-fixed a logic issue in Progess View
+
 1.2(New Horizon)
 -added progress status
 -added fixed icon setter appeareance issues
@@ -187,65 +191,67 @@ ScrollView {
 -disabled autocorrection on CodeEditor
 -added Project Preferences
 """)
-.font(.system(size: 11))
-}
-Spacer()
-}
-.frame(height: 200)
+                                    .font(.system(size: 11))
+                                }
+                                Spacer()
+                            }
+                            .frame(height: 200)
+                        }
+                        Section() {
+                            Button( action: {
+                                showProj = true
+                                hellnah = UUID()
+                            }){
+                                listItem(label: "Create Project", systemImageName: "+", text: "Creates a FCM Project")
+                            }
+                            Button( action: {
+                                $fileimporter.trampolineIfNeeded(to: true)
+                            }){
+                                listItem(label: "Import Project", systemImageName: "↑", text: "Imports a Project")
+                            }
+                        }
+                        Button( action: {
+                            hello = UUID()
+                            about = true
+                        }){
+                            listItem(label: "About", systemImageName: "i", text: "Shows Information about this App")
+                        }
+                        .sheet(isPresented: $about) {
+                            Frida(hello: $hello)
+                        }
+                    }
+                    .listStyle(InsetGroupedListStyle())
+                    .navigationTitle("FridaCodeManager")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .fileImporter(isPresented: $fileimporter,allowedContentTypes: [.project]) { result in
+                    do {
+                        let fileURL = try result.get()
+                        handleFileImport(fileURL)
+                        importProj()
+                        hellnah = UUID()
+                    } catch {
+                        print("Error importing file: \(error.localizedDescription)")
+                    }
                 }
-            Button( action: {
-                showProj = true
-                hellnah = UUID()
-            }){
-                listItem(label: "Create Project", systemImageName: "+", text: "Creates a FCM Project")
             }
-            Button( action: {
-                $fileimporter.trampolineIfNeeded(to: true)
-            }){
-                listItem(label: "Import Project", systemImageName: "↑", text: "Imports a Project")
-            }
-            Button( action: {
-                hello = UUID()
-                about = true
-            }){
-                listItem(label: "About", systemImageName: "i", text: "Shows Information about this App")
-            }
-            .sheet(isPresented: $about) {
-                Frida(hello: $hello)
-            }
-            }
-            .listStyle(InsetGroupedListStyle())
-            .navigationTitle("FridaCodeManager")
-            .navigationBarTitleDisplayMode(.inline)
-            .fileImporter(isPresented: $fileimporter,allowedContentTypes: [.project]) { result in
-            do {
-                let fileURL = try result.get()
-                handleFileImport(fileURL)
-importProj()
-hellnah = UUID()
-            } catch {
-                print("Error importing file: \(error.localizedDescription)")
-            }
+            .sheet(isPresented: $showProj) {
+                BottomPopupView {
+                    ProjPopupView(isPresented: $showProj, AppName: $app, BundleID: $bundleid, SDK: $SDK, hellnah: $hellnah)
+                }
+                .background(BackgroundClearView())
             }
         }
-        .sheet(isPresented: $showProj) {
-            BottomPopupView {
-                ProjPopupView(isPresented: $showProj, AppName: $app, BundleID: $bundleid, SDK: $SDK, hellnah: $hellnah)
-              }
-              .background(BackgroundClearView())
-            }
-    }
-    func listItem(label: String, systemImageName: String, text: String) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(label)
-                    .font(.headline)
-                Text(text)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-            Spacer()
-            ZStack {
+        func listItem(label: String, systemImageName: String, text: String) -> some View {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(label)
+                        .font(.headline)
+                    Text(text)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+                Spacer()
+                ZStack {
                 Rectangle()
                     .foregroundColor(.secondary)
                     .aspectRatio(contentMode: .fit)
