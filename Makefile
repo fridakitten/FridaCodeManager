@@ -1,5 +1,4 @@
 # Makefile
-
 SDK_PATH = sdks/iPhoneOS15.6.sdk
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
 SWIFT := $(shell find ./FCM/ -name '*.swift')
@@ -13,18 +12,20 @@ else
 SHELL := /bin/sh
 endif
 
-ifeq ($(wildcard $(SDK_PATH)),)
-sdk_marker := .sdk_not_exists
+# Check if SDK exists
+sdk_marker := .sdk_exists
+
 .PHONY: create
 create:
-	@git clone https://github.com/theos/sdks.git
-	@mkdir Product
-	@make all
-endif
+	@if [ ! -f $(SDK_PATH) ]; then \
+		echo "SDK not found. Cloning the repository..."; \
+		git clone https://github.com/theos/sdks.git; \
+		touch $(sdk_marker); \
+	fi
 
-# initial
-all: compile_swift package deb clean
-roothide: compile_swift package_roothide deb clean
+# Ensure the SDK is checked before running 'all'
+all: create compile_swift package deb clean
+roothide: create compile_swift package_roothide deb clean
 
 compile_swift:
 	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n"
@@ -58,4 +59,4 @@ deb:
 	dpkg-deb -b .package Product/FridaCodeManager.deb
 
 clean:
-	rm -rf $(OUTPUT_DIR)/swifty .package
+	rm -rf $(OUTPUT_DIR)/swifty .package $(sdk_marker)
