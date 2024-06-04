@@ -38,7 +38,9 @@ struct FileList: View {
     @State private var isRenaming: Bool = false
     @State private var oldName: String = ""
     @State private var selfile: String = ""
+    @State private var selname: String = ""
     @State private var rename: Bool = false
+    @State private var remove: Bool = false
     @State private var fbool: Bool = false
     @State var nv: String
     @Binding var buildv: Bool
@@ -57,9 +59,20 @@ struct FileList: View {
                             }
                         }
                         .contextMenu {
-                            Button("Rename") {
+                            Button(action: {
                                 selfile = item.lastPathComponent
                                 rename = true
+                            }) {
+                                Label("Rename", systemImage: "pencil")
+                            }
+                            Section {
+                                Button(role: .destructive, action: {
+                                    selfile = item.path
+                                    selname = item.lastPathComponent
+                                    remove = true
+                                }) {
+                                    Label("Remove", systemImage: "trash")
+                                }
                             }
                         }
                     } else {
@@ -92,15 +105,25 @@ struct FileList: View {
                                 }
                             }
                             .contextMenu {
-                                Button("Rename") {
+                                Button(action: {
                                     selfile = item.lastPathComponent
                                     rename = true
+                                }) {
+                                    Label("Rename", systemImage: "pencil")
+                                }
+                                Section {
+                                    Button(role: .destructive, action: {
+                                        selfile = item.path
+                                        selname = item.lastPathComponent
+                                        remove = true
+                                    }) {
+                                        Label("Remove", systemImage: "trash")
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                .onDelete(perform: deleteItems)
             }
         }
         .onAppear {
@@ -142,6 +165,15 @@ struct FileList: View {
         .sheet(isPresented: $rename) {
             BottomPopupView {
                 RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPath)
+            }
+            .background(BackgroundClearView())
+            .onDisappear {
+                loadFiles()
+            }
+        }
+        .sheet(isPresented: $remove) {
+            BottomPopupView {
+                RemovalPopup(isPresented: $remove, name: $selname, exec: $selfile)
             }
             .background(BackgroundClearView())
             .onDisappear {

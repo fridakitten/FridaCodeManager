@@ -198,7 +198,7 @@ struct ContentView: View {
         switch(type) {
             case 1:
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/My App.swift", contents: Data("import SwiftUI\n\n@main\nstruct MyApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}".utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: Data("import SwiftUI\n\nstruct ContentView: View {\n    var body: some View {\n       Text(\"Hello, World!\")\n    }\n}".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: Data("import SwiftUI\n\nstruct ContentView: View {\n    var body: some View {\n        Text(\"Hello, World!\")\n    }\n}".utf8))
                 break
             case 2:
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: mainv.data(using: .utf8))

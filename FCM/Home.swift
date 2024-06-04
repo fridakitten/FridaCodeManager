@@ -42,11 +42,14 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
-1.2.1(Bug fixes)
+1.2.1 (Bug fixes)
 -improved a bit the Home View
 -fixed a logic issue in Progess View
+-removed Frameworks
+-updated File actions UI
+-fixed a spacing issue in the file presets
 
-1.2(New Horizon)
+1.2 (New Horizon)
 -added progress status
 -added fixed icon setter appeareance issues
 -made application version globally

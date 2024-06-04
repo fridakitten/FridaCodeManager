@@ -26,16 +26,8 @@ struct RemovalPopup: View {
     @Binding var isPresented: Bool
     @Binding var name: String
     @Binding var exec: String
-    @Binding var hellnah: UUID
     var body: some View {
      ZStack {
-        /*FluidGradient(blobs: [.orange, .primary, .yellow],
-                      highlights: [.orange, .primary, .yellow],
-                      speed: 1.0,
-                      blur: 0.75)
-          .ignoresSafeArea()
-          .frame(height: 220)
-          .background(.quaternary)*/
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text("Remove \"\(name)\"?")
@@ -56,9 +48,7 @@ struct RemovalPopup: View {
                 .cornerRadius(10)
                 Spacer()
                 Button(action: {
-                    let ProjectPath = "\(global_documents)/\(exec)"
-                    shell("rm -rf '\(ProjectPath)'")
-                    hellnah = UUID()
+                    shell("rm -rf '\(exec)'")
                     isPresented = false
                 }, label: {
                     Text("Confirm")

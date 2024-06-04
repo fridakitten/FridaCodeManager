@@ -86,8 +86,8 @@ struct ProjectView: View {
                                 }
                                 Section {
                                     Button(role: .destructive, action: {
-                                        projname = Project.Executable
-                                        projrname = Project.Name
+                                        projname = "\(global_documents)/\(Project.Name)"
+                                        projrname = Project.Executable
                                         Removal = true
                                     }){
                                         Label("Remove", systemImage: "trash")
@@ -114,9 +114,13 @@ struct ProjectView: View {
             }
             .sheet(isPresented: $Removal) {
                 BottomPopupView {
-                   RemovalPopup(isPresented: $Removal, name: $projname, exec: $projrname, hellnah: $hello)
+                   RemovalPopup(isPresented: $Removal, name: $projrname, exec: $projname)
                 }
                 .background(BackgroundClearView())
+                .onDisappear {
+                    hello = UUID()
+                }
+
             }
         }
     }
