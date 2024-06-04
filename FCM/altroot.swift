@@ -34,6 +34,5 @@ func altroot(inPath path: String) -> URL? {
     } catch {
         print("Error while searching for .jbroot folder: \(error.localizedDescription)")
     }
-
     return URL(fileURLWithPath: "/")
 }

@@ -26,7 +26,6 @@ import UIKit
 struct ImagePickerView: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
     @Environment(\.presentationMode) var presentationMode
-
     class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         var parent: ImagePickerView
 
@@ -38,11 +37,9 @@ struct ImagePickerView: UIViewControllerRepresentable {
             if let uiImage = info[.originalImage] as? UIImage {
                 parent.selectedImage = uiImage.scaleToSize(size: CGSize(width: 1024, height: 1024))
             }
-
             parent.presentationMode.wrappedValue.dismiss()
         }
     }
-
     var sourceType: UIImagePickerController.SourceType = .photoLibrary
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -84,20 +81,18 @@ struct ImgView: View {
     @State var isImagePickerPresented: Bool = false
     @State var imageloaded: Bool = false
     @Binding var iconid: UUID
-
     var body: some View {
-            Section(header: Text("icon")) {
+        Section(header: Text("icon")) {
             if let image = selectedImage {
                 HStack {
-                Spacer()
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
-                    .cornerRadius(25)
-                Spacer()
+                    Spacer()
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                        .cornerRadius(25)
+                    Spacer()
                 }
-                
                 Button("Assign Icon") {
                     saveImage(image)
                     iconid = UUID()
@@ -105,31 +100,29 @@ struct ImgView: View {
             } else {
                 Text("App does not have a Icon")
             }
-
             Button("Add Icon") {
-imageloaded = true
+                imageloaded = true
                 self.isImagePickerPresented.toggle()
             }
             .sheet(isPresented: $isImagePickerPresented) {
                 ImagePickerView(selectedImage: $selectedImage)
             }
         }
-            if fe("\(projpath)/Resources/AppIcon.png") {
-                Section {
-                    Button("Remove Icon") {
-                        remove()
-                        iconid = UUID()
-                    }
-                    .accentColor(Color.red)
+        if fe("\(projpath)/Resources/AppIcon.png") {
+            Section {
+                Button("Remove Icon") {
+                    remove()
+                    iconid = UUID()
                 }
-                .onAppear {
-                    if imageloaded == false {
-                        selectedImage = loadImage(fromPath: "\(projpath)/Resources/AppIcon.png")
-                    }
+                .accentColor(Color.red)
+            }
+            .onAppear {
+                if imageloaded == false {
+                    selectedImage = loadImage(fromPath: "\(projpath)/Resources/AppIcon.png")
                 }
             }
+        }
     }
-    
     func saveImage(_ image: UIImage) {
         guard let imageData = image.pngData() else {
             return
@@ -153,13 +146,13 @@ imageloaded = true
         }
     }
     func removeFile(atPath filePath: String) {
-    do {
-        try FileManager.default.removeItem(atPath: filePath)
-        print("File at \(filePath) removed successfully.")
-    } catch {
-        print("Error: Unable to remove file at \(filePath). \(error.localizedDescription)")
+        do {
+            try FileManager.default.removeItem(atPath: filePath)
+            print("File at \(filePath) removed successfully.")
+        } catch {
+            print("Error: Unable to remove file at \(filePath). \(error.localizedDescription)")
+        }
     }
-}
 }
 
 func loadImage(fromPath imagePath: String) -> UIImage? {
@@ -175,7 +168,6 @@ func createEmptyImage() -> UIImage? {
     let size = CGSize(width: 0, height: 0)
     UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
     defer { UIGraphicsEndImageContext() }
-    
     if let emptyImage = UIGraphicsGetImageFromCurrentImageContext() {
         return emptyImage
     } else {

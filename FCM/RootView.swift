@@ -30,21 +30,21 @@ struct ContentView: View {
     var body: some View {
         TabView {
             Home(SDK: $sdk, hellnah: $hello)
-            .tabItem {
-                Label("Home", systemImage: "house")
-            }
+                .tabItem {
+                    Label("Home", systemImage: "house")
+                }
             ProjectView(sdk: $sdk, hello: $hello)
-            .tabItem {
-                Label("Projects", systemImage: "folder")
-            }
+                .tabItem {
+                    Label("Projects", systemImage: "folder")
+                }
             StatsView()
-            .tabItem {
-                Label("Stats", systemImage: "chart.line.uptrend.xyaxis")
-            }
+                .tabItem {
+                    Label("Stats", systemImage: "chart.line.uptrend.xyaxis")
+                }
             Settings(sdk: $sdk, bsl: $bsl, fname: $fname)
-            .tabItem {
-                Label("Settings", systemImage: "gear")
-            }
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
         }
         .offset(x: 0, y: 0)
         .accentColor(.primary)

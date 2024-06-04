@@ -75,16 +75,12 @@ struct StatsView: View {
         cppSize = calculateFileSize(path: global_documents, fileExtension: "cpp")
         objCSize = calculateFileSize(path: global_documents, fileExtension: "m")
         objCppSize = calculateFileSize(path: global_documents, fileExtension: "mm")
-
-        // Calculate total size
         totalSize = swiftSize + cSize + cppSize + objCSize + objCppSize
     }
     func calculateFileSize(path: String, fileExtension: String) -> Double {
         var totalSizeKB: Double = 0.0
-
         let fileManager = FileManager.default
         let enumerator = fileManager.enumerator(atPath: path)
-
         while let file = enumerator?.nextObject() as? String {
             if !file.contains("Frameworks") && !file.contains("frameworks") && file.hasSuffix(fileExtension) {
                 let filePath = (path as NSString).appendingPathComponent(file)
@@ -98,7 +94,6 @@ struct StatsView: View {
                 }
             }
         }
-
         return totalSizeKB
     }
 }
@@ -107,13 +102,11 @@ struct NestedCircleProgressView: View {
     let progressValues: [Double]
     let totalSize: Double
     let colors: [Color] = [.red, .blue, .green, .orange, .yellow]
-
     var body: some View {
         ZStack {
             ForEach(0..<progressValues.count) { index in
                 Circle()
-                    .trim(from: index == 0 ? 0.0 : CGFloat(progressValues[0..<index].reduce(0, +) / totalSize),
-                          to: CGFloat(progressValues[0...index].reduce(0, +) / totalSize))
+                    .trim(from: index == 0 ? 0.0 : CGFloat(progressValues[0..<index].reduce(0, +) / totalSize),to: CGFloat(progressValues[0...index].reduce(0, +) / totalSize))
                     .stroke(colors[index], lineWidth: 20)
                     .frame(width: 100, height: 100)
             }
@@ -129,15 +122,15 @@ struct statsbox: View {
     let per: Double
     var body: some View {
         if doub != 0.0 {
-        HStack {
-            Rectangle()
-                .foregroundColor(color)
-                .cornerRadius(360)
-                .frame(width: 20, height: 20)
-            Text("\(language)")
-            Spacer()
-            Text("\(String(format: "%.2f", per))% • \(String(format: "%.2f", doub)) KB")
-                .font(.system(size: 12, weight: .semibold))
+            HStack {
+                Rectangle()
+                    .foregroundColor(color)
+                    .cornerRadius(360)
+                    .frame(width: 20, height: 20)
+                Text("\(language)")
+                Spacer()
+                Text("\(String(format: "%.2f", per))% • \(String(format: "%.2f", doub)) KB")
+                    .font(.system(size: 12, weight: .semibold))
             }
         }
     }

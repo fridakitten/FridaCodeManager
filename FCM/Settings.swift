@@ -51,9 +51,6 @@ struct Settings: View {
                     NavigationLink(destination: SFSymbolView()) {
                     Text("SFSymbols")
                 }
-                NavigationLink(destination: Packages()) {
-                    Text("Frameworks (Experimental)")
-                }
             }
         }
         .listStyle(InsetGroupedListStyle())

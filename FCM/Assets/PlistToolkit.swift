@@ -24,8 +24,7 @@ import Foundation
 
 func rplist(forKey key: String, plistPath: String) -> String? {
     // Attempt to read existing plist content
-    if let plistDict = NSDictionary(contentsOfFile: plistPath) as? [String: Any],
-       let value = plistDict[key] as? String {
+    if let plistDict = NSDictionary(contentsOfFile: plistPath) as? [String: Any], let value = plistDict[key] as? String {
         return value
     } else {
         print("Error reading value from \(plistPath) for key: \(key)")
@@ -56,9 +55,7 @@ func wplist(value: Any, forKey key: String, plistPath: String) {
 }
 
 func paeplist(aname arrayName: String, path plistPath: String) -> Bool {
-    guard let plistData = FileManager.default.contents(atPath: plistPath),
-          let plistDictionary = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any],
-          let targetArray = plistDictionary[arrayName] as? [Any] else {
+    guard let plistData = FileManager.default.contents(atPath: plistPath), let plistDictionary = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any], let targetArray = plistDictionary[arrayName] as? [Any] else {
         return false
     }
 
@@ -69,8 +66,7 @@ func caplist(aname arrayName: String, path plistPath: String, arrayData: [Any]) 
     var plistDictionary: [String: Any] = [:]
 
     // Check if plist file already exists
-    if let existingPlistData = FileManager.default.contents(atPath: plistPath),
-       let existingPlist = try? PropertyListSerialization.propertyList(from: existingPlistData, options: [], format: nil) as? [String: Any] {
+    if let existingPlistData = FileManager.default.contents(atPath: plistPath), let existingPlist = try? PropertyListSerialization.propertyList(from: existingPlistData, options: [], format: nil) as? [String: Any] {
         plistDictionary = existingPlist
     }
 

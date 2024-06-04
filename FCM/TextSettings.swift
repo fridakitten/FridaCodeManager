@@ -51,19 +51,17 @@ struct textset: View {
 struct FontPickerView: View {
     @State private var selectedFontIndex = 0
     @Binding var fname: String
-    
     let codeEditorFonts: [String] = guif()
-    
     var body: some View {
         VStack {
             Picker(selection: $fname, label: Text("Font")) {
-              Group {
-ForEach(codeEditorFonts, id: \.self) { fontName in
-                    Text(fontName)
-                        .font(.custom(fontName, size: 16))
+                Group {
+                    ForEach(codeEditorFonts, id: \.self) { fontName in
+                        Text(fontName)
+                            .font(.custom(fontName, size: 16))
+                    }
                 }
-              }
-              .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitleDisplayMode(.inline)
             }
             .labelsHidden()
             .clipped()

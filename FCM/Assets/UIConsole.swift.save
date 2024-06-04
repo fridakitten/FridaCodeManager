@@ -19,7 +19,7 @@
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
  */ 
-    
+
 import SwiftUI
 import Foundation
 
@@ -29,38 +29,38 @@ struct LogView: View {
     @AppStorage("cmp") var cmp: Bool = true
     var body: some View {
         Group {
-            if show == true {
-                VStack {
-                    ScrollView(showsIndicators: false) {
-                        VStack(alignment: .leading) {
-                            Text("\(LogItems.filter { !$0.contains("remark:") && !$0.contains("note:") }.joined(separator: "\n"))")
-                                .font(.system(size: 10, design: .monospaced))
-                                .foregroundColor(.primary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(4)
-                        .flipped()
+        if show == true {
+            VStack {
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading) {
+                        Text("\(LogItems.filter { !$0.contains("remark:") && !$0.contains("note:") }.joined(separator: "\n"))")
+                            .font(.system(size: 10, design: .monospaced))
+                            .foregroundColor(.primary)
                     }
-                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity)
+                    .padding(4)
                     .flipped()
-                    .background(Color(UIColor.systemGray6))
-                    .cornerRadius(15)
                 }
-                .frame(width: UIScreen.main.bounds.width / 1.2,height: UIScreen.main.bounds.height / 2)
-            } else if cmp == true {
-                ZStack {
-                    Rectangle()
-                        .foregroundColor(Color(UIColor.systemGray6))
-                        .frame(width: UIScreen.main.bounds.width / 1.2,height: 50)
-                        .cornerRadius(15)
-                        .onDisappear {
-                            cmp = false
-                        }
-                    Text("Warning: on first compile it gonna take a few minutes")
-                        .font(.system(size: 11,weight: .semibold))
-                        .foregroundColor(.primary)
-                }
+                .padding(.horizontal)
+                .flipped()
+                .background(Color(UIColor.systemGray6))
+                .cornerRadius(15)
             }
+            .frame(width: UIScreen.main.bounds.width / 1.2,height: UIScreen.main.bounds.height / 2)
+        } else if cmp == true {
+            ZStack {
+            Rectangle()
+                .foregroundColor(Color(UIColor.systemGray6))
+                .frame(width: UIScreen.main.bounds.width / 1.2,height: 50)
+                .cornerRadius(15)
+                .onDisappear {
+                    cmp = false
+                }
+            Text("Warning: on first compile it gonna take a few minutes")
+                .font(.system(size: 11,weight: .semibold))
+                .foregroundColor(.primary)
+            }
+        }
         }
         .contextMenu {
             Button("Copy Log") {
@@ -128,7 +128,8 @@ class LogStream {
             let array = Array(UnsafeBufferPointer(start: buffer, count: bytesRead)) + [UInt8(0)]
             array.withUnsafeBufferPointer { ptr in
                 let str = String(cString: unsafeBitCast(ptr.baseAddress, to: UnsafePointer<CChar>.self))
-                self.outputString.append(str)
+               
+self.outputString.append(str)
                 LogItems.wrappedValue = self.outputString.split(separator: "\n")
             }
         }
@@ -147,7 +148,9 @@ class LogStream {
             let array = Array(UnsafeBufferPointer(start: buffer, count: bytesRead)) + [UInt8(0)]
             array.withUnsafeBufferPointer { ptr in
                 let str = String(cString: unsafeBitCast(ptr.baseAddress, to: UnsafePointer<CChar>.self))
-                self.outputString.append(str)
+
+self.outputString.append(str)
+
                 LogItems.wrappedValue = self.outputString.split(separator: "\n")
             }
         }
