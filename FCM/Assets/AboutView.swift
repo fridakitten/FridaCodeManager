@@ -36,12 +36,16 @@ struct Frida: View {
                     cell(credit: "AppInstaller iOS", role: "Compiling Genius", url: "https://github.com/AppInstalleriOSGH.png")
                     cell(credit: "meighler", role: "Licensor", url: "https://github.com/meighler.png")
                     cell(credit: "HAHALOSAH", role: "Helping Hand", url: "https://github.com/HAHALOSAH.png")
-                    cell(credit: "dleovl", role: "Helping Hand", url: "https://github.com/dleovl.png")
                     cell(credit: "MudSplasher", role: "Icon Designer", url: "https://github.com/MudSplasher.png")
                 }
                 Section(header: Text("Side Credits")) {
                     cell(credit: "Opa334", role: "Trollstore Helper", url: "https://github.com/opa334.png")
-                    cell(credit: "Theos", role: "SDKs", url: "https://github.com/theos.png")
+                    cell(credit: "Theos", role: "SDK", url: "https://github.com/theos.png")
+                }
+                Section(header: Text("Supporters")) {
+                    cell(credit: "RoothideDev", role: "Giving me Power", url: "https://github.com/roothide.png")
+                    cell(credit: "Speedyfriend67", role: "Making Projects using FCM", url: "https://github.com/speedyfriend433.png")
+                    cell(credit: "Burhan Rana", role: "Making videos about my tools", url: "https://github.com/burhangee.png")
                 }
             }
             .id(hello)
