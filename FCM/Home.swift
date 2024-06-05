@@ -45,6 +45,8 @@ struct Home: View {
 1.2.2 (Bug fixes)
 -improved Settings
 -updated Rename popup to feel more familiar
+-added Debug Log for the Experts
+-fixed a issues with loading images on Project View
 
 1.2.1 (Bug fixes)
 -improved a bit the Home View

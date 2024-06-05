@@ -53,11 +53,11 @@ struct LogViewDebug: View {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading) {
                             Text("\(LogItems.filter { !$0.contains("remark:") && !$0.contains("note:") }.joined(separator: "\n"))")
-                                .font(.system(size: 8, design: .monospaced))
+                                .font(.system(size: 7, design: .monospaced))
                                 .foregroundColor(.primary)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(4)
+                        .padding(2)
                         .flipped()
                     }
                     .padding(.horizontal)
