@@ -43,6 +43,7 @@ let global_version: String = "v1.2.2 (non-release)"
 @main
 struct MyApp: App {
     @State var hello: UUID = UUID()
+    @AppStorage("debug") var show: Bool = false
     init() {
         let navigationBarAppearance = UINavigationBarAppearance()
         navigationBarAppearance.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.9)
@@ -59,10 +60,15 @@ struct MyApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            ContentView(hello: $hello)
-                .onOpenURL { url in
+            ZStack {
+                ContentView(hello: $hello)
+                    .onOpenURL { url in
                     handleSprojFile(url: url)
+                    }
+                if show {
+                    Debug()
                 }
+            }
         }
     }
     func handleSprojFile(url: URL) {

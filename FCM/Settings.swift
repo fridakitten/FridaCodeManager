@@ -44,6 +44,9 @@ struct Settings: View {
                 Section(header: Text("Advanced")) {
                     NavigationLink(destination: textset(bsl: $bsl, fname: $fname,fontstate: $fontstate)) {
                         Text("Code Editor")
+                        }
+                    NavigationLink(destination: DebugSettings()) {
+                        Text("Debug")
                     }
                 }
                 Section(header: Text("Additional Tools")) {
@@ -56,5 +59,12 @@ struct Settings: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         }
+    }
+}
+
+struct DebugSettings: View {
+    @AppStorage("debug") var show: Bool = false
+    var body: some View {
+        Toggle("Debug Log",isOn: $show)
     }
 }
