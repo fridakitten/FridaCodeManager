@@ -32,29 +32,12 @@ struct RenamePopupView: View {
 
     var body: some View {
      ZStack {
-        /*FluidGradient(blobs: [.orange, .primary, .yellow],
-                      highlights: [.orange, .primary, .yellow],
-                      speed: 1.0,
-                      blur: 0.75)
-          .ignoresSafeArea()
-          .frame(height: 220)
-          .background(.quaternary)*/
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Rename")
-                    .font(.system(size: 25, weight: .bold, design: .default))
+                Text("Rename \"\(old)\"?")
+                    .font(.system(size: 20, weight: .bold, design: .default))
                     .foregroundColor(.primary)
                 Spacer()
-                Button(action: {
-                    isPresented = false
-                }, label: {
-                    Image(systemName: "xmark")
-                        .imageScale(.small)
-                        .frame(width: 32, height: 32)
-                        .background(Color.black.opacity(0.06))
-                        .cornerRadius(16)
-                        .foregroundColor(.primary)
-                })
             }
             TextField("Filename", text: $new)
                 .frame(height: 36)
@@ -65,6 +48,15 @@ struct RenamePopupView: View {
                     new = old
                 }
             HStack {
+                Button(action: {
+                    isPresented = false
+                }, label: {
+                    Text("Cancel")
+                })
+                .frame(width: 80, height: 36)
+                .background(Color(.systemBackground).opacity(0.5))
+                .foregroundColor(.primary)
+                .cornerRadius(10)
                 Spacer()
                 Button(action: {
                     let oldpath = "\(directoryPath)/\(old)"

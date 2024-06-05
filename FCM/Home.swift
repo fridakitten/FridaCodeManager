@@ -44,6 +44,7 @@ struct Home: View {
                                 Text("""
 1.2.2 (Bug fixes)
 -improved Settings
+-updated Rename popup to feel more familiar
 
 1.2.1 (Bug fixes)
 -improved a bit the Home View
