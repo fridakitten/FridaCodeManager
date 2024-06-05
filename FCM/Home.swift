@@ -42,6 +42,9 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.3 (Features)
+-fixed install happening on App Exportation
+
 1.2.2 (Bug fixes)
 -improved Settings
 -updated Rename popup to feel more familiar

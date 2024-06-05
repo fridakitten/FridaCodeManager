@@ -2,7 +2,7 @@
 SDK_PATH = sdks/iPhoneOS15.6.sdk
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
 SWIFT := $(shell find ./FCM/ -name '*.swift')
-VERSION = 1.2.2
+VERSION = 1.3
 
 ifeq ($(wildcard /bin/sh),)
 ifeq ($(wildcard /var/jb/bin/sh),)

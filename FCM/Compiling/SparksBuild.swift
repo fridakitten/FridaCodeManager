@@ -74,7 +74,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let Extension = load("\(ProjectInfo.ProjectPath)/api.txt")
     let ApiExt: ext = api(Extension,ProjectInfo)
     if ApiExt.before != "" {
-        shell("\(CDEXEC) && \(ApiExt.before)")
+        shell("\(CDEXEC) ; \(ApiExt.before)")
     }
     usleep(100000)
     DispatchQueue.main.async {
@@ -128,13 +128,13 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             }
         }
     }
-    if shell("\(CDEXEC) && \(EXEC)") != 0 {
+    if shell("\(CDEXEC) ; \(EXEC)") != 0 {
         print("+++++++++++++++++++++++++++\n \n+++++++++ error +++++++++++\ncompiling \(ProjectInfo.Executable) failed\n+++++++++++++++++++++++++++")
         shell(CLEANEXEC)
         return 1
     }
     if ApiExt.after != "" {
-        shell("\(CDEXEC) && \(ApiExt.after)")
+        shell("\(CDEXEC) ; \(ApiExt.after)")
     }
     print("+++++++++++++++++++++++++++\n \n+++++ install-stage +++++++")
     usleep(100000)
@@ -160,7 +160,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             }
         }
     }
-    shell("\(CDEXEC) && \(ZIPEXEC)")
+    shell("\(CDEXEC) ; \(ZIPEXEC)")
     usleep(100000)
     DispatchQueue.main.async {
         if let status = status {
@@ -172,7 +172,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             }
         }
     }
-    shell(INSTALL, uid: 0)
+    if erase { shell(INSTALL, uid: 0) }
     usleep(100000)
     DispatchQueue.main.async {
         if let status = status {
@@ -186,7 +186,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
     shell(CLEANEXEC)
     print("+++++++++++++++++++++++++++\n \n++++++++++ done +++++++++++")
-    if erase == true {
+    if erase {
         shell(RMEXEC)
         shell("killall '\(ProjectInfo.Executable)' > /dev/null 2>&1")
         OpenApp(ProjectInfo.BundleID)
