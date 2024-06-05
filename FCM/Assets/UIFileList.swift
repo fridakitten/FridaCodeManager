@@ -411,67 +411,6 @@ struct PKG: View {
     }
 }
 
-struct PKGSelect: View {
-    @State private var files: [URL] = []
-    @State private var folders: [URL] = []
-    @State var directoryPath: String
-    @Binding var ProjectName: String
-    @Binding var addview: Bool
-    var body: some View {
-        List {
-            Section() {
-                ForEach(folders, id: \.self) { folder in
-                    Button( action: {
-                        let Framework = folder.lastPathComponent
-                        let frameworks = "\(global_documents)/frameworks"
-                        let app_frameworks = "\(global_documents)/\(ProjectName)/Frameworks"
-                        cfolder(atPath: app_frameworks)
-                        shell("cd '\(app_frameworks)' && cp -r '\(frameworks)/\(Framework)' ./")
-                        addview = false
-                        }){
-                            HStack {
-                            Image(systemName: "tray.fill")
-                            Text(folder.lastPathComponent)
-                        }
-                    }
-                    .foregroundColor(.primary)
-                    .accentColor(.primary)
-                }
-            }
-        }
-        .onAppear {
-            loadFiles()
-        }
-        .listStyle(InsetGroupedListStyle())
-        .navigationTitle("Frameworks")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-    func loadFiles() {
-        let fileManager = FileManager.default
-        let directoryURL = URL(fileURLWithPath: directoryPath)
-        do {
-            let fileURLs = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
-            let fileURLsOnly = fileURLs.filter { !isDirectory($0) }
-            let folderURLs = fileURLs.filter { isDirectory($0) }
-            folders = folderURLs
-            files = fileURLsOnly
-        } catch {
-            print("Error loading files: \(error.localizedDescription)")
-        }
-    }
-    func deleteItems(at offsets: IndexSet) {
-        for index in offsets {
-            let itemURL = (folders + files)[index]
-            do {
-                try FileManager.default.removeItem(at: itemURL)
-            } catch {
-                print("Error deleting item: \(error.localizedDescription)")
-            }
-        }
-        loadFiles()
-    }
-}
-
 func gfilesize(atPath filePath: String) -> String {
     let fileURL = URL(fileURLWithPath: filePath)
     do {

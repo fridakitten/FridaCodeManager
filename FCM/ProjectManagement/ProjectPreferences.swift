@@ -40,9 +40,6 @@ struct ProjPreferences: View {
                 NavigationLink(destination: asksdk(projpath: "\(global_documents)/\(ProjectName)")) {
                     Label("SDK", systemImage: "sdcard")
                 }
-                NavigationLink(destination: Frameprefs(ProjectName: $ProjectName, FrameworkPath: $FrameworkPath, ProjectPath: $ProjectPath)) {
-                    Label("Frameworks", systemImage: "tray.2")
-                }
             }
             .accentColor(.primary)
             .listStyle(InsetGroupedListStyle())
@@ -121,33 +118,6 @@ struct PrefsInfo: View {
         wplist(value: MIOS, forKey: "MinimumOSVersion", plistPath: PlistPath)
         hello = UUID()
     }
-}
-
-struct Frameprefs: View {
-    @Binding var ProjectName: String
-    @Binding var FrameworkPath: String
-    @Binding var ProjectPath: String
-    @State var addview: Bool = false
-    @State var puuid: UUID = UUID()
-    var body: some View {
-        VStack {
-            PKG(directoryPath: ProjectPath)
-            .id(puuid)
-        }
-        .navigationBarItems(trailing: Button(action: {
-            addview = true
-        }) {
-            Image(systemName: "plus")
-        })
-        .sheet(isPresented: $addview) {
-            PKGSelect(directoryPath: FrameworkPath, ProjectName: $ProjectName, addview: $addview)
-                .onDisappear {
-                    puuid = UUID()
-                }
-            }
-            .navigationTitle("Frameworks")
-            .navigationBarTitleDisplayMode(.inline)
-        }
 }
 
 struct Appeareance: View {
