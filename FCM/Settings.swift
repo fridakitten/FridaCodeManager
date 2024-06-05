@@ -36,10 +36,9 @@ struct Settings: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("default sdk"), footer: Text("The sdk gets used when you create a new project.")) {
-                    Text(sdk)
+                Section(header: Text("default sdk")) {
                     NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
-                        Text("Change")
+                        Text(sdk)
                     }
                 }
                 Section(header: Text("Advanced")) {

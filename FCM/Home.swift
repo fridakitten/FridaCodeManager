@@ -42,6 +42,9 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.2.2 (Bug fixes)
+-improved Settings
+
 1.2.1 (Bug fixes)
 -improved a bit the Home View
 -fixed a logic issue in Progess View
