@@ -47,7 +47,9 @@ struct PubImg: View {
             Spacer().frame(width: 0, height:0)
             .onAppear {
                 if selectedImage == nil {
-                    selectedImage = loadImage(fromPath: "\(projpath)/Resources/AppIcon.png")
+                    if fe("\(projpath)/Resources/AppIcon.png") {
+                        selectedImage = loadImage(fromPath: "\(projpath)/Resources/AppIcon.png")
+                    }
                 }
         }
     }
