@@ -115,7 +115,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         }
     }
     try? copyc(from: Resources, to: AppPath)
-    shell("rm \(AppPath)/DontTouchMe.plist")
+    shell("rm '\(AppPath)/DontTouchMe.plist"')
     print("+++++ compiler-stage ++++++")
     usleep(100000)
     DispatchQueue.main.async {
