@@ -18,11 +18,11 @@ sdk_marker := .sdk_exists
 
 .PHONY: create
 create:
+	-mkdir Product
 	@if [ ! -f $(SDK_PATH) ]; then \
 		echo "SDK not found. Cloning the repository..."; \
 		git clone https://github.com/theos/sdks.git; \
 		touch $(sdk_marker); \
-		mkdir Product; \
 	fi
 
 # Ensure the SDK is checked before running 'all'
