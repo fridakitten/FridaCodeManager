@@ -63,7 +63,7 @@ struct MyApp: App {
             ZStack {
                 ContentView(hello: $hello)
                     .onOpenURL { url in
-                    handleSprojFile(url: url)
+                        handleSprojFile(url: url)
                     }
                 if show {
                     Debug()

@@ -47,6 +47,8 @@ struct RenamePopupView: View {
                 .onAppear {
                     new = old
                 }
+                .disableAutocorrection(true)
+                .autocapitalization(.none)
             HStack {
                 Button(action: {
                     isPresented = false

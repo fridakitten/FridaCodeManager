@@ -57,11 +57,15 @@ struct ProjPopupView: View {
                 .padding([.leading, .trailing], 10)
                 .background(Color(.systemBackground).opacity(0.5))
                 .cornerRadius(10)
+                .disableAutocorrection(true)
+                .autocapitalization(.none)
             TextField("Bundle Identifier", text: $BundleID)
                 .frame(height: 36)
                 .padding([.leading, .trailing], 10)
                 .background(Color(.systemBackground).opacity(0.5))
                 .cornerRadius(10)
+                .disableAutocorrection(true)
+                .autocapitalization(.none)
             HStack {
                 HStack {
                 Spacer().frame(width: 10)

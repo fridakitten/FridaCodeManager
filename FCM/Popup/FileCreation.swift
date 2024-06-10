@@ -51,6 +51,8 @@ struct CreatePopupView: View {
                 .padding([.leading, .trailing], 10)
                 .background(Color(.systemBackground).opacity(0.5))
                 .cornerRadius(10)
+                .disableAutocorrection(true)
+                .autocapitalization(.none)
             HStack {
                 HStack {
                 Spacer().frame(width: 10)

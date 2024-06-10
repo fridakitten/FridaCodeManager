@@ -44,6 +44,8 @@ struct Home: View {
                                 Text("""
 1.3 (Features)
 -fixed install happening on App Exportation
+-added sdk download menu
+-disabled auto correction in many new places
 
 1.2.2 (Bug fixes)
 -improved Settings
