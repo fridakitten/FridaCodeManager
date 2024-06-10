@@ -23,6 +23,7 @@ struct SDKDownload: View {
             }
         }
         .navigationTitle("SDK Hub")
+        .navigationBarTitleDisplayMode(.inline)
         .id(listid)
     }
     private func download(_ sdk: String) {
