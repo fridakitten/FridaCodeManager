@@ -40,6 +40,9 @@ struct Settings: View {
                     NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
                         Text(sdk)
                     }
+                    NavigationLink(destination: SDKDownload()) {
+                        Text("SDK Hub")
+                    }
                 }
                 Section(header: Text("Advanced")) {
                     NavigationLink(destination: textset(bsl: $bsl, fname: $fname,fontstate: $fontstate)) {
