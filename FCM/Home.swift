@@ -45,6 +45,7 @@ struct Home: View {
 1.3.1 (Improvements)
 -removed useless functions
 -added haptic feedback to the popup
+-added Copy/Move functions to File Manager
 
 1.3 (Features)
 -fixed install happening on App Exportation

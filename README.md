@@ -28,5 +28,3 @@ meighler - Licensor
 MudSplasher - Icon Designer
 
 HAHALOSAH - Helping Hand
-
-dleovl - Helping Hand

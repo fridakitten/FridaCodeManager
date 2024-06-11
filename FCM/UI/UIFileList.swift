@@ -46,12 +46,14 @@ struct FileList: View {
     @Binding var buildv: Bool
     @State var builda: Bool
     @State var showfile: Bool = false
+    @Binding var actpath: String
+    @Binding var action: Int
     var body: some View {
         List {
             Section {
                 ForEach(folders + files, id: \.self) { item in
                     if isDirectory(item) {
-                        NavigationLink(destination: FileList(directoryPath: item.path, nv: item.lastPathComponent, buildv: $buildv, builda: false)) {
+                        NavigationLink(destination: FileList(directoryPath: item.path, nv: item.lastPathComponent, buildv: $buildv, builda: false, actpath: $actpath, action: $action)) {
                             HStack {
                                 Image(systemName: "folder.fill")
                                     .foregroundColor(.primary)
@@ -63,7 +65,21 @@ struct FileList: View {
                                 selfile = item.lastPathComponent
                                 rename = true
                             }) {
-                                Label("Rename", systemImage: "pencil")
+                                Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
+                            }
+                            Section {
+                                Button(action: {
+                                    actpath = item.path
+                                    action = 1
+                                }) {
+                                    Label("Copy", systemImage: "doc.on.doc")
+                                }
+                                Button(action: {
+                                    actpath = item.path
+                                    action = 2
+                                }) {
+                                    Label("Move", systemImage: "folder")
+                                }
                             }
                             Section {
                                 Button(role: .destructive, action: {
@@ -112,6 +128,20 @@ struct FileList: View {
                                     Label("Rename", systemImage: "pencil")
                                 }
                                 Section {
+                                    Button(action: {
+                                        actpath = item.path
+                                        action = 1
+                                    }) {
+                                        Label("Copy", systemImage: "doc.on.doc")
+                                    }
+                                    Button(action: {
+                                        actpath = item.path
+                                        action = 2
+                                    }) {
+                                        Label("Move", systemImage: "folder")
+                                    }
+                                }
+                                Section {
                                     Button(role: .destructive, action: {
                                         selfile = item.path
                                         selname = item.lastPathComponent
@@ -145,7 +175,24 @@ struct FileList: View {
                     }
                     Section {
                         Button(action: { showAlertmod = true }) {
-                            Label("Create File", systemImage: "doc.fill.badge.plus")
+                            Label("Create", systemImage: "doc.fill.badge.plus")
+                        }
+                    }
+                    if action > 0 {
+                        Section {
+                            Button(action: {
+                                if action == 1 {
+                                    shell("cp -r '\(actpath)' '\(directoryPath)'")
+                                    action = 0
+                                } else if action == 2 {
+                                    shell("mv '\(actpath)' '\(directoryPath)/\(URL(fileURLWithPath: actpath).lastPathComponent)'")
+                                    action = 0
+                                }
+                                haptfeedback(1)
+                                loadFiles()
+                            }) {
+                                Label("Paste", systemImage: "doc.on.clipboard")
+                            }
                         }
                     }
                 } label: {
@@ -250,6 +297,23 @@ struct FileList: View {
                 return 4
             default:
                 return 0
+        }
+    }
+    func gtypo(item: String) -> Bool {
+        let suffix = gsuffix(from: item)
+        switch(suffix) {
+            case "png":
+                return true
+            case "jpg":
+                return true
+            case "jpeg":
+                return true
+            case "PNG":
+                return true
+            case "JPG":
+                return true
+            default:
+                return false
         }
     }
     func loadFiles() {
@@ -429,22 +493,4 @@ func isDirectory(_ fileURL: URL) -> Bool {
     var isDirectory: ObjCBool = false
     FileManager.default.fileExists(atPath: fileURL.path, isDirectory: &isDirectory)
     return isDirectory.boolValue
-}
-
-func gtypo(item: String) -> Bool {
-    let suffix = gsuffix(from: item)
-    switch(suffix) {
-        case "png":
-            return true
-        case "jpg":
-            return true
-        case "jpeg":
-            return true
-        case "PNG":
-            return true
-        case "JPG":
-            return true
-        default:
-            return false
-    }
 }

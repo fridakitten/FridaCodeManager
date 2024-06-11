@@ -139,8 +139,10 @@ struct CodeSpace: View {
     @State var buildv: Bool = false
     @State var fcreate: Bool = false
     @State var builda: Bool = true
+    @State var pathstate: String = ""
+    @State var action: Int = 0
     var body: some View {
-        FileList(directoryPath: ProjectInfo.ProjectPath, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda)
+        FileList(directoryPath: ProjectInfo.ProjectPath, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
                 buildView(ProjectInfo: ProjectInfo, sdk: $sdk, buildv: $buildv)
             }
