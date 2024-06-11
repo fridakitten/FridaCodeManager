@@ -46,6 +46,7 @@ struct Home: View {
 -removed useless functions
 -added haptic feedback to the popup
 -added Copy/Move functions to File Manager
+-redesigned settings page
 
 1.3 (Features)
 -fixed install happening on App Exportation

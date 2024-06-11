@@ -40,21 +40,21 @@ struct Settings: View {
                     NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
                         Text(sdk)
                     }
-                    NavigationLink(destination: SDKDownload()) {
-                        Text("SDK Hub")
-                    }
                 }
                 Section(header: Text("Advanced")) {
                     NavigationLink(destination: textset(bsl: $bsl, fname: $fname,fontstate: $fontstate)) {
-                        Text("Code Editor")
+                        Label("Code Editor", systemImage: "doc.plaintext.fill")
                         }
                     NavigationLink(destination: DebugSettings()) {
-                        Text("Debug")
+                        Label("Debug", systemImage: "ant.fill")
                     }
                 }
                 Section(header: Text("Additional Tools")) {
+                    NavigationLink(destination: SDKDownload()) {
+                        Label("SDK Hub", systemImage: "arrow.down")
+                    }
                     NavigationLink(destination: SFSymbolView()) {
-                    Text("SFSymbols")
+                    Label("SFSymbols", systemImage: "square.grid.3x3")
                 }
             }
         }
