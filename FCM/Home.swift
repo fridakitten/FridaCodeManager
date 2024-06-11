@@ -42,6 +42,9 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.3.1 (Improvements)
+-removed useless functions
+
 1.3 (Features)
 -fixed install happening on App Exportation
 -added sdk download menu
