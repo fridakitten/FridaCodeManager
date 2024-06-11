@@ -61,6 +61,7 @@ struct RenamePopupView: View {
                 .cornerRadius(10)
                 Spacer()
                 Button(action: {
+                    haptfeedback(1)
                     let oldpath = "\(directoryPath)/\(old)"
                     try? renameFile(atPath: oldpath, to: new)
                     isPresented = false

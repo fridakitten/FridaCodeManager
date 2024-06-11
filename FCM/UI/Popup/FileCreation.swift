@@ -76,6 +76,7 @@ struct CreatePopupView: View {
                 Spacer().frame(width: 10)
                 Button(action: {
                     if FileName != "" {
+                        haptfeedback(1)
                         if type == 1 {
 cfile(atPath: "\(filepath)/\(FileName)", withContent: "")
                         } else if type == 2 {
@@ -83,7 +84,9 @@ cfile(atPath: "\(filepath)/\(FileName)", withContent: "")
                         }
                         FileName = ""
                         isPresented = false
+                        return
                     }
+                    haptfeedback(2)
                 }, label: {
                     Text("Submit")
                 })

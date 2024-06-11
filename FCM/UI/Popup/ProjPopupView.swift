@@ -91,16 +91,19 @@ struct ProjPopupView: View {
                 Button(action: {
                     let docs = "\(global_documents)/\(AppName)"
                     if AppName != "" {
-                    if BundleID != "" {
-                    if !fe(docs) {
-                        isPresented = false
-                        MakeApplicationProject(AppName, BundleID,SDK: SDK, type: type)
-                        AppName = ""
-                        BundleID = ""
-                        hellnah = UUID()
+                        if BundleID != "" {
+                            if !fe(docs) {
+                                haptfeedback(1)
+                                isPresented = false
+                                MakeApplicationProject(AppName, BundleID,SDK: SDK, type: type)
+                                AppName = ""
+                                BundleID = ""
+                                hellnah = UUID()
+                                return
+                            }
+                        }
                     }
-                 }
-                    }
+                    haptfeedback(2)
                 }, label: {
                     Text("Submit")
                 })

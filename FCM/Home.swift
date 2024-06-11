@@ -44,6 +44,7 @@ struct Home: View {
                                 Text("""
 1.3.1 (Improvements)
 -removed useless functions
+-added haptic feedback to the popup
 
 1.3 (Features)
 -fixed install happening on App Exportation

@@ -48,6 +48,7 @@ struct RemovalPopup: View {
                 .cornerRadius(10)
                 Spacer()
                 Button(action: {
+                    haptfeedback(1)
                     shell("rm -rf '\(exec)'")
                     isPresented = false
                 }, label: {
