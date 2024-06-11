@@ -125,7 +125,7 @@ struct FileList: View {
                                     selfile = item.lastPathComponent
                                     rename = true
                                 }) {
-                                    Label("Rename", systemImage: "pencil")
+                                    Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
                                 }
                                 Section {
                                     Button(action: {
