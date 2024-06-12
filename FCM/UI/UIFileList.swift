@@ -58,47 +58,16 @@ struct FileList: View {
         List {
             Section {
                 ForEach(folders + files, id: \.self) { item in
-                    if isDirectory(item) {
-                        NavigationLink(destination: FileList(directoryPath: item.path, nv: item.lastPathComponent, buildv: $buildv, builda: false, actpath: $actpath, action: $action)) {
-                            HStack {
-                                Image(systemName: "folder.fill")
-                                    .foregroundColor(.primary)
-                                Text(item.lastPathComponent)
-                            }
-                        }
-                        .contextMenu {
-                            Button(action: {
-                                selfile = item.lastPathComponent
-                                activeSheet = .rename
-                            }) {
-                                Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
-                            }
-                            Section {
-                                Button(action: {
-                                    actpath = item.path
-                                    action = 1
-                                }) {
-                                    Label("Copy", systemImage: "doc.on.doc")
-                                }
-                                Button(action: {
-                                    actpath = item.path
-                                    action = 2
-                                }) {
-                                    Label("Move", systemImage: "folder")
+                    HStack {
+                        if isDirectory(item) {
+                            NavigationLink(destination: FileList(directoryPath: item.path, nv: item.lastPathComponent, buildv: $buildv, builda: false, actpath: $actpath, action: $action)) {
+                                HStack {
+                                    Image(systemName: "folder.fill")
+                                        .foregroundColor(.primary)
+                                    Text(item.lastPathComponent)
                                 }
                             }
-                            Section {
-                                Button(role: .destructive, action: {
-                                    selfile = item.path
-                                    selname = item.lastPathComponent
-                                    activeSheet = .remove
-                                }) {
-                                    Label("Remove", systemImage: "trash")
-                                }
-                            }
-                        }
-                    } else {
-                        HStack {
+                        } else {
                             Button(action: {
                                 selpath = item.path
                                 if !gtypo(item: item.lastPathComponent) {
@@ -126,36 +95,36 @@ struct FileList: View {
                                     }
                                 }
                             }
-                            .contextMenu {
-                                Button(action: {
-                                    selfile = item.lastPathComponent
-                                    activeSheet = .rename
-                                }) {
-                                    Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
-                                }
-                                Section {
-                                    Button(action: {
-                                        actpath = item.path
-                                        action = 1
-                                    }) {
-                                        Label("Copy", systemImage: "doc.on.doc")
-                                    }
-                                    Button(action: {
-                                        actpath = item.path
-                                        action = 2
-                                    }) {
-                                        Label("Move", systemImage: "folder")
-                                    }
-                                }
-                                Section {
-                                    Button(role: .destructive, action: {
-                                        selfile = item.path
-                                        selname = item.lastPathComponent
-                                        activeSheet = .remove
-                                    }) {
-                                        Label("Remove", systemImage: "trash")
-                                    }
-                                }
+                        }
+                    }
+                    .contextMenu {
+                        Button(action: {
+                            selfile = item.lastPathComponent
+                            activeSheet = .rename
+                        }) {
+                            Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
+                        }
+                        Section {
+                            Button(action: {
+                                actpath = item.path
+                                action = 1
+                            }) {
+                                Label("Copy", systemImage: "doc.on.doc")
+                            }
+                            Button(action: {
+                                actpath = item.path
+                                action = 2
+                            }) {
+                                Label("Move", systemImage: "folder")
+                            }
+                        }
+                        Section {
+                            Button(role: .destructive, action: {
+                                selfile = item.path
+                                selname = item.lastPathComponent
+                                activeSheet = .remove
+                            }) {
+                                Label("Remove", systemImage: "trash")
                             }
                         }
                     }
