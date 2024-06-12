@@ -1,5 +1,5 @@
  /* 
- TextSettings.swift 
+ Settings.swift 
 
  Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
  Copyright (C) 2024 fridakitten 
@@ -21,6 +21,61 @@
  */ 
     
 import SwiftUI
+
+struct Settings: View {
+    @Binding var sdk: String
+    @Binding var bsl: Bool
+    @Binding var fname: String
+    @State var fontstate: CGFloat = {
+        if let savedFont = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
+            return savedFont
+        } else {
+            return 15.0
+        }
+    }()
+    var body: some View {
+        NavigationView {
+            List {
+                Section(header: Text("default sdk")) {
+                    NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
+                        Text(sdk)
+                    }
+                }
+                Section(header: Text("Advanced")) {
+                    NavigationLink(destination: textset(bsl: $bsl, fname: $fname,fontstate: $fontstate)) {
+                        Label("Code Editor", systemImage: "doc.plaintext.fill")
+                        }
+                    NavigationLink(destination: DebugSettings()) {
+                        Label("Debug", systemImage: "ant.fill")
+                    }
+                }
+                Section(header: Text("Additional Tools")) {
+                    NavigationLink(destination: SDKDownload()) {
+                        Label("SDK Hub", systemImage: "arrow.down")
+                    }
+                    NavigationLink(destination: SFSymbolView()) {
+                    Label("SFSymbols", systemImage: "square.grid.3x3.fill")
+                }
+            }
+        }
+        .listStyle(InsetGroupedListStyle())
+        .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+struct DebugSettings: View {
+    @AppStorage("debug") var show: Bool = false
+    var body: some View {
+        List {
+            Toggle("Debug Log",isOn: $show)
+        }
+        .listStyle(InsetGroupedListStyle())
+        .navigationTitle("Debug")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
 
 struct textset: View {
     @Binding var bsl: Bool
@@ -68,3 +123,4 @@ struct FontPickerView: View {
         }
     }
 }
+

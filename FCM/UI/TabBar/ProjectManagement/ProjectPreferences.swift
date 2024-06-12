@@ -32,13 +32,13 @@ struct ProjPreferences: View {
         NavigationView {
             List {
                 NavigationLink(destination: PrefsInfo(ProjectName: $ProjectName, hello: $hello)) {
-                    Label("App Information", systemImage: "list.bullet.rectangle")
+                    Label("App Information", systemImage: "list.bullet.rectangle.fill")
                 }
                 NavigationLink(destination: Appeareance(projname: ProjectName,projpath: "\(global_documents)/\(ProjectName)")) {
-                    Label("Appeareance", systemImage: "paintbrush")
+                    Label("Appeareance", systemImage: "paintbrush.fill")
                 }
                 NavigationLink(destination: asksdk(projpath: "\(global_documents)/\(ProjectName)")) {
-                    Label("SDK", systemImage: "sdcard")
+                    Label("SDK", systemImage: "sdcard.fill")
                 }
             }
             .accentColor(.primary)
