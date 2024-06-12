@@ -42,6 +42,10 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.3.2 (Optimisation)
+-removed some duplicated functions
+-made File Manager a bit more optimised
+
 1.3.1 (Improvements)
 -removed useless functions
 -added haptic feedback to the popup

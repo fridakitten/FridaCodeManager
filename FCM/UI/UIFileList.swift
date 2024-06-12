@@ -26,21 +26,27 @@ import Foundation
 let screenHeight = UIScreen.main.bounds.height
 let screenWidth = UIScreen.main.bounds.width
 
+enum ActiveSheet: Identifiable {
+    case create, rename, remove
+
+    var id: Int {
+        hashValue
+    }
+}
+
 struct FileList: View {
+    @State private var activeSheet: ActiveSheet?
     @State var directoryPath: String
     @State private var files: [URL] = []
     @State private var folders: [URL] = []
     @State private var quar: Bool = false
-    @State private var selpath: String = ""
-    @State private var showAlertmod: Bool = false
     @State private var fileName: String = ""
+    @State private var selpath: String = ""
     @State private var newName: String = ""
     @State private var isRenaming: Bool = false
     @State private var oldName: String = ""
     @State private var selfile: String = ""
     @State private var selname: String = ""
-    @State private var rename: Bool = false
-    @State private var remove: Bool = false
     @State private var fbool: Bool = false
     @State var nv: String
     @Binding var buildv: Bool
@@ -63,7 +69,7 @@ struct FileList: View {
                         .contextMenu {
                             Button(action: {
                                 selfile = item.lastPathComponent
-                                rename = true
+                                activeSheet = .rename
                             }) {
                                 Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
                             }
@@ -85,7 +91,7 @@ struct FileList: View {
                                 Button(role: .destructive, action: {
                                     selfile = item.path
                                     selname = item.lastPathComponent
-                                    remove = true
+                                    activeSheet = .remove
                                 }) {
                                     Label("Remove", systemImage: "trash")
                                 }
@@ -123,7 +129,7 @@ struct FileList: View {
                             .contextMenu {
                                 Button(action: {
                                     selfile = item.lastPathComponent
-                                    rename = true
+                                    activeSheet = .rename
                                 }) {
                                     Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
                                 }
@@ -145,7 +151,7 @@ struct FileList: View {
                                     Button(role: .destructive, action: {
                                         selfile = item.path
                                         selname = item.lastPathComponent
-                                        remove = true
+                                        activeSheet = .remove
                                     }) {
                                         Label("Remove", systemImage: "trash")
                                     }
@@ -174,7 +180,7 @@ struct FileList: View {
                         }
                     }
                     Section {
-                        Button(action: { showAlertmod = true }) {
+                        Button(action: { activeSheet = .create }) {
                             Label("Create", systemImage: "doc.fill.badge.plus")
                         }
                     }
@@ -200,32 +206,42 @@ struct FileList: View {
                 }
             }
         }
-        .sheet(isPresented: $showAlertmod) {
-            BottomPopupView {
-               CreatePopupView(isPresented: $showAlertmod, filepath: $directoryPath)
-            }
-            .background(BackgroundClearView())
-            .onDisappear {
-                loadFiles()
-            }
-        }
-        .sheet(isPresented: $rename) {
-            BottomPopupView {
-                RenamePopupView(isPresented: $rename, old: $selfile, directoryPath: $directoryPath)
-            }
-            .background(BackgroundClearView())
-            .onDisappear {
-                loadFiles()
-            }
-        }
-        .sheet(isPresented: $remove) {
-            BottomPopupView {
-                RemovalPopup(isPresented: $remove, name: $selname, exec: $selfile)
-            }
-            .background(BackgroundClearView())
-            .onDisappear {
-                loadFiles()
-            }
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+                case .create:
+                    BottomPopupView {
+                        CreatePopupView(isPresented: Binding(
+                            get: { activeSheet == .create },
+                            set: { if !$0 { activeSheet = nil } }
+                        ), filepath: $directoryPath)
+                    }
+                    .background(BackgroundClearView())
+                    .onDisappear {
+                        loadFiles()
+                    }
+                case .rename:
+                    BottomPopupView {
+                        RenamePopupView(isPresented: Binding(
+                            get: { activeSheet == .rename },
+                            set: { if !$0 { activeSheet = nil } }
+                        ), old: $selfile, directoryPath: $directoryPath)
+                    }
+                    .background(BackgroundClearView())
+                    .onDisappear {
+                        loadFiles()
+                    }
+                case .remove:
+                    BottomPopupView {
+                        RemovalPopup(isPresented: Binding(
+                            get: { activeSheet == .remove },
+                            set: { if !$0 { activeSheet = nil } }
+                        ), name: $selname, exec: $selfile)
+                    }
+                    .background(BackgroundClearView())
+                    .onDisappear {
+                        loadFiles()
+                    }
+                }
         }
         .fullScreenCover(isPresented: $quar) {
             CodeEditorView(quar: $quar, filePath: $selpath)
@@ -234,18 +250,6 @@ struct FileList: View {
             ImageView(imagePath: $selpath, fbool: $fbool)
         }
     }
-    func copyf(_ sourcePath: String,_ destinationPath: String) {
-        do {
-            let sourceURL = URL(fileURLWithPath: sourcePath)
-            let destinationURL = URL(fileURLWithPath: destinationPath)
-
-            try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
-            print("File copied successfully!")
-        } catch {
-            print("Error copying file: \(error.localizedDescription)")
-        }
-    }
-
     func gsymbol(item: String) -> String {
         let suffix = gsuffix(from: item)
         switch(suffix) {
@@ -340,12 +344,6 @@ struct FileList: View {
             }
         }
         loadFiles()
-    }
-    func renameFile(atPath filePath: String, to newFileName: String) throws {
-        let fileManager = FileManager.default
-        let directoryPath = (filePath as NSString).deletingLastPathComponent
-        let newFilePath = (directoryPath as NSString).appendingPathComponent(newFileName)
-        try fileManager.moveItem(atPath: filePath, toPath: newFilePath)
     }
 }
 

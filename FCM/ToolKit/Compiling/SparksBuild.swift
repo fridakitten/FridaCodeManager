@@ -36,10 +36,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //compiler setup
     usleep(100000)
     DispatchQueue.main.async {
-        if let status = status {
+        if let status = status, let progress = progress {
             status.wrappedValue = "setting up compiler"
-        }
-        if let progress = progress {
             withAnimation {
                 progress.wrappedValue = 0.0
             }
@@ -78,10 +76,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
     usleep(100000)
     DispatchQueue.main.async {
-        if let status = status {
+        if let status = status, let progress = progress {
             status.wrappedValue = "preparing compiler"
-        }
-        if let progress = progress {
             withAnimation {
                 progress.wrappedValue = 0.05
             }
@@ -91,10 +87,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     print("FridaCodeManager \(global_version)\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
     usleep(100000)
     DispatchQueue.main.async {
-        if let status = status {
+        if let status = status, let progress = progress {
             status.wrappedValue = "creating folders"
-        }
-        if let progress = progress {
             withAnimation {
                 progress.wrappedValue = 0.1
             }
@@ -105,10 +99,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     cfolder(atPath: ClangPath)
     usleep(100000)
     DispatchQueue.main.async {
-        if let status = status {
+        if let status = status, let progress = progress {
             status.wrappedValue = "copying app resources to folders"
-        }
-        if let progress = progress {
             withAnimation {
                 progress.wrappedValue = 0.15
             }
@@ -119,10 +111,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     print("+++++ compiler-stage ++++++")
     usleep(100000)
     DispatchQueue.main.async {
-        if let status = status {
+        if let status = status, let progress = progress {
             status.wrappedValue = "compiling \(ProjectInfo.Executable)"
-        }
-        if let progress = progress {
             withAnimation {
                 progress.wrappedValue = 0.2
             }
@@ -139,10 +129,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     print("+++++++++++++++++++++++++++\n \n+++++ install-stage +++++++")
     usleep(100000)
     DispatchQueue.main.async {
-        if let status = status {
+        if let status = status, let progress = progress {
             status.wrappedValue = "giving entitlements to app"
-        }
-        if let progress = progress {
             withAnimation {
                 progress.wrappedValue = 0.7
             }
@@ -151,10 +139,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     shell(LDIDEXEC)
     usleep(100000)
     DispatchQueue.main.async {
-        if let status = status {
+        if let status = status, let progress = progress {
             status.wrappedValue = "compressing app into .ipa archive"
-        }
-        if let progress = progress {
             withAnimation {
                 progress.wrappedValue = 0.75
             }
@@ -163,10 +149,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     shell("\(CDEXEC) ; \(ZIPEXEC)")
     usleep(100000)
     DispatchQueue.main.async {
-        if let status = status {
+        if let status = status, let progress = progress {
             status.wrappedValue = "installing \(ProjectInfo.Executable)"
-        }
-        if let progress = progress {
             withAnimation {
                 progress.wrappedValue = 0.9
             }
@@ -175,10 +159,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if erase { shell(INSTALL, uid: 0) }
     usleep(100000)
     DispatchQueue.main.async {
-        if let status = status {
+        if let status = status, let progress = progress {
             status.wrappedValue = "clean up"
-        }
-        if let progress = progress {
             withAnimation {
                 progress.wrappedValue = 1.0
             }
@@ -198,14 +180,6 @@ func OpenApp(_ BundleID: String) {
     guard let obj = objc_getClass("LSApplicationWorkspace") as? NSObject else { return }
     let workspace = obj.perform(Selector(("defaultWorkspace")))?.takeUnretainedValue() as? NSObject
     workspace?.perform(Selector(("openApplicationWithBundleID:")), with: BundleID)
-}
-
-func copyf(sourcePath: String, destinationPath: String) {
-    let fileManager = FileManager.default
-    
-    do {
-        try! fileManager.copyItem(atPath: sourcePath, toPath: destinationPath)
-    }
 }
 
 func FindFiles(_ ProjectPath: String, _ suffix: String) -> String? {

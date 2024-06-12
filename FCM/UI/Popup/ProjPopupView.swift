@@ -18,11 +18,7 @@
 
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
-    
-//
-//  Created by Artem Novichkov on 20.05.2021.
-//
+ */
 
 import SwiftUI
 
@@ -89,19 +85,14 @@ struct ProjPopupView: View {
                 .cornerRadius(10)
                 Spacer().frame(width: 10)
                 Button(action: {
-                    let docs = "\(global_documents)/\(AppName)"
-                    if AppName != "" {
-                        if BundleID != "" {
-                            if !fe(docs) {
-                                haptfeedback(1)
-                                isPresented = false
-                                MakeApplicationProject(AppName, BundleID,SDK: SDK, type: type)
-                                AppName = ""
-                                BundleID = ""
-                                hellnah = UUID()
-                                return
-                            }
-                        }
+                    if AppName != "", BundleID != "", !fe("\(global_documents)/\(AppName)") {
+                        haptfeedback(1)
+                        isPresented = false
+                        MakeApplicationProject(AppName, BundleID,SDK: SDK, type: type)
+                        AppName = ""
+                        BundleID = ""
+                        hellnah = UUID()
+                        return
                     }
                     haptfeedback(2)
                 }, label: {

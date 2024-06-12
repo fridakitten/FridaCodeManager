@@ -35,7 +35,7 @@ struct BottomPopupView<Content: View>: View {
             VStack {
                 Spacer()
                 content
-                    .padding(.bottom , geometry.safeAreaInsets.bottom)
+                    .padding(.bottom, geometry.safeAreaInsets.bottom)
                     .background {
 VStack {
 FluidGradient(blobs: [.orange, .primary, .red],

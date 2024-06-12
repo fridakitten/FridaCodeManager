@@ -22,7 +22,7 @@
 
 import Foundation
 
-public func cfolder(atPath path: String) {
+func cfolder(atPath path: String) {
     do {
         try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
     } catch {
@@ -36,6 +36,14 @@ func cfile(atPath path: String, withContent content: String) {
         print("File created successfully at path: \(path)")
     } catch {
         print("Error creating file: \(error.localizedDescription)")
+    }
+}
+
+func copyf(sourcePath: String, destinationPath: String) {
+    let fileManager = FileManager.default
+        
+    do {   
+        try! fileManager.copyItem(atPath: sourcePath, toPath: destinationPath)
     }
 }
 
@@ -71,6 +79,5 @@ func renameFile(atPath filePath: String, to newFileName: String) throws {
     let fileManager = FileManager.default
     let directoryPath = (filePath as NSString).deletingLastPathComponent
     let newFilePath = (directoryPath as NSString).appendingPathComponent(newFileName)
-
     try fileManager.moveItem(atPath: filePath, toPath: newFilePath)
 }

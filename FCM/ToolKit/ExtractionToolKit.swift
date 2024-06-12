@@ -24,8 +24,7 @@ import Foundation
 
 func exportProj(_ project: Project) {
     let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
-    shell("rm '\(global_documents)/\(modname).sproj'")
-    shell("cd '\(global_documents)' && zip -r \(modname).sproj '\(project.Name)'")
+    shell("rm '\(global_documents)/\(modname).sproj' ; cd '\(global_documents)' ; zip -r \(modname).sproj '\(project.Name)'")
 }
 
 func exportApp(_ project: Project) {
@@ -37,9 +36,8 @@ func exportApp(_ project: Project) {
 }
 
 func importProj() {
-    let target = "\(global_documents)/target.sproj"
+    let target: String = "\(global_documents)/target.sproj"
     if fe(target) {
-        shell("cd '\(global_documents)' && unzip '\(target)'")
-        shell("rm '\(target)'")
+        shell("cd '\(global_documents)' ; unzip '\(target)' ; rm '\(target)'")
     }
 }
