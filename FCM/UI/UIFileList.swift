@@ -38,7 +38,6 @@ struct FileList: View {
     @State private var activeSheet: ActiveSheet?
     @State var directoryPath: String
     @State private var files: [URL] = []
-    @State private var folders: [URL] = []
     @State private var quar: Bool = false
     @State private var fileName: String = ""
     @State private var selpath: String = ""
@@ -57,7 +56,7 @@ struct FileList: View {
     var body: some View {
         List {
             Section {
-                ForEach(folders + files, id: \.self) { item in
+                ForEach(files, id: \.self) { item in
                     HStack {
                         if isDirectory(item) {
                             NavigationLink(destination: FileList(directoryPath: item.path, nv: item.lastPathComponent, buildv: $buildv, builda: false, actpath: $actpath, action: $action)) {
@@ -293,19 +292,14 @@ struct FileList: View {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
         do {
-            let fileURLs = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
-            let fileURLsOnly = fileURLs.filter { url in
-            !isDirectory(url) && url.lastPathComponent != "DontTouchMe.plist"}
-            let folderURLs = fileURLs.filter { isDirectory($0) }
-            folders = folderURLs
-            files = fileURLsOnly
+            files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
         } catch {
             print("Error loading files: \(error.localizedDescription)")
         }
     }
     func deleteItems(at offsets: IndexSet) {
         for index in offsets {
-            let itemURL = (folders + files)[index]
+            let itemURL = (files)[index]
             do {
                 try FileManager.default.removeItem(at: itemURL)
             } catch {
@@ -352,13 +346,12 @@ struct ImageView: View {
 
 struct SDKList: View {
     @State private var files: [URL] = []
-    @State private var folders: [URL] = []
     @State var directoryPath: String
     @Binding var sdk: String
     var body: some View {
         List {
             Section() {
-                ForEach(folders, id: \.self) { folder in
+                ForEach(files, id: \.self) { folder in
                     Button( action: {
                         sdk = folder.lastPathComponent
                     }){
@@ -382,63 +375,10 @@ struct SDKList: View {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
         do {
-            let fileURLs = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
-            let fileURLsOnly = fileURLs.filter { !isDirectory($0) }
-            let folderURLs = fileURLs.filter { isDirectory($0) }
-            folders = folderURLs
-            files = fileURLsOnly
+            files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
         } catch {
             print("Error loading files: \(error.localizedDescription)")
         }
-    }
-}
-
-struct PKG: View {
-    @State private var files: [URL] = []
-    @State private var folders: [URL] = []
-    @State var directoryPath: String
-    var body: some View {
-        List {
-            Section() {
-                ForEach(folders, id: \.self) { folder in
-                    HStack {
-                        Image(systemName: "tray.fill")
-                        Text(folder.lastPathComponent)
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-        }
-        .onAppear {
-            loadFiles()
-        }
-        .listStyle(InsetGroupedListStyle())
-        .navigationTitle("Packages")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-    func loadFiles() {
-        let fileManager = FileManager.default
-        let directoryURL = URL(fileURLWithPath: directoryPath)
-        do {
-            let fileURLs = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
-            let fileURLsOnly = fileURLs.filter { !isDirectory($0) }
-            let folderURLs = fileURLs.filter { isDirectory($0) }
-            folders = folderURLs
-            files = fileURLsOnly
-        } catch {
-            print("Error loading files: \(error.localizedDescription)")
-        }
-    }
-    func deleteItems(at offsets: IndexSet) {
-        for index in offsets {
-            let itemURL = (folders + files)[index]
-            do {
-                try FileManager.default.removeItem(at: itemURL)
-            } catch {
-                print("Error deleting item: \(error.localizedDescription)")
-            }
-        }
-        loadFiles()
     }
 }
 
