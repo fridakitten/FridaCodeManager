@@ -36,7 +36,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"))
     let frameflags: String = {
         var flags: String = ""
-        if MFiles != [] { 
+        if MFiles != [""] { 
             for item in frameworks {
                 flags += "-framework \(item) "
             }
@@ -58,15 +58,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         if !fe(ClangBridge) {
             EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
         } else {
-            if MFiles != [] {
-                let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"))
-                let frameflags: String = {
-                    var flags: String = ""
-                    for item in frameworks {
-                        flags += "-framework \(item) "
-                    }
-                    return flags
-                }()
+            if MFiles != [""] {
                 for mFile in MFiles {
                     EXEC += "clang -w -isysroot '\(SDKPath)' -F'\(SDKPath)/System/Library/Frameworks' -F'\(SDKPath)/System/Library/PrivateFrameworks' \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(ProjectInfo.ProjectPath)/clang/\(UUID()).o'; "
                 }
@@ -75,7 +67,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -import-objc-header '\(ClangBridge)' -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
             }
         }
-    } else if MFiles != [] {
+    } else if MFiles != [""] {
         EXEC += "clang -w -isysroot '\(SDKPath)' -F'\(SDKPath)/System/Library/Frameworks' -F'\(SDKPath)/System/Library/PrivateFrameworks' \(MFiles.joined(separator: " ")) \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) -o '\(AppPath)/\(ProjectInfo.Executable)'"
     }
     let LDIDEXEC = "ldid -S'\(ProjectInfo.ProjectPath)/entitlements.plist' '\(AppPath)/\(ProjectInfo.Executable)'"
