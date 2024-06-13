@@ -49,15 +49,6 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
         } else {
             if MFiles != [] {
-                DispatchQueue.main.async {
-                    if let status = status, let progress = progress {
-                        status.wrappedValue = "determine frameworks"
-                        withAnimation {
-                            progress.wrappedValue = 0.0
-                        }
-                    }
-                }
-                usleep(100000)
                 let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"))
                 let frameflags: String = {
                     var flags: String = ""
