@@ -33,6 +33,16 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let ClangBridge = "\(ProjectInfo.ProjectPath)/bridge.h"
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
     let MFiles = (findObjCFilesStack(ProjectInfo.ProjectPath) ?? [""])
+    let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"))
+    let frameflags: String = {
+        var flags: String = ""
+        if MFiles != [] { 
+            for item in frameworks {
+                flags += "-framework \(item) "
+            }
+        }
+        return flags
+    }()
     //compiler setup
     DispatchQueue.main.async {
         if let status = status, let progress = progress {
@@ -65,24 +75,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -import-objc-header '\(ClangBridge)' -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
             }
         }
-    } else if MFiles != [""] {
-        DispatchQueue.main.async {
-            if let status = status, let progress = progress {
-                status.wrappedValue = "determine frameworks"
-                withAnimation {
-                    progress.wrappedValue = 0.0
-                }
-            }
-        }
-        usleep(100000)
-        let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"))
-        let frameflags: String = {
-            var flags: String = ""
-            for item in frameworks {
-                flags += "-framework \(item) "
-            }
-            return flags
-        }()
+    } else if MFiles != [] {
         EXEC += "clang -w -isysroot '\(SDKPath)' -F'\(SDKPath)/System/Library/Frameworks' -F'\(SDKPath)/System/Library/PrivateFrameworks' \(MFiles.joined(separator: " ")) \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) -o '\(AppPath)/\(ProjectInfo.Executable)'"
     }
     let LDIDEXEC = "ldid -S'\(ProjectInfo.ProjectPath)/entitlements.plist' '\(AppPath)/\(ProjectInfo.Executable)'"
