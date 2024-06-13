@@ -45,6 +45,7 @@ struct Home: View {
 1.3.2 (Optimisation)
 -removed some duplicated functions
 -made File Manager a bit more optimised
+-switched to -F flag
 
 1.3.1 (Improvements)
 -removed useless functions
