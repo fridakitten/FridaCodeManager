@@ -42,6 +42,10 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.3.3 (Fixes)
+-now the automated framework finder will completely ignore illegal framework names avoiding compiling issues
+-fixed a minor efficiency issue in the build process
+
 1.3.2 (Optimisation)
 -removed some duplicated functions
 -made File Manager a bit more optimised

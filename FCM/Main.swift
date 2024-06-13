@@ -38,7 +38,7 @@ let global_documents: String = {
     return paths[0].path
 }()
 let global_sdkpath: String = "\(Bundle.main.bundlePath)/sdk"
-let global_version: String = "v1.3.2"
+let global_version: String = "v1.3.3"
 
 @main
 struct MyApp: App {
