@@ -22,7 +22,7 @@
 
 import Foundation
 
-func findFrameworks(in directory: URL) -> [String] {
+func findFrameworks(in directory: URL, SDKPath: String) -> [String] {
     var frameworksSet = Set<String>()
     
     let fileManager = FileManager.default
@@ -53,12 +53,20 @@ func findFrameworks(in directory: URL) -> [String] {
             print("Error reading file \(fileURL): \(error)")
         }
     }
-    
+    //getting all frameworks
+    let frameworks = try! fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/Frameworks"), includingPropertiesForKeys: nil) + fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/PrivateFrameworks"), includingPropertiesForKeys: nil)
+    //extracting URLs and converting them to framework names
+    let rawFW: [String] = frameworks.map { url in
+        let lastPathComponent = url.lastPathComponent
+        return lastPathComponent.deletingPathExtension()
+    }
+    //filtering stuff out that might got copied
+    frameworksSet = frameworksSet.filter { rawFW.contains($0) }
     return Array(frameworksSet)
 }
 
 func extractFrameworks(from contents: String) -> Set<String> {
-    let pattern = "#import\\s+<([^/]+)/.*?>"
+    let pattern = "#(?:import|include)\\s+<([^/]+)/[^>]+>"
     let regex = try! NSRegularExpression(pattern: pattern, options: [])
     let nsString = contents as NSString
     let matches = regex.matches(in: contents, options: [], range: NSRange(location: 0, length: nsString.length))
@@ -72,4 +80,10 @@ func extractFrameworks(from contents: String) -> Set<String> {
     }
     
     return frameworksSet
+}
+
+extension String {
+    func deletingPathExtension() -> String {
+        return (self as NSString).deletingPathExtension
+    }
 }
