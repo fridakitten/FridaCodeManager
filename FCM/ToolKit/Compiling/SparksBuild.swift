@@ -34,7 +34,6 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
     let MFiles = (findObjCFilesStack(ProjectInfo.ProjectPath) ?? [""])
     //compiler setup
-    usleep(100000)
     DispatchQueue.main.async {
         if let status = status, let progress = progress {
             status.wrappedValue = "setting up compiler"
@@ -43,14 +42,32 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             }
         }
     }
+    usleep(100000)
     var EXEC = ""
     if SwiftFiles != "" {
         if !fe(ClangBridge) {
             EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
         } else {
             if MFiles != [] {
+                DispatchQueue.main.async {
+                    if let status = status, let progress = progress {
+                        status.wrappedValue = "determine frameworks"
+                        withAnimation {
+                            progress.wrappedValue = 0.0
+                        }
+                    }
+                }
+                usleep(100000)
+                let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"))
+                let frameflags: String = {
+                    var flags: String = ""
+                    for item in frameworks {
+                        flags += "-framework \(item) "
+                    }
+                    return flags
+                }()
                 for mFile in MFiles {
-                EXEC += "clang -w -isysroot '\(SDKPath)' -F'\(SDKPath)/System/Library/Frameworks' -F'\(SDKPath)/System/Library/PrivateFrameworks' -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(ProjectInfo.ProjectPath)/clang/\(UUID()).o'; "
+                    EXEC += "clang -w -isysroot '\(SDKPath)' -F'\(SDKPath)/System/Library/Frameworks' -F'\(SDKPath)/System/Library/PrivateFrameworks' \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(ProjectInfo.ProjectPath)/clang/\(UUID()).o'; "
                 }
                 EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) clang/*.o -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -import-objc-header '\(ClangBridge)' -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
             } else {
@@ -58,7 +75,24 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             }
         }
     } else if MFiles != [""] {
-        EXEC += "clang -w -isysroot '\(SDKPath)' \(MFiles.joined(separator: " ")) -F'\(SDKPath)/System/Library/Frameworks' -target arm64-apple-ios\(ProjectInfo.TG) -o '\(AppPath)/\(ProjectInfo.Executable)'"
+        DispatchQueue.main.async {
+            if let status = status, let progress = progress {
+                status.wrappedValue = "determine frameworks"
+                withAnimation {
+                    progress.wrappedValue = 0.0
+                }
+            }
+        }
+        usleep(100000)
+        let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"))
+        let frameflags: String = {
+            var flags: String = ""
+            for item in frameworks {
+                flags += "-framework \(item) "
+            }
+            return flags
+        }()
+        EXEC += "clang -w -isysroot '\(SDKPath)' -F'\(SDKPath)/System/Library/Frameworks' -F'\(SDKPath)/System/Library/PrivateFrameworks' \(MFiles.joined(separator: " ")) \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) -o '\(AppPath)/\(ProjectInfo.Executable)'"
     }
     let LDIDEXEC = "ldid -S'\(ProjectInfo.ProjectPath)/entitlements.plist' '\(AppPath)/\(ProjectInfo.Executable)'"
     var CLEANEXEC = ""

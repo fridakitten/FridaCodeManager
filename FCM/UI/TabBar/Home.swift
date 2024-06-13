@@ -46,6 +46,7 @@ struct Home: View {
 -removed some duplicated functions
 -made File Manager a bit more optimised
 -switched to -F flag
+-added automated framework finder for c languages
 
 1.3.1 (Improvements)
 -removed useless functions
