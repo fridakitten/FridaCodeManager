@@ -292,7 +292,11 @@ struct FileList: View {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
         do {
-            files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
+            let items = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
+            let fileURLs = items.filter { url in
+            !isDirectory(url) && url.lastPathComponent != "DontTouchMe.plist"}
+            let folderURLs = items.filter { isDirectory($0) }
+            files = folderURLs + fileURLs
         } catch {
             print("Error loading files: \(error.localizedDescription)")
         }
