@@ -33,10 +33,10 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let ClangBridge = "\(ProjectInfo.ProjectPath)/bridge.h"
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
     let MFiles = (findObjCFilesStack(ProjectInfo.ProjectPath) ?? [""])
-    let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"))
     let frameflags: String = {
         var flags: String = ""
-        if MFiles != [""] { 
+        if MFiles != [""] {
+            let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"))
             for item in frameworks {
                 flags += "-framework \(item) "
             }
