@@ -64,15 +64,12 @@ struct MyApp: App {
                 ContentView(hello: $hello)
                     .onOpenURL { url in
                         importProj(target: url.path)
+                        hello = UUID()
                     }
                 if show {
                     Debug()
                 }
             }
         }
-    }
-    func handleSprojFile(url: URL) {
-        importProj(target: url.path)
-        hello = UUID()
     }
 }

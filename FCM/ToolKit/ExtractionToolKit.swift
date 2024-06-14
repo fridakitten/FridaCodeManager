@@ -36,7 +36,18 @@ func exportApp(_ project: Project) {
 }
 
 func importProj(target: String) {
+    let v2uuid: String = "\(UUID())"
     if fe(target) {
-        shell("unzip '\(target)' -d \(global_documents)")
+        if shell("mkdir '/tmp/\(v2uuid)' ;unzip '\(target)' -d '/tmp/\(v2uuid)'") != 0 {
+            return
+        }
     }
+    let content: [URL] = try! FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: "/tmp/\(v2uuid)"), includingPropertiesForKeys: nil)
+    let projpath: String = content[0].path
+    print("\nfound at: \(projpath)")
+    if fe("\(projpath)/Resources/DontTouchMe.plist") {
+        wplist(value: v2uuid, forKey: "ProjectName", plistPath: "\(projpath)/Resources/DontTouchMe.plist")
+        shell("mv '\(projpath)' '\(global_documents)/\(v2uuid)'")
+    }
+    shell("rm -rf '/tmp/\(v2uuid)'")
 }
