@@ -7,7 +7,7 @@ struct SDKDownload: View {
     var body: some View {
         List {
             ForEach(sdks, id:\.self) { item in
-                if !fe("\(Bundle.main.bundlePath)/sdk/iPhoneOS\(item).sdk") {
+                if !fe("\(global_sdkpath)/iPhoneOS\(item).sdk") {
                     Button( action: {
                         download(item)
                     }) {
@@ -29,7 +29,7 @@ struct SDKDownload: View {
     private func download(_ sdk: String) {
         DispatchQueue.global(qos: .utility).async {
             ShowAlert(UIAlertController(title: "Downloading SDK", message: "", preferredStyle: .alert))
-            shell("cd \(Bundle.main.bundlePath)/sdk ; curl -O https://polcom.de/sdk/iOS\(sdk).zip ; unzip iOS\(sdk).zip ; rm iOS\(sdk).zip", uid: 0)
+            shell("mkdir \(global_sdkpath); cd \(global_sdkpath) ; curl -O https://polcom.de/sdk/iOS\(sdk).zip ; unzip iOS\(sdk).zip ; rm iOS\(sdk).zip", uid: 0)
             listid = UUID()
             DismissAlert()
         }
