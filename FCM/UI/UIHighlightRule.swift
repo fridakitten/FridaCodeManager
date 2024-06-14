@@ -104,10 +104,10 @@ extension HighlightingTextEditor {
         let highlightedString = NSMutableAttributedString(string: text)
         let all = NSRange(location: 0, length: text.utf16.count)
 
-        let editorFont = defaultEditorFont
+        //let editorFont = defaultEditorFont
         let editorTextColor = defaultEditorTextColor
 
-        highlightedString.addAttribute(.font, value: editorFont, range: all)
+        //highlightedString.addAttribute(.font, value: editorFont, range: all)
         highlightedString.addAttribute(.foregroundColor, value: editorTextColor, range: all)
 
         highlightRules.forEach { rule in
@@ -115,14 +115,14 @@ extension HighlightingTextEditor {
             matches.forEach { match in
                 rule.formattingRules.forEach { formattingRule in
 
-                    var font = SystemFontAlias()
+                    /*var font = SystemFontAlias()
                     highlightedString.enumerateAttributes(in: match.range, options: []) { attributes, _, _ in
                         let fontAttribute = attributes.first { $0.key == .font }!
                         // swiftlint:disable:next force_cast
                         let previousFont = fontAttribute.value as! SystemFontAlias
                         font = previousFont.with(formattingRule.fontTraits)
-                    }
-                    highlightedString.addAttribute(.font, value: font, range: match.range)
+                    }*/
+                    //highlightedString.addAttribute(.font, value: font, range: match.range)
 
                     let matchRange = Range<String.Index>(match.range, in: text)!
                     let matchContent = String(text[matchRange])

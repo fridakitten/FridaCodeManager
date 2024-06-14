@@ -69,7 +69,9 @@ struct DebugSettings: View {
     @AppStorage("debug") var show: Bool = false
     var body: some View {
         List {
-            Toggle("Debug Log",isOn: $show)
+            Section() {
+                Toggle("Debug Log",isOn: $show)
+            }
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("Debug")

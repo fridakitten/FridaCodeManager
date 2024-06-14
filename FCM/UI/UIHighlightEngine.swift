@@ -1,4 +1,4 @@
- /* 
+  /* 
  UIHighlightEngine.swift 
 
  Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
@@ -89,7 +89,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     }
 
     private func updateTextViewModifiers(_ textView: UITextView) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInteractive).async {
         let textInputTraits = textView.value(forKey: "textInputTraits") as? NSObject
         textInputTraits?.setValue(textView.tintColor, forKey: "insertionPointColor")
         }
