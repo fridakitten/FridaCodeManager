@@ -40,8 +40,6 @@ package:
 	mkdir .package
 	mkdir -p .package/var/jb/Applications/FridaCodeManager.app
 	cp -r Blueprint/FridaCodeManager.app/* .package/var/jb/Applications/FridaCodeManager.app
-	mkdir -p .package/var/jb/Applications/FridaCodeManager.app/sdk
-	cp -r sdks/iPhoneOS15.6.sdk .package/var/jb/Applications/FridaCodeManager.app/sdk/iPhoneOS15.6.sdk
 	mkdir -p .package/DEBIAN
 	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: iphoneos-arm64\nDescription: .\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
 	echo "#!/var/jb/bin/sh\ncd /var/jb/Applications/FridaCodeManager.app\nrm -rf ./sdk" > .package/DEBIAN/prerm
