@@ -63,7 +63,7 @@ struct MyApp: App {
             ZStack {
                 ContentView(hello: $hello)
                     .onOpenURL { url in
-                        handleSprojFile(url: url)
+                        importProj(target: url.path)
                     }
                 if show {
                     Debug()
@@ -72,16 +72,7 @@ struct MyApp: App {
         }
     }
     func handleSprojFile(url: URL) {
-        do {
-            let documentsURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-            let targetURL = documentsURL.appendingPathComponent("target.sproj")
-            try FileManager.default.copyItem(at: url, to: targetURL)
-            let copiedFileContent = try String(contentsOf: targetURL)
-            print("Copied File Content: \(copiedFileContent)")
-        } catch {
-            print("Error handling .sproj file: \(error.localizedDescription)")
-        }
-        importProj()
+        importProj(target: url.path)
         hello = UUID()
     }
 }

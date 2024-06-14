@@ -35,9 +35,8 @@ func exportApp(_ project: Project) {
     }
 }
 
-func importProj() {
-    let target: String = "\(global_documents)/target.sproj"
+func importProj(target: String) {
     if fe(target) {
-        shell("cd '\(global_documents)' ; unzip '\(target)' ; rm '\(target)'")
+        shell("unzip '\(target)' -d \(global_documents)")
     }
 }

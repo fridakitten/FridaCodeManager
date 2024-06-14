@@ -259,8 +259,7 @@ struct Home: View {
                     .fileImporter(isPresented: $fileimporter,allowedContentTypes: [.project]) { result in
                     do {
                         let fileURL = try result.get()
-                        handleFileImport(fileURL)
-                        importProj()
+                        importProj(target: fileURL.path)
                         hellnah = UUID()
                     } catch {
                         print("Error importing file: \(error.localizedDescription)")
