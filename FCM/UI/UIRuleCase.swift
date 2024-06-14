@@ -28,13 +28,13 @@ func grule(_ isaythis: String) -> [HighlightRule] {
     switch(isaythis) {
         case "swift":
             return [
-                HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\.)\\w+(?=[(])", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0))
-                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(let|var|struct|some|import|private|class|nil|return|func|override)\\b", options: []), formattingRules: [
+                HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(let|var|struct|some|import|private|class|nil|return|func|override)\\b", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor (red: 1.0, green: 0.2, blue: 0.6, alpha: 1.0))
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\b(let|var|struct|func|class)\\s)\\w+", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0))
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b\\w+(?=(([(](.*)[)])?(\\s*\\{))|([(](.*)[)]))", options: []), formattingRules: [
+                    TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0))
+                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\.)\\w+(?=[(])", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0))
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "@\\w+[^()]", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0))
