@@ -45,6 +45,9 @@ struct Home: View {
 1.3.4 (Fixes)
 -updated highlighting engine(logic fixes)
 -importing a new project will now change the uuid of the imported project(now you can import a project multiple times)
+-stopped highlighting engine to calculate font types
+-fixed bash environment
+-SDK is not pre shipped anymore
 
 1.3.3 (Fixes)
 -now the automated framework finder will completely ignore illegal framework names avoiding compiling issues
