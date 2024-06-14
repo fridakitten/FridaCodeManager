@@ -79,7 +79,6 @@ navigationBarAppearance.backButtonAppearance = backItemAppearance
 UINavigationBar.appearance().standardAppearance = navigationBarAppearance
 UINavigationBar.appearance().compactAppearance = navigationBarAppearance
 UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
-                    code = ""
                     quar = false
                 }
                 .accentColor(.primary)
