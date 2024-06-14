@@ -61,7 +61,7 @@ struct ProjectView: View {
                                             DismissAlert()
                                             let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
                                             if let stabURL = URL(string: "file://\(global_documents)/\(modname).ipa") {
-                                                fuck(url: stabURL)
+                                                share(url: stabURL)
                                             }
                                         }
                                     }){
@@ -71,7 +71,7 @@ struct ProjectView: View {
                                         let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
                                         exportProj(Project)
                                         if let stabURL = URL(string: "file://\(global_documents)/\(modname).sproj") {
-                                            fuck(url: stabURL)
+                                            share(url: stabURL)
                                         }
                                     }){
                                         Label("Export Project", systemImage: "archivebox")
@@ -124,7 +124,7 @@ struct ProjectView: View {
             }
         }
     }
-    func fuck(url: URL) {
+    func share(url: URL) {
         let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         if let viewController = UIApplication.shared.windows.first?.rootViewController {
             viewController.present(activityViewController, animated: true, completion: nil)
