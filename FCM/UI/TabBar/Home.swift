@@ -42,6 +42,10 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.3.5 (Fixes)
+-fixed some highlighting performance issues
+-fixed removing sdks
+
 1.3.4 (Fixes)
 -updated highlighting engine(logic fixes)
 -importing a new project will now change the uuid of the imported project(now you can import a project multiple times)

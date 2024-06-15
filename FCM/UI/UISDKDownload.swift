@@ -40,7 +40,7 @@ struct SDKDownload: View {
         }
         DispatchQueue.global(qos: .utility).async {
             ShowAlert(UIAlertController(title: "Removing SDK", message: "", preferredStyle: .alert))
-            shell("cd \(Bundle.main.bundlePath)/sdk ; rm -rf iPhoneOS\(sdk).sdk", uid: 0)
+            shell("rm -rf \(global_sdkpath)/iPhoneOS\(sdk).sdk", uid: 0)
             listid = UUID()
             DismissAlert()
         }
