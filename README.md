@@ -1,5 +1,8 @@
 # FridaCodeManager
 
+## Notes
+I made this project cause my parents took my mac and I still did wanted to code and AppInstaller iOS was the first person that helped me making this project, without them this would not exist so give him a follow!
+
 ## Compatibility
 iOS 15.0 - 17.0 was offcially tested on both, roothide and rootless
 
