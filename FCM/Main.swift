@@ -37,7 +37,7 @@ let global_documents: String = {
     let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
     return paths[0].path
 }()
-let global_sdkpath: String = "\(global_documents)/sdk"
+let global_sdkpath: String = "\(global_documents)/../.sdk"
 let global_version: String = "v1.3.4"
 
 @main
