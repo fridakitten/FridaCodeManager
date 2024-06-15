@@ -1,7 +1,10 @@
 # FridaCodeManager
 
-## Notice
-Dont bully me for the Initial Code, bully SparkleChan
+## Notes
+I made this project cause my parents took my mac and I still did wanted to code and AppInstaller iOS was the first person that helped me making this project, without them this would not exist so give him a follow!
+
+## Compatibility
+iOS 15.0 - 17.0 was offcially tested on both, roothide and rootless
 
 ## Compiling
 Its meant to be compiled on jailbroken iOS devices in terminal,
@@ -12,19 +15,39 @@ To compile package for roothide use `make roothide`
 
 Was successfully compiled on
 
-iPhone 11, iOS 16.5
-
-iPhone X, iOS 15.3
-
-iPhone X, iOS 15.0
+</br>
+    <table>
+        <tr>
+            <th>iDevice</th>
+            <th>iOS Version</th>
+        </tr>
+        <tr>
+            <td>iPhone 6s</td>
+            <td>iOS 15.8.2</td>
+        </tr>
+        <tr>
+            <td>iPhone 7</td>
+            <td>iOS 15.6</td>
+        </tr>
+        <tr>
+            <td>iPhone X</td>
+            <td>iOS 15.0</td>
+        </tr>
+        <tr>
+            <td>iPhone 11</td>
+            <td>iOS 16.5</td>
+        </tr>
+    </table>
+</br>
 
 ## Credits
-Frida - Main Developer
-
-AppInstaller iOS - Compiling Genius
-
-meighler - Licensor
-
-MudSplasher - Icon Designer
-
-HAHALOSAH - Helping Hand
+- SeanIsNotAConstant: [https://github.com/fridakitten](https://github.com/fridakitten)
+- AppInstallerIOS: [https://github.com/AppInstalleriOSGH](https://github.com/AppInstalleriOSGH)
+- meighler: [https://github.com/meighler](https://github.com/meighler)
+- HAHALOSAH: [https://github.com/HAHALOSAH](https://github.com/HAHALOSAH)
+- MudSplasher: [https://github.com/MudSplasher](https://github.com/MudSplasher)
+- Opa334: [https://github.com/Opa334](https://github.com/Opa334)
+- Theos: [https://github.com/theos](https://github.com/theos)
+- RootHideDev: [https://github.com/roothide](https://github.com/roothide)
+- Speedyfriend67: [https://github.com/speedyfriend433](https://github.com/speedyfriend433)
+- Burhan Rana: [https://github.com/burhangee](https://github.com/burhangee)
