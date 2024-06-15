@@ -1,7 +1,7 @@
 # FridaCodeManager
 
-## Notice
-Dont bully me for the Initial Code, bully SparkleChan
+## Compatibility
+iOS 15.0 - 17.0 was offcially tested on both, roothide and rootless
 
 ## Compiling
 Its meant to be compiled on jailbroken iOS devices in terminal,
