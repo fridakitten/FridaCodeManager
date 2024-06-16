@@ -38,11 +38,11 @@ func exportApp(_ project: Project) {
 func importProj(target: String) {
     let v2uuid: String = "\(UUID())"
     if fe(target) {
-        if shell("mkdir '/tmp/\(v2uuid)' ;unzip '\(target)' -d '/tmp/\(v2uuid)'") != 0 {
+        if shell("mkdir '\(global_documents)/../tmp/\(v2uuid)' ;unzip '\(target)' -d '\(global_documents)/../tmp/\(v2uuid)'") != 0 {
             return
         }
     }
-    let content: [URL] = try! FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: "/tmp/\(v2uuid)"), includingPropertiesForKeys: nil)
+    let content: [URL] = try! FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: "\(global_documents)/../tmp/\(v2uuid)"), includingPropertiesForKeys: nil)
     let projpath: String = content[0].path
     print("\nfound at: \(projpath)")
     if fe("\(projpath)/Resources/DontTouchMe.plist") {

@@ -45,6 +45,7 @@ struct Home: View {
 1.3.5 (Fixes)
 -fixed some highlighting performance issues
 -fixed removing sdks
+-using now app containers tmp folder for project imports
 
 1.3.4 (Fixes)
 -updated highlighting engine(logic fixes)
