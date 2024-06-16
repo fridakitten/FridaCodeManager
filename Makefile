@@ -42,7 +42,6 @@ package:
 	cp -r Blueprint/FridaCodeManager.app/* .package/var/jb/Applications/FridaCodeManager.app
 	mkdir -p .package/DEBIAN
 	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: iphoneos-arm64\nDescription: .\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
-	echo "#!/var/jb/bin/sh\ncd /var/jb/Applications/FridaCodeManager.app\nrm -rf ./sdk" > .package/DEBIAN/prerm
 
 package_roothide:
 	find . -type f -name ".DS_Store" -delete
@@ -52,12 +51,10 @@ package_roothide:
 	cp -r Blueprint/FridaCodeManager.app/* .package/Applications/FridaCodeManager.app
 	mkdir -p .package/DEBIAN
 	echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: iphoneos-arm64e\nDescription: .\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
-	echo "#!/bin/sh\ncd /Applications/FridaCodeManager.app\nrm -rf ./sdk" > .package/DEBIAN/prerm
 
 deb:
 	-rm -rf Product/*
-	chmod 0755 .package/DEBIAN/prerm
 	dpkg-deb -b .package Product/FridaCodeManager.deb
 
 clean:
-	rm -rf $(OUTPUT_DIR)/swifty .package $(sdk_marker)
+	rm -rf $(OUTPUT_DIR)/swifty .package
