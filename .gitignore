@@ -4,3 +4,4 @@ Blueprint/FridaCodeManager.app/swifty
 Blueprint/FridaCodeManager.app/sdk
 Product/*
 .package
+.sdk_exists
