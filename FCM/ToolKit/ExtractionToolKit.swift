@@ -31,7 +31,7 @@ func exportApp(_ project: Project) {
     let result = build(project, false, nil, nil)
     let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
     if result == 0 {
-        shell("mv '\(global_documents)/\(project.Name)/ts.ipa' '\(global_documents)/\(modname).ipa'")
+        shell("rm '\(global_documents)/\(modname).ipa' ; mv '\(global_documents)/\(project.Name)/ts.ipa' '\(global_documents)/\(modname).ipa'")
     }
 }
 
