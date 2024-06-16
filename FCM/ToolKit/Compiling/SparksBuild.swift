@@ -35,7 +35,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let MFiles = (findObjCFilesStack(ProjectInfo.ProjectPath) ?? [])
     let frameflags: String = {
         var flags: String = ""
-        if MFiles != [] {
+        if MFiles != [], fe(SDKPath) {
             let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"), SDKPath: SDKPath)
             for item in frameworks {
                 flags += "-framework \(item) "
