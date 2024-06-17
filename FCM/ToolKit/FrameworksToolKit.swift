@@ -54,7 +54,12 @@ func findFrameworks(in directory: URL, SDKPath: String) -> [String] {
         }
     }
     //getting all frameworks
-    let frameworks = try! fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/Frameworks"), includingPropertiesForKeys: nil) + fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/PrivateFrameworks"), includingPropertiesForKeys: nil)
+    var frameworks: [URL] = []
+    do {
+        frameworks = try fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/Frameworks"), includingPropertiesForKeys: nil) + fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/PrivateFrameworks"), includingPropertiesForKeys: nil)
+    } catch {
+        print("Something happened wrong while unwrapping")
+    }
     //extracting URLs and converting them to framework names
     let rawFW: [String] = frameworks.map { url in
         let lastPathComponent = url.lastPathComponent
