@@ -32,7 +32,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let ClangPath = "\(ProjectInfo.ProjectPath)/clang"
     let ClangBridge = "\(ProjectInfo.ProjectPath)/bridge.h"
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
-    let MFiles = (findObjCFilesStack(ProjectInfo.ProjectPath) ?? [])
+    let MFiles = findObjCFilesStack(ProjectInfo.ProjectPath)
     let frameflags: String = {
         var flags: String = ""
         if !MFiles.isEmpty, fe(SDKPath) {
@@ -207,7 +207,7 @@ func FindFiles(_ ProjectPath: String, _ suffix: String) -> String? {
     }
 }
 
-func findObjCFilesStack(_ projectPath: String) -> [String]? {
+func findObjCFilesStack(_ projectPath: String) -> [String] {
     let fileExtensions = [".m", ".c", ".mm", ".cpp"]
     
     do {
@@ -223,7 +223,7 @@ func findObjCFilesStack(_ projectPath: String) -> [String]? {
         
         return objCFiles
     } catch {
-        return nil
+        return []
     }
 }
 
