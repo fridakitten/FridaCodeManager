@@ -78,7 +78,15 @@ struct CreatePopupView: View {
                     if FileName != "" {
                         haptfeedback(1)
                         if type == 1 {
-cfile(atPath: "\(filepath)/\(FileName)", withContent: "")
+                            var content = ""
+                            switch gsuffix(from: FileName) {
+                                case "swift", "c", "m", "mm", "cpp", "h":
+                                    content = authorgen(file: FileName)
+                                    break
+                                default:
+                                    break
+                            }
+                            cfile(atPath: "\(filepath)/\(FileName)", withContent: content)
                         } else if type == 2 {
                             cfolder(atPath: "\(filepath)/\(FileName)")
                         }

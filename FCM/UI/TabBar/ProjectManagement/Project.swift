@@ -55,14 +55,14 @@ func GetProjects() -> [Project] {
 func MakeApplicationProject(_ Name: String, _ BundleID: String, SDK: String, type: Int) {
     let v2uuid = UUID()
     let rvch = """
-#import <UIKit/UIKit.h>
+\(authorgen(file: "myRootViewController.h"))#import <UIKit/UIKit.h>
 
 @interface myRootViewController : UIViewController
 
 @end
 """
     let rvc = """
-#import "myRootViewController.h"
+\(authorgen(file: "myRootViewController.m"))#import "myRootViewController.h"
 
 @interface myRootViewController () <UITableViewDataSource>
 @property (nonatomic, strong) UITableView *logTableView;
@@ -120,7 +120,7 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, SDK: String, typ
 @end
 """
     let apdh = """
-#import <UIKit/UIKit.h>
+\(authorgen(file: "myAppDelegate.h"))#import <UIKit/UIKit.h>
 
 @interface myAppDelegate : UIResponder <UIApplicationDelegate>
 
@@ -130,7 +130,7 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, SDK: String, typ
 @end
 """
     let apd = """
-#import "myAppDelegate.h"
+\(authorgen(file: "myAppDelegate.m"))#import "myAppDelegate.h"
 #import "myRootViewController.h"
 
 @implementation myAppDelegate
@@ -146,7 +146,7 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, SDK: String, typ
 @end
 """
     let mainv = """
-#import <Foundation/Foundation.h>
+\(authorgen(file: "main.m"))#import <Foundation/Foundation.h>
 #import "myAppDelegate.h"
 
 int main(int argc, char *argv[]) {
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
 """
 
     let mainh = """
-#import <Foundation/Foundation.h>
+\(authorgen(file: "main.h"))#import <Foundation/Foundation.h>
 
 @interface MyObjectiveCClass : NSObject
 
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
 @end
 """
     let mainm = """
-#import "main.h"
+\(authorgen(file: "main.m"))#import "main.h"
 
 @implementation MyObjectiveCClass
 
@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
 @end
 """
     let objcswift = """
-import Foundation
+\(authorgen(file: "ContentView.swift"))import Foundation
 import SwiftUI
 
 struct ContentView: View {
@@ -197,8 +197,8 @@ struct ContentView: View {
         FileManager.default.createFile(atPath: "\(ResourcesPath)/DontTouchMe.plist", contents: Data("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n\t<key>ProjectName</key>\n\t<string>\(v2uuid)</string>\n\t<key>SDK</key>\n\t<string>\(SDK)</string>\n</dict>\n</plist>".utf8))
         switch(type) {
             case 1:
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/My App.swift", contents: Data("import SwiftUI\n\n@main\nstruct MyApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}".utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: Data("import SwiftUI\n\nstruct ContentView: View {\n    var body: some View {\n        Text(\"Hello, World!\")\n    }\n}".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/My App.swift", contents: Data("\(authorgen(file: "My App.swift"))import SwiftUI\n\n@main\nstruct MyApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: Data("\(authorgen(file: "ContentView.swift"))import SwiftUI\n\nstruct ContentView: View {\n    var body: some View {\n        Text(\"Hello, World!\")\n    }\n}".utf8))
                 break
             case 2:
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: mainv.data(using: .utf8))
@@ -208,9 +208,9 @@ struct ContentView: View {
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myRootViewController.m", contents: rvc.data(using: .utf8))
                 break;
             case 3:
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/My App.swift", contents: Data("import SwiftUI\n\n@main\nstruct MyApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/My App.swift", contents: Data("\(authorgen(file: "My App.swift"))import SwiftUI\n\n@main\nstruct MyApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}".utf8))
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: objcswift.data(using: .utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/bridge.h", contents: Data("#import \"main.h\"".utf8))
+                FileManager.default.createFile(atPath:"\(global_documents)/\(v2uuid)/bridge.h", contents: Data("\(authorgen(file: "bridge.h"))#import \"main.h\"".utf8))
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.h", contents: mainh.data(using: .utf8))
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: mainm.data(using: .utf8))
             default:
@@ -221,3 +221,11 @@ struct ContentView: View {
             print(error)
         }
     }
+
+func authorgen(file: String) -> String {
+    let author = UserDefaults.standard.string(forKey: "Author")
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "dd.MM.yy"
+    let currentDate = Date()
+    return "//\n// \(file)\n//\n// Created by \(author ?? "Anonym") on \(dateFormatter.string(from: currentDate))\n//\n \n"
+}

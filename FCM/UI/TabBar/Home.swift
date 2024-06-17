@@ -46,7 +46,8 @@ struct Home: View {
 -fixed compiling crash when SDK is missing
 -made copy/move functions work over projects
 -made default code editor font smaller
--inbuild copy menu will show now a responsive popup
+-inbuild copy buttons will show now a responsive popup
+-author credit features added
 
 1.3.5 (Fixes)
 -fixed some highlighting performance issues

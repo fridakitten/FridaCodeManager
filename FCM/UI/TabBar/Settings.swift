@@ -44,7 +44,10 @@ struct Settings: View {
                 Section(header: Text("Advanced")) {
                     NavigationLink(destination: textset(bsl: $bsl, fname: $fname,fontstate: $fontstate)) {
                         Label("Code Editor", systemImage: "doc.plaintext.fill")
-                        }
+                    }
+                    NavigationLink(destination: AuthorSettings()) {
+                        Label("Author", systemImage: "person.fill")
+                    }
                     NavigationLink(destination: DebugSettings()) {
                         Label("Debug", systemImage: "ant.fill")
                     }
@@ -126,3 +129,13 @@ struct FontPickerView: View {
     }
 }
 
+struct AuthorSettings: View {
+    @AppStorage("Author") var author: String = "Anonym"
+    var body: some View {
+        List {
+            TextField("Your Name", text: $author)
+        }
+        .navigationTitle("Author")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
