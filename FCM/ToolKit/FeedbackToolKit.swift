@@ -2,6 +2,7 @@ import UIKit
 
 let generator = UINotificationFeedbackGenerator()
 
+//Haptic Feedback
 func haptfeedback(_ type: Int) {
     switch(type) {
         case 1:
@@ -12,5 +13,17 @@ func haptfeedback(_ type: Int) {
             return
         default:
             return
+    }
+}
+
+//Alert Feedback
+func ShowAlert(_ Alert: UIAlertController) {
+    DispatchQueue.main.async {
+        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.present(Alert, animated: true, completion: nil)
+    }
+}
+func DismissAlert() {
+    DispatchQueue.main.async {
+        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.dismiss(animated: true)
     }
 }

@@ -68,7 +68,7 @@ struct LogView: View {
                 for item in LogItems {
                     fullstring += "\(item)\n"
                 }
-                copyToClipboard(text: fullstring)
+                copyToClipboard(text: fullstring, alert: false)
             }
         }
         .onDisappear {
@@ -80,8 +80,11 @@ struct LogView: View {
         }
     }
 }
-func copyToClipboard(text: String) {
+func copyToClipboard(text: String, alert: Bool? = true) {
+    haptfeedback(1)
+    if (alert ?? true) {ShowAlert(UIAlertController(title: "Copied", message: "", preferredStyle: .alert))}
     UIPasteboard.general.string = text
+    if (alert ?? true) {DismissAlert()}
 }
 
 //From https://github.com/Odyssey-Team/Taurine/blob/main/Taurine/app/LogStream.swift

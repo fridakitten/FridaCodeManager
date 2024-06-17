@@ -58,7 +58,7 @@ struct SFSymbolListView: View {
     var body: some View {
         List(symbols, id: \.self) { symbolName in
             Button( action: {
-                copyToPasteboard(symbolName)
+                copyToClipboard(text: symbolName)
             }){
                 HStack {
                     Image(systemName: symbolName)
@@ -71,8 +71,5 @@ struct SFSymbolListView: View {
         .navigationBarTitle("SFSymbols")
         .navigationBarTitleDisplayMode(.inline)
         .listStyle(InsetGroupedListStyle())
-    }
-    private func copyToPasteboard(_ symbolName: String) {
-        UIPasteboard.general.string = symbolName
     }
 }

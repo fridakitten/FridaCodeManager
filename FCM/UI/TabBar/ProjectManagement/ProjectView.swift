@@ -21,8 +21,6 @@
  */ 
     
 import SwiftUI
-import UIKit
-import QuickLook
 
 struct ProjectView: View {
     @Binding var sdk: String
@@ -148,16 +146,6 @@ struct CodeSpace: View {
             .fullScreenCover(isPresented: $buildv) {
                 buildView(ProjectInfo: ProjectInfo, sdk: $sdk, buildv: $buildv)
             }
-    }
-}
-func ShowAlert(_ Alert: UIAlertController) {
-    DispatchQueue.main.async {
-        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.present(Alert, animated: true, completion: nil)
-    }
-}
-func DismissAlert() {
-    DispatchQueue.main.async {
-        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.dismiss(animated: true)
     }
 }
 
