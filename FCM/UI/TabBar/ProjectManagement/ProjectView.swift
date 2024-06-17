@@ -35,12 +35,14 @@ struct ProjectView: View {
     @State var qls: String = ""
     @State var building: Bool = false
     @State var current: String = ""
+    @State var pathstate: String = ""
+    @State var action: Int = 0
     var body: some View {
         NavigationView {
             List {
                 Section {
                     ForEach(GetProjects()) { Project in
-                        NavigationLink(destination: CodeSpace(ProjectInfo: Project, sdk: $sdk)) {
+                        NavigationLink(destination: CodeSpace(ProjectInfo: Project, sdk: $sdk, pathstate: $pathstate, action: $action)) {
                             HStack {
                                 PubImg(projpath: "\(global_documents)/\(Project.Name)")
                                 Spacer().frame(width: 15)
@@ -139,8 +141,8 @@ struct CodeSpace: View {
     @State var buildv: Bool = false
     @State var fcreate: Bool = false
     @State var builda: Bool = true
-    @State var pathstate: String = ""
-    @State var action: Int = 0
+    @Binding var pathstate: String
+    @Binding var action: Int
     var body: some View {
         FileList(directoryPath: ProjectInfo.ProjectPath, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
