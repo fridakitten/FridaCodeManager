@@ -42,6 +42,10 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.3.6 (Fixes)
+-fixed compiling crash when SDK is missing
+-made copy/move functions work over projects
+
 1.3.5 (Fixes)
 -fixed some highlighting performance issues
 -fixed removing sdks
