@@ -14,7 +14,6 @@ You need `swift`,`clang`,`git` and `make`. Run `make all` to compile and package
 To compile package for roothide use `make roothide`
 
 Was successfully compiled on
-
 </br>
     <table>
         <tr>
