@@ -42,6 +42,10 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.3.7 (Fixes)
+-framework finder will now safe unwrap the legal framework names
+-in build process, MFiles is really empty now when you only have swift files
+
 1.3.6 (Fixes)
 -fixed compiling crash when SDK is missing
 -made copy/move functions work over projects

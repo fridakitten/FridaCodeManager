@@ -17,13 +17,36 @@ func haptfeedback(_ type: Int) {
 }
 
 //Alert Feedback
-func ShowAlert(_ Alert: UIAlertController) {
+func ShowAlert(_ alert: UIAlertController) {
     DispatchQueue.main.async {
-        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.present(Alert, animated: true, completion: nil)
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let keyWindow = windowScene.keyWindow,
+              let rootViewController = keyWindow.rootViewController else {
+            return
+        }
+        
+        // Find the topmost view controller to present the alert from
+        var topController = rootViewController
+        while let presentedController = topController.presentedViewController {
+            topController = presentedController
+        }
+        topController.present(alert, animated: true, completion: nil)
     }
 }
+
 func DismissAlert() {
     DispatchQueue.main.async {
-        UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController?.dismiss(animated: true)
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let keyWindow = windowScene.keyWindow,
+              let rootViewController = keyWindow.rootViewController else {
+            return
+        }
+        
+        // Find the topmost view controller to dismiss the alert from
+        var topController = rootViewController
+        while let presentedController = topController.presentedViewController {
+            topController = presentedController
+        }
+        topController.dismiss(animated: true, completion: nil)
     }
 }
