@@ -45,6 +45,7 @@ struct Home: View {
 1.3.6 (Fixes)
 -fixed compiling crash when SDK is missing
 -made copy/move functions work over projects
+-made default code editor font smaller
 
 1.3.5 (Fixes)
 -fixed some highlighting performance issues

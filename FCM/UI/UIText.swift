@@ -29,7 +29,7 @@ struct CodeEditorView: View {
         if let savedFont = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
             return savedFont
         } else {
-            return 15.0
+            return 13.0
         }
     }()
     @State var code: String = " "
