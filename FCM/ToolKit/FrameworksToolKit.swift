@@ -30,6 +30,7 @@ func findFrameworks(in directory: URL, SDKPath: String) -> [String] {
     let options: FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles]
     
     guard let directoryEnumerator = fileManager.enumerator(at: directory, includingPropertiesForKeys: resourceKeys, options: options) else {
+        print("Failed to create directory enumerator for \(directory)")
         return []
     }
     
@@ -40,51 +41,58 @@ func findFrameworks(in directory: URL, SDKPath: String) -> [String] {
             if resourceValues.isRegularFile == true {
                 let fileExtension = fileURL.pathExtension.lowercased()
                 if ["h", "c", "cpp", "m", "mm"].contains(fileExtension) {
-                    let fileContents = try String(contentsOf: fileURL, encoding: .utf8)
-                    let frameworkMatches = extractFrameworks(from: fileContents)
-                    frameworksSet.formUnion(frameworkMatches)
+                    do {
+                        let fileContents = try String(contentsOf: fileURL, encoding: .utf8)
+                        let frameworkMatches = extractFrameworks(from: fileContents)
+                        frameworksSet.formUnion(frameworkMatches)
+                    } catch {
+                        print("Error reading file \(fileURL): \(error)")
+                    }
                 }
             } else if resourceValues.isDirectory == true {
-                // Continue the enumeration
             } else {
                 directoryEnumerator.skipDescendants()
             }
         } catch {
-            print("Error reading file \(fileURL): \(error)")
+            print("Error reading resource values for file \(fileURL): \(error)")
         }
     }
-    //getting all frameworks
+
     var frameworks: [URL] = []
     do {
         frameworks = try fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/Frameworks"), includingPropertiesForKeys: nil) + fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/PrivateFrameworks"), includingPropertiesForKeys: nil)
     } catch {
-        print("Something happened wrong while unwrapping")
+        print("Error while getting framework directories: \(error)")
     }
-    //extracting URLs and converting them to framework names
+    
     let rawFW: [String] = frameworks.map { url in
         let lastPathComponent = url.lastPathComponent
         return lastPathComponent.deletingPathExtension()
     }
-    //filtering stuff out that might got copied
+    
     frameworksSet = frameworksSet.filter { rawFW.contains($0) }
     return Array(frameworksSet)
 }
 
 func extractFrameworks(from contents: String) -> Set<String> {
     let pattern = "#(?:import|include)\\s+<([^/]+)/[^>]+>"
-    let regex = try! NSRegularExpression(pattern: pattern, options: [])
-    let nsString = contents as NSString
-    let matches = regex.matches(in: contents, options: [], range: NSRange(location: 0, length: nsString.length))
-    
-    var frameworksSet = Set<String>()
-    for match in matches {
-        if match.numberOfRanges == 2 {
-            let framework = nsString.substring(with: match.range(at: 1))
-            frameworksSet.insert(framework)
+    do {
+        let regex = try NSRegularExpression(pattern: pattern, options: [])
+        let nsString = contents as NSString
+        let matches = regex.matches(in: contents, options: [], range: NSRange(location: 0, length: nsString.length))
+        
+        var frameworksSet = Set<String>()
+        for match in matches {
+            if match.numberOfRanges == 2 {
+                let framework = nsString.substring(with: match.range(at: 1))
+                frameworksSet.insert(framework)
+            }
         }
+        return frameworksSet
+    } catch {
+        print("Error creating regex: \(error)")
+        return Set<String>()
     }
-    
-    return frameworksSet
 }
 
 extension String {

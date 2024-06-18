@@ -42,6 +42,9 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.3.8 (Fixes)
+-rewrote parts of the framework finder(potentially crash fixes)
+
 1.3.7 (Fixes)
 -framework finder will now safe unwrap the legal framework names
 -in build process, MFiles is really empty now when you only have swift files
