@@ -24,15 +24,16 @@ import Foundation
 
 func exportProj(_ project: Project) {
     let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
-    shell("rm '\(global_documents)/\(modname).sproj' ; cd '\(global_documents)' ; zip -r \(modname).sproj '\(project.Name)'")
+    shell("rm '\(global_documents)/../tmp/\(modname).sproj' ; cd '\(global_documents)' ; zip -r \(modname).sproj '\(project.Name)' ; mv \(modname).sproj '\(global_documents)/../tmp/\(modname).sproj'")
 }
 
-func exportApp(_ project: Project) {
+func exportApp(_ project: Project) -> Int {
     let result = build(project, false, nil, nil)
     let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
     if result == 0 {
-        shell("rm '\(global_documents)/\(modname).ipa' ; mv '\(global_documents)/\(project.Name)/ts.ipa' '\(global_documents)/\(modname).ipa'")
+        shell("rm '\(global_documents)/../tmp/\(modname).ipa' ; mv '\(global_documents)/\(project.Name)/ts.ipa' '\(global_documents)/../tmp/\(modname).ipa'")
     }
+    return result
 }
 
 func importProj(target: String) {
@@ -49,5 +50,5 @@ func importProj(target: String) {
         wplist(value: v2uuid, forKey: "ProjectName", plistPath: "\(projpath)/Resources/DontTouchMe.plist")
         shell("mv '\(projpath)' '\(global_documents)/\(v2uuid)'")
     }
-    shell("rm -rf '/tmp/\(v2uuid)'")
+    shell("rm -rf '\(global_documents)/../tmp/\(v2uuid)'")
 }

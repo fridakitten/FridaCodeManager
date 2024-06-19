@@ -46,6 +46,8 @@ struct Home: View {
 -rewrote parts of the framework finder(potentially crash fixes)
 -made SparksBuild more efficient
 -SparksBuild now prints out what the frameworks-finder finds
+-fixed bug where Export App Feature won't check if the build process succeeds
+-App/Project Exports will now use the tmp folder of the app container
 
 1.3.7 (Fixes)
 -framework finder will now safe unwrap the legal framework names

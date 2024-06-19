@@ -57,12 +57,13 @@ struct ProjectView: View {
                                     Button(action: {
                                         DispatchQueue.global(qos: .utility).async {
                                             ShowAlert(UIAlertController(title: "Building \(Project.Executable)", message: "", preferredStyle: .alert))
-                                            exportApp(Project)
-                                            DismissAlert()
-                                            let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
-                                            if let stabURL = URL(string: "file://\(global_documents)/\(modname).ipa") {
-                                                share(url: stabURL)
-                                            }
+                                            if exportApp(Project) == 0 {
+                                                DismissAlert()
+                                                let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
+                                                if let stabURL = URL(string: "file://\(NSTemporaryDirectory())\(modname).ipa") {
+                                                    share(url: stabURL)
+                                                }
+                                            } else { DismissAlert() }
                                         }
                                     }){
                                         Label("Export App", systemImage: "app")
@@ -70,7 +71,7 @@ struct ProjectView: View {
                                     Button(action: {
                                         let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
                                         exportProj(Project)
-                                        if let stabURL = URL(string: "file://\(global_documents)/\(modname).sproj") {
+                                        if let stabURL = URL(string: "file://\(NSTemporaryDirectory())\(modname).sproj") {
                                             share(url: stabURL)
                                         }
                                     }){
