@@ -33,15 +33,16 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let ClangBridge = "\(ProjectInfo.ProjectPath)/bridge.h"
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
     let MFiles = findObjCFilesStack(ProjectInfo.ProjectPath)
+    let frameworks: [String] = {
+        return findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"), SDKPath: SDKPath)
+    }()
     let frameflags: String = {
-        var flags: String = ""
         if !MFiles.isEmpty, fe(SDKPath) {
-            let frameworks: [String] = findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"), SDKPath: SDKPath)
-            for item in frameworks {
-                flags += "-framework \(item) "
-            }
+            return frameworks.map { framework in
+                return "-framework \(framework)"
+            }.joined(separator: " ")
         }
-        return flags
+        return ""
     }()
     //compiler setup
     DispatchQueue.main.async {
@@ -59,9 +60,10 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
         } else {
             if !MFiles.isEmpty {
-                for mFile in MFiles {
-                    EXEC += "clang -w -isysroot '\(SDKPath)' -F'\(SDKPath)/System/Library/Frameworks' -F'\(SDKPath)/System/Library/PrivateFrameworks' \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(ProjectInfo.ProjectPath)/clang/\(UUID()).o'; "
+                let commands = MFiles.map { mFile in
+                return "clang -w -isysroot '\(SDKPath)' -F'\(SDKPath)/System/Library/Frameworks' -F'\(SDKPath)/System/Library/PrivateFrameworks' \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(ProjectInfo.ProjectPath)/clang/\(UUID()).o'"
                 }
+                EXEC += commands.joined(separator: "; ")
                 EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) clang/*.o -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -import-objc-header '\(ClangBridge)' -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
             } else {
             EXEC += "swiftc -sdk '\(SDKPath)' \(SwiftFiles) -o '\(AppPath)/\(ProjectInfo.Executable)' -parse-as-library -import-objc-header '\(ClangBridge)' -suppress-warnings -target arm64-apple-ios\(ProjectInfo.TG)"
@@ -95,6 +97,12 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
     //compiler start
     print("FridaCodeManager \(global_version)\n \n+++++++++++++++++++++++++++\nApp Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\n+++++++++++++++++++++++++++\n ")
+    if !frameflags.isEmpty {
+        print("""
+\n+++++ frameworkfinder +++++\n\(frameworks.map { "\($0)" }.joined(separator: "\n"))\n
++++++++++++++++++++++++++++\n 
+""")
+    }
     usleep(100000)
     DispatchQueue.main.async {
         if let status = status, let progress = progress {

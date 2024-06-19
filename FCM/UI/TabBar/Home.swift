@@ -44,6 +44,8 @@ struct Home: View {
                                 Text("""
 1.3.8 (Fixes)
 -rewrote parts of the framework finder(potentially crash fixes)
+-made SparksBuild more efficient
+-SparksBuild now prints out what the frameworks-finder finds
 
 1.3.7 (Fixes)
 -framework finder will now safe unwrap the legal framework names
