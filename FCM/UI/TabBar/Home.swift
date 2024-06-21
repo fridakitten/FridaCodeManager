@@ -42,6 +42,13 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.3.9 (Fixes)
+-fixed Hybrid Compiling
+-fixed -F clang flag
+-implemented theos headers
+-fixed IOKit header of theos headers (poomsmart, I dare you do this again!)
+-fixed frameworks finder check
+
 1.3.8 (Fixes)
 -rewrote parts of the framework finder(potentially crash fixes)
 -made SparksBuild more efficient
