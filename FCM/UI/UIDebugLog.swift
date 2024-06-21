@@ -72,7 +72,7 @@ struct LogViewDebug: View {
         }
         Spacer().frame(height: 0)
         .onAppear {
-            LogStream($LogItems)
+            _ = LogStream($LogItems)
         }
     }
 }

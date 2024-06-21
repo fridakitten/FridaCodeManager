@@ -77,9 +77,9 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //compiling app
     messenger(status,progress,"compiling \(ProjectInfo.Executable)",0.3)
     print("\n \nFridaCodeManager \(global_version)\n ")
-    climessenger("info","App Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)")
+    _ = climessenger("info","App Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)")
     if !frameworks.isEmpty {
-        climessenger("frameworkfinder","\(frameworks.map { "\($0)" }.joined(separator: "\n") + "\n")")
+        _ = climessenger("frameworkfinder","\(frameworks.map { "\($0)" }.joined(separator: "\n") + "\n")")
     }
     cfolder(atPath: info[0])
     cfolder(atPath: info[1])
@@ -87,7 +87,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     try? copyc(from: info[2], to: info[1])
     shell("rm '\(info[1])/DontTouchMe.plist'")
     if climessenger("compiler-stage","","\(CDEXEC) ; \(EXEC)") != 0 {
-        climessenger("error-occurred","compiling \(ProjectInfo.Executable) failed")
+        _ = climessenger("error-occurred","compiling \(ProjectInfo.Executable) failed")
         shell(CLEANEXEC)
         return 1
     }
@@ -99,7 +99,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     messenger(status,progress,"installing \(ProjectInfo.Executable)",0.7)
     if erase {
         let result: Int = shell("\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa' > /dev/null 2>&1", uid: 0)
-        climessenger("install--stage","TrollStore Helper returned \(String(result))")
+        _ = climessenger("install--stage","TrollStore Helper returned \(String(result))")
     }
     shell(CLEANEXEC)
     if erase {

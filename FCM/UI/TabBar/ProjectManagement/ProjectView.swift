@@ -189,7 +189,7 @@ struct buildView: View {
         .onAppear {
             DispatchQueue.global(qos: .utility).async {
                 compiling = true
-                let result = build(ProjectInfo, true, $status, $progress)
+                _ = build(ProjectInfo, true, $status, $progress)
                 withAnimation {
                     console = true
                 }
