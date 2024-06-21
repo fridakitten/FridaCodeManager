@@ -1,0 +1,8 @@
+module RocketBootstrap {
+  header "rocketbootstrap.h"
+  config_macros ROCKETBOOTSTRAP_LOAD_DYNAMIC
+
+  link "rocketbootstrap"
+
+  export *
+}
