@@ -33,16 +33,19 @@ struct LogView: View {
                 VStack {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading) {
-                            Text("\(LogItems.filter { !$0.contains("remark:") && !$0.contains("note:") }.joined(separator: "\n"))")
-                                .font(.system(size: 10, design: .monospaced))
-                                .foregroundColor(.primary)
+                            HStack {
+                                Text("\(LogItems.filter { !$0.contains("perform implicit import") }.joined(separator: "\n"))")
+                                    .font(.system(size: 9, design: .monospaced))
+                                    .foregroundColor(.primary)
+                                Spacer()
+                            }
                         }
                         .frame(maxWidth: .infinity)
                         .padding(4)
-                        .flipped()
+                        //.flipped()
                     }
                     .padding(.horizontal)
-                    .flipped()
+                    //.flipped()
                     .background(Color(UIColor.systemGray6))
                     .cornerRadius(15)
                 }

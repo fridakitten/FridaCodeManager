@@ -42,11 +42,16 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
+1.4 (Features and Improvements)
+-implementation of SeansBuild(rewrite of SparksBuild)
+-warnings appear now in the Error Log
+-made error log appear even if compiling succeed, cause the user has to have the ability to fix warnings
+
 1.3.9 (Fixes)
 -fixed Hybrid Compiling
 -fixed -F clang flag
 -implemented theos headers
--fixed IOKit header of theos headers (poomsmart, I dare you do this again!)
+-fixed IOKit header of theos headers (poomsmart, I dare you not to do this again!)
 -fixed frameworks finder check
 
 1.3.8 (Fixes)

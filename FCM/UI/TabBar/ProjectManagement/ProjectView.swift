@@ -190,13 +190,16 @@ struct buildView: View {
             DispatchQueue.global(qos: .utility).async {
                 compiling = true
                 let result = build(ProjectInfo, true, $status, $progress)
-                if result != 0 {
+                withAnimation {
+                    console = true
+                }
+                /*if result != 0 {
                     withAnimation {
                         console = true
                     }
                 } else {
-                    buildv = false
-                }
+                    //buildv = false
+                }*/
                 compiling = false
             }
         }
