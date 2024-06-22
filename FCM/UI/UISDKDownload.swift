@@ -17,7 +17,7 @@ struct SDKDownload: View {
                     Button( action: {
                         remove(item)
                     }) {
-                        Label("iOS \(item)", systemImage: "trash")
+                        Label("iOS \(item)", systemImage: "trash.fill")
                     }
                 }
             }

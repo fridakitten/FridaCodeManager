@@ -51,6 +51,9 @@ struct Settings: View {
                     NavigationLink(destination: DebugSettings()) {
                         Label("Debug", systemImage: "ant.fill")
                     }
+                    NavigationLink(destination: Cleaner()) {
+                        Label("Cleaner", systemImage: "trash.fill")
+                    }
                 }
                 Section(header: Text("Additional Tools")) {
                     NavigationLink(destination: SDKDownload()) {
@@ -137,5 +140,43 @@ struct AuthorSettings: View {
         }
         .navigationTitle("Author")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct Cleaner: View {
+    var body: some View {
+       List {
+           Button(action: {
+               clean(1)
+           }) {
+               Label("Clean ModuleCache", systemImage: "trash.fill")
+           }
+           Button(action: {
+               clean(1)
+           }) {
+               Label("Clean Temporary Data", systemImage: "trash.fill")
+           }
+       }
+       .navigationTitle("Cleaner")
+       .navigationBarTitleDisplayMode(.inline)
+    }
+    private func clean(_ arg: Int) {
+        DispatchQueue.global(qos: .utility).async {
+            ShowAlert(UIAlertController(title: "Cleaning", message: "", preferredStyle: .alert))
+                var path: String = {
+                    switch(arg) {
+                        case 1:
+                            return "\(global_documents)/../.cache/clang/ModuleCache"
+                        case 2:
+                            return "\(global_documents)/../tmp"
+                        default:
+                            return "\(global_documents)/../.cache/clang/ModuleCache"
+                    }
+                }()
+                if fe(path) {
+                    shell("rm -rf \(path)/*")
+                }
+            DismissAlert()
+        }
     }
 }
