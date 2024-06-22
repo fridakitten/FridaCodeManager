@@ -67,7 +67,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             }
             EXEC += commands.joined()
         }
-        EXEC += "swiftc \(SwiftFiles) \(!MFiles.isEmpty ? "clang/*.o" : "") \(fe(info[5]) ? "-import-objc-header '\(info[5])'" : "") -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)'"
+        EXEC += "swiftc \(SwiftFiles) \(!MFiles.isEmpty ? "clang/*.o" : "") \(fe(info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)'"
     } else {
         EXEC += "clang \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'"
     }
