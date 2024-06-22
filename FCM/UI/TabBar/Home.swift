@@ -48,6 +48,7 @@ struct Home: View {
 -made error log appear even if compiling succeed, cause the user has to have the ability to fix warnings
 -fixed copy log issues
 -fixed the main UI components
+-fixed FCM's info.plist
 
 1.3.9 (Fixes)
 -fixed Hybrid Compiling
