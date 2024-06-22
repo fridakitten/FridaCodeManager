@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>AppIcon.png</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.sinac.fridacodemaanager</string>
+	<string>com.sparklechan.swifty</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
@@ -42,7 +42,7 @@
         <string>FCM Project</string>
         <key>LSItemContentTypes</key>
         <array>
-            <string>public.sproj</string>
+            <string>public.data</string>
             <string>com.frida.sproj</string>
         </array>
         <key>LSHandlerRank</key>

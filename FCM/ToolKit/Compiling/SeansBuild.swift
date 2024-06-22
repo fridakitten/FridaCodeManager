@@ -59,7 +59,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
 
     //setting up command
     messenger(status,progress,"setting up compiler",0.2)
-    var EXEC = "export SDKROOT=\"\(info[3])\" ; export CPATH=\"\(Bundle.main.bundlePath)/include\" ; export LIBRARY_PATH=\"\(info[3])/usr/lib\" ; export FRAMEWORK_PATH=\"/System/Library/Frameworks:/System/Library/PrivateFrameworks\" ; "
+    var EXEC = ""
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             let commands = MFiles.map { mFile in
@@ -86,7 +86,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     cfolder(atPath: info[4])
     try? copyc(from: info[2], to: info[1])
     shell("rm '\(info[1])/DontTouchMe.plist'")
-    if climessenger("compiler-stage","","\(CDEXEC) ; \(EXEC)") != 0 {
+    if climessenger("compiler-stage","","\(CDEXEC) ; \(EXEC)", nil, ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks"]) != 0 {
         _ = climessenger("error-occurred","compiling \(ProjectInfo.Executable) failed")
         shell(CLEANEXEC)
         return 1
@@ -121,7 +121,7 @@ func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_ tstat: 
     }
 }
 
-func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: uid_t? = 501) -> Int {
+func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: uid_t? = 501,_ env: [String]? = []) -> Int {
     let marks: Int = (36 - title.count) / 2
     let slice = String(repeating: "+", count: marks)
     var code = 0
@@ -129,7 +129,7 @@ func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: 
         print("\(slice) \(title) \(slice)\n\(text)\n++++++++++++++++++++++++++++++++++++++\n \n")
     } else {
         print("\(slice) \(title) \(slice)")
-        code = shell((command ?? "echo"),uid: (uid ?? 501))
+        code = shell((command ?? "echo"),uid: (uid ?? 501), env: (env ?? []))
         print("++++++++++++++++++++++++++++++++++++++\n ")
     }
     return code

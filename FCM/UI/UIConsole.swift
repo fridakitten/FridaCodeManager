@@ -33,7 +33,7 @@ struct LogView: View {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading) {
                             HStack {
-                                Text("\(LogItems.filter { !$0.contains("perform implicit import") }.joined(separator: "\n"))")
+                                Text("\(LogItems.filter { !$0.contains("perform implicit import") && !$0.contains("clang-14: warning: -framework") }.joined(separator: "\n"))")
                                     .font(.system(size: 9, design: .monospaced))
                                     .foregroundColor(.primary)
                                 Spacer()
@@ -53,7 +53,7 @@ struct LogView: View {
         }
         .contextMenu {
             Button("Copy Log") {
-                let fullstring: String = "\(LogItems.filter { !$0.contains("perform implicit import") }.joined(separator: "\n"))"
+                let fullstring: String = "\(LogItems.filter { !$0.contains("perform implicit import") && !$0.contains("clang-14: warning: -framework") }.joined(separator: "\n"))"
                 copyToClipboard(text: fullstring, alert: false)
             }
         }

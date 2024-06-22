@@ -50,6 +50,7 @@ struct Home: View {
 -fixed the main UI components
 -fixed FCM's info.plist
 -removed first compiler notice
+-added ability to the shell to append stuff to its environment
 
 1.3.9 (Fixes)
 -fixed Hybrid Compiling

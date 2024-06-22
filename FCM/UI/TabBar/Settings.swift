@@ -163,7 +163,7 @@ struct Cleaner: View {
     private func clean(_ arg: Int) {
         DispatchQueue.global(qos: .utility).async {
             ShowAlert(UIAlertController(title: "Cleaning", message: "", preferredStyle: .alert))
-                var path: String = {
+                let path: String = {
                     switch(arg) {
                         case 1:
                             return "\(global_documents)/../.cache/clang/ModuleCache"

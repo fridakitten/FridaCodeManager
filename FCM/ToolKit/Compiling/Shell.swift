@@ -23,8 +23,8 @@
 import Foundation
 import Darwin
 
-@discardableResult func shell(_ command: String, uid: uid_t? = 501) -> Int {
-    return runCommand("/usr/bin/bash", ["-c", command], (uid ?? 501))
+@discardableResult func shell(_ command: String, uid: uid_t? = 501, env: [String]? = []) -> Int {
+    return runCommand("/usr/bin/bash", ["-c", command], (uid ?? 501), (env ?? []))
 }
 
 // Define C functions
@@ -35,11 +35,11 @@ func posix_spawnattr_set_persona_uid_np(_ attr: UnsafeMutablePointer<posix_spawn
 @_silgen_name("posix_spawnattr_set_persona_gid_np")
 func posix_spawnattr_set_persona_gid_np(_ attr: UnsafeMutablePointer<posix_spawnattr_t?>, _ persona_id: uid_t)
 
-func runCommand(_ command: String, _ args: [String], _ uid: uid_t) -> Int {
+func runCommand(_ command: String, _ args: [String], _ uid: uid_t,_ env: [String]) -> Int {
     var pid: pid_t = 0
     let args: [String] = [String(command.split(separator: "/").last!)] + args
     let argv: [UnsafeMutablePointer<CChar>?] = args.map { $0.withCString(strdup) }
-    let env = ["PATH=/usr/local/sbin:\(jbroot)/usr/local/sbin:/usr/local/bin:\(jbroot)/usr/local/bin:/usr/sbin:\(jbroot)/usr/sbin:/usr/bin:\(jbroot)/usr/bin:/sbin:\(jbroot)/sbin:/bin:\(jbroot)/bin:/usr/bin/X11:\(jbroot)/usr/bin/X11:/usr/games:\(jbroot)/usr/games","HOME=\(global_documents)/..","TMPDIR=\(global_documents)/../tmp"]
+    let env = ["PATH=/usr/local/sbin:\(jbroot)/usr/local/sbin:/usr/local/bin:\(jbroot)/usr/local/bin:/usr/sbin:\(jbroot)/usr/sbin:/usr/bin:\(jbroot)/usr/bin:/sbin:\(jbroot)/sbin:/bin:\(jbroot)/bin:/usr/bin/X11:\(jbroot)/usr/bin/X11:/usr/games:\(jbroot)/usr/games","HOME=\(global_documents)/..","TMPDIR=\(global_documents)/../tmp"] + env
     let proenv: [UnsafeMutablePointer<CChar>?] = env.map { $0.withCString(strdup) }
     defer { for case let pro? in proenv { free(pro) } }
     var attr: posix_spawnattr_t?
