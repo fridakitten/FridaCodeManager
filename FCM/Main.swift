@@ -46,7 +46,7 @@ struct MyApp: App {
     @AppStorage("debug") var show: Bool = false
     init() {
         let navigationBarAppearance = UINavigationBarAppearance()
-        navigationBarAppearance.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.9)
+        navigationBarAppearance.backgroundColor = UIColor.systemBackground
         let titleAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
         navigationBarAppearance.titleTextAttributes = titleAttributes
         let buttonAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white] // Set button color to white
@@ -57,6 +57,15 @@ struct MyApp: App {
         UINavigationBar.appearance().standardAppearance = navigationBarAppearance
         UINavigationBar.appearance().compactAppearance = navigationBarAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
+
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor.systemBackground
+
+        UITabBar.appearance().standardAppearance = appearance
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+        }
     }
     var body: some Scene {
         WindowGroup {

@@ -47,6 +47,7 @@ struct Home: View {
 -warnings appear now in the Error Log
 -made error log appear even if compiling succeed, cause the user has to have the ability to fix warnings
 -fixed copy log issues
+-fixed the main UI components
 
 1.3.9 (Fixes)
 -fixed Hybrid Compiling
