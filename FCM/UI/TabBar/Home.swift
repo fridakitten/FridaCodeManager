@@ -49,6 +49,7 @@ struct Home: View {
 -fixed copy log issues
 -fixed the main UI components
 -fixed FCM's info.plist
+-removed first compiler notice
 
 1.3.9 (Fixes)
 -fixed Hybrid Compiling

@@ -45,8 +45,7 @@ struct Debug: View {
 }
 
 struct LogViewDebug: View {
-    @State var LogItems: [String.SubSequence] = [""] 
-    @AppStorage("cmp") var cmp: Bool = true
+    @State var LogItems: [String.SubSequence] = [""]
     var body: some View {
         Group {
                 VStack {

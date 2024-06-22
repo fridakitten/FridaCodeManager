@@ -24,9 +24,8 @@ import SwiftUI
 import Foundation
 
 struct LogView: View {
-    @State var LogItems: [String.SubSequence] = ["!waiting on execution!"] 
+    @State var LogItems: [String.SubSequence] = [""] 
     @Binding var show: Bool
-    @AppStorage("cmp") var cmp: Bool = true
     var body: some View {
         Group {
             if show == true {
@@ -50,19 +49,6 @@ struct LogView: View {
                     .cornerRadius(15)
                 }
                 .frame(width: UIScreen.main.bounds.width / 1.2,height: UIScreen.main.bounds.height / 2)
-            } else if cmp == true {
-                ZStack {
-                    Rectangle()
-                        .foregroundColor(Color(UIColor.systemGray6))
-                        .frame(width: UIScreen.main.bounds.width / 1.2,height: 50)
-                        .cornerRadius(15)
-                        .onDisappear {
-                            cmp = false
-                        }
-                    Text("Warning: on first compile it gonna take a few minutes")
-                        .font(.system(size: 11,weight: .semibold))
-                        .foregroundColor(.primary)
-                }
             }
         }
         .contextMenu {
