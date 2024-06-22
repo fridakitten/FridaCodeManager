@@ -46,6 +46,7 @@ struct Home: View {
 -implementation of SeansBuild(rewrite of SparksBuild)
 -warnings appear now in the Error Log
 -made error log appear even if compiling succeed, cause the user has to have the ability to fix warnings
+-fixed copy log issues
 
 1.3.9 (Fixes)
 -fixed Hybrid Compiling

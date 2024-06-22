@@ -67,10 +67,7 @@ struct LogView: View {
         }
         .contextMenu {
             Button("Copy Log") {
-                var fullstring: String = ""
-                for item in LogItems {
-                    fullstring += "\(item)\n"
-                }
+                let fullstring: String = "\(LogItems.filter { !$0.contains("perform implicit import") }.joined(separator: "\n"))"
                 copyToClipboard(text: fullstring, alert: false)
             }
         }
