@@ -29,7 +29,7 @@ import Foundation
 import SwiftUI
 
 func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ progress: Binding<Double>?) -> Int {
-    let info: [String] = ["\(ProjectInfo.ProjectPath)/Payload","\(ProjectInfo.ProjectPath)/Payload/\(ProjectInfo.Executable).app","\(ProjectInfo.ProjectPath)/Resources","\(global_sdkpath)/\(ProjectInfo.SDK)","\(ProjectInfo.ProjectPath)/clang","\(ProjectInfo.ProjectPath)/bridge.h","\(ProjectInfo.ProjectPath)/entitlements.plist"]
+    let info: [String] = ["\(ProjectInfo.ProjectPath)/Payload","\(ProjectInfo.ProjectPath)/Payload/\(ProjectInfo.Executable).app","\(ProjectInfo.ProjectPath)/Resources","\(global_sdkpath)/\(ProjectInfo.SDK)","\(ProjectInfo.ProjectPath)/clang","\(ProjectInfo.ProjectPath)/bridge.h","\(ProjectInfo.ProjectPath)/entitlements.plist","\(load("\(ProjectInfo.ProjectPath)/api"))"]
     //PayloadPath  info[0]
     //AppPath      info[1]
     //Resources    info[2]
@@ -37,6 +37,13 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //ClangPath    info[4]
     //ClangBridge  info[5]
     //Entitlements info[6]
+    //API Text     info[7]
+
+    //Processing API
+    var apiextension: ext = ext(build: "")
+    if !info[7].isEmpty {
+        apiextension = api(info[7], ProjectInfo)
+    }
 
     //finding code files
     messenger(status,progress,"finding code files",0.1)
@@ -63,13 +70,13 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             let commands = MFiles.map { mFile in
-                return "clang \(frameflags) -fmodules -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(info[4])/\(UUID()).o' ; "
+                return "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(info[4])/\(UUID()).o' ; "
             }
             EXEC += commands.joined()
         }
         EXEC += "swiftc \(SwiftFiles) \(!MFiles.isEmpty ? "clang/*.o" : "") \(fe(info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)'"
     } else {
-        EXEC += "clang \(frameflags) -fmodules -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'"
+        EXEC += "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'"
     }
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
     let CLEANEXEC = "rm -rf '\(info[4])'; rm -rf '\(info[0])'"
@@ -77,9 +84,12 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //compiling app
     messenger(status,progress,"compiling \(ProjectInfo.Executable)",0.3)
     print("\n \nFridaCodeManager \(global_version)\n ")
-    _ = climessenger("info","App Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)")
+    _ = climessenger("info","App Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\nSDK:      \(ProjectInfo.SDK)")
+    if !info[7].isEmpty {
+        _ = climessenger("api-call-fetcher","Build: \(apiextension.build)")
+    }
     if !frameworks.isEmpty {
-        _ = climessenger("frameworkfinder","\(frameworks.map { "\($0)" }.joined(separator: "\n") + "\n")")
+        _ = climessenger("framework-finder","\(frameworks.map { "\($0)" }.joined(separator: "\n") + "\n")")
     }
     cfolder(atPath: info[0])
     cfolder(atPath: info[1])

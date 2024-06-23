@@ -34,6 +34,8 @@ func apicall(_ text: String,_ proj:Project) -> String {
     ret = ret.replacingOccurrences(of: "<model>", with: gmodel())
     ret = ret.replacingOccurrences(of: "<osname>", with: gos())
     ret = ret.replacingOccurrences(of: "<osver>", with: gosver())
+    ret = ret.replacingOccurrences(of: "<theos-path>", with: "\(Bundle.main.bundlePath)/include")
+    ret = ret.replacingOccurrences(of: "<container-path>", with: "\(global_documents)/../")
     ret = repla(ret)
     ret = rsc(ret)
     return ret

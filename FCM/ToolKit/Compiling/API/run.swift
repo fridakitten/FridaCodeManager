@@ -26,16 +26,11 @@
 //
 
 func api(_ text: String,_ Project:Project) -> ext {
-    //before tag
-    let fcmclass: String = tags(text,"fcm")
-    var before: String = tags(fcmclass,"bef")
-    before = apicall(before,Project)
-    //build tag
-    var build: String = tags(fcmclass,"build")
-    build = apicall(build,Project)
-    //after tag
-    var after: String = tags(fcmclass,"aft")
-    after = apicall(after,Project)
+    //api class
+    let apiclass: String = tags(text,"api")
 
-    return ext(before:before,flag:build,after:after)
+    //build subclass
+    let build: String = tags(apiclass,"build")
+
+    return ext(build: apicall(build,Project))
 }

@@ -23,11 +23,8 @@
 import Foundation
 import UIKit
 
-struct ext: Identifiable {
-    let id: UUID = UUID()
-    let before: String
-    let flag: String
-    let after: String
+struct ext {
+    var build: String
 }
 
 func tags(_ inputString: String,_ tag: String) -> String {
