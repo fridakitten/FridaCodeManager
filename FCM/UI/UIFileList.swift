@@ -231,6 +231,8 @@ struct FileList: View {
                 return ".\(suffix)"
             case "cpp":
                 return ".\(suffix)"
+            case "api":
+                return ".\(suffix)"
             default:
                 return ""
         }
@@ -250,6 +252,8 @@ struct FileList: View {
                 return Color.red
             case "h":
                 return Color.secondary
+            case "api":
+                return Color.purple
             default:
                 return Color.primary
         }
@@ -266,6 +270,8 @@ struct FileList: View {
             case "mm":
                 return 5
             case "cpp":
+                return 4
+            case "api":
                 return 4
             default:
                 return 0

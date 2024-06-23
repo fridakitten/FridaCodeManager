@@ -64,7 +64,7 @@ func grule(_ isaythis: String) -> [HighlightRule] {
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0))
                 ])
             ]
-        case "html", "plist", "xml":
+        case "html", "plist", "xml", "api":
             return [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "<[^>]+>", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0))
