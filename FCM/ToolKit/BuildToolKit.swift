@@ -41,15 +41,20 @@ func FindFiles(_ ProjectPath: String, _ suffix: String) -> String? {
     }
 }
 
-func findObjCFilesStack(_ projectPath: String) -> [String] {
+func findObjCFilesStack(_ projectPath: String, _ ignore: [String]) -> [String] {
     let fileExtensions = [".m", ".c", ".mm", ".cpp"]
     
     do {
         var objCFiles: [String] = []
         
+        let allFiles = try FileManager.default.subpathsOfDirectory(atPath: projectPath)
+        
         for fileExtension in fileExtensions {
-            let files = try FileManager.default.subpathsOfDirectory(atPath: projectPath)
+            let files = allFiles
                 .filter { $0.hasSuffix(fileExtension) }
+                .filter { file in
+                    ignore.isEmpty || !ignore.contains { file.hasPrefix($0) }
+                }
                 .map { "'\($0)'" }
             
             objCFiles.append(contentsOf: files)

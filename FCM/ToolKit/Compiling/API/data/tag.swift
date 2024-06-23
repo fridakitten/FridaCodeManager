@@ -24,7 +24,10 @@ import Foundation
 import UIKit
 
 struct ext {
-    var build: String
+    let build: String
+    let bef: String
+    let aft: String
+    let ign: String
 }
 
 func tags(_ inputString: String,_ tag: String) -> String {

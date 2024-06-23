@@ -40,7 +40,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //API Text     info[7]
 
     //Processing API
-    var apiextension: ext = ext(build: "")
+    var apiextension: ext = ext(build: "", bef: "", aft: "", ign: "")
     if !info[7].isEmpty {
         apiextension = api(info[7], ProjectInfo)
     }
@@ -48,7 +48,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //finding code files
     messenger(status,progress,"finding code files",0.1)
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
-    let MFiles = findObjCFilesStack(ProjectInfo.ProjectPath)
+    let MFiles = findObjCFilesStack(ProjectInfo.ProjectPath, splitAndTrim(apiextension.ign))
 
     //finding frameworks
     messenger(status,progress,"finding frameworks",0.15)
@@ -66,7 +66,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
 
     //setting up command
     messenger(status,progress,"setting up compiler",0.2)
-    var EXEC = ""
+    var EXEC = "\(!apiextension.bef.isEmpty ? "\(apiextension.bef) ; " : "")"
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             let commands = MFiles.map { mFile in
@@ -78,6 +78,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     } else {
         EXEC += "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'"
     }
+    EXEC += " ; \(apiextension.aft)"
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
     let CLEANEXEC = "rm -rf '\(info[4])'; rm -rf '\(info[0])'"
 
@@ -86,7 +87,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     print("\n \nFridaCodeManager \(global_version)\n ")
     _ = climessenger("info","App Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\nSDK:      \(ProjectInfo.SDK)")
     if !info[7].isEmpty {
-        _ = climessenger("api-call-fetcher","Build: \(apiextension.build)")
+        _ = climessenger("api-call-fetcher","build: \(apiextension.build)\n \nexec-before: \(apiextension.bef)\n \nexec-after: \(apiextension.aft)\n \ncompiler-ignore-content: \(apiextension.ign)")
     }
     if !frameworks.isEmpty {
         _ = climessenger("framework-finder","\(frameworks.map { "\($0)" }.joined(separator: "\n") + "\n")")
@@ -143,4 +144,14 @@ func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: 
         print("++++++++++++++++++++++++++++++++++++++\n ")
     }
     return code
+}
+
+func splitAndTrim(_ inputString: String) -> [String] {
+    // Split the input string by the delimiter ";"
+    let parts = inputString.split(separator: ";")
+    
+    // Trim whitespaces from each part and return the resulting array
+    let trimmedParts = parts.map { $0.trimmingCharacters(in: .whitespaces) }
+    
+    return trimmedParts
 }
