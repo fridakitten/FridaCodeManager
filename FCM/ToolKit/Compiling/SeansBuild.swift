@@ -63,13 +63,13 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             let commands = MFiles.map { mFile in
-                return "clang \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(info[4])/\(UUID()).o' ; "
+                return "clang \(frameflags) -fmodules -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) -o '\(info[4])/\(UUID()).o' ; "
             }
             EXEC += commands.joined()
         }
         EXEC += "swiftc \(SwiftFiles) \(!MFiles.isEmpty ? "clang/*.o" : "") \(fe(info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)'"
     } else {
-        EXEC += "clang \(frameflags) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'"
+        EXEC += "clang \(frameflags) -fmodules -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'"
     }
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
     let CLEANEXEC = "rm -rf '\(info[4])'; rm -rf '\(info[0])'"
