@@ -48,7 +48,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //finding code files
     messenger(status,progress,"finding code files",0.1)
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
-    let MFiles = findObjCFilesStack(ProjectInfo.ProjectPath, splitAndTrim(apiextension.ign))
+    let MFiles = findObjCFilesStack(ProjectInfo.ProjectPath, splitAndTrim(apiextension.ign) + ["Resources"])
 
     //finding frameworks
     messenger(status,progress,"finding frameworks",0.15)
