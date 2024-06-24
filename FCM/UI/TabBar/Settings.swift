@@ -152,7 +152,7 @@ struct Cleaner: View {
                Label("Clean ModuleCache", systemImage: "trash.fill")
            }
            Button(action: {
-               clean(1)
+               clean(2)
            }) {
                Label("Clean Temporary Data", systemImage: "trash.fill")
            }
