@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
-IFS= readarray -d '' arr < <(awk -v RS= -v ORS='\0' '1' ChangeLog)
+set -e
 
-echo "The first paragraph, aka the latest version changelog of FCM, is:"
-echo
-echo ${arr[0]}
-echo
+[[ -f .package/changelog ]] && rm -f .package/changelog && touch .package/changelog
+
+while read -r line
+do
+	[[ $line == "" ]] && break
+
+	echo $line >> .package/changelog
+done < ChangeLog
+
+echo "The latest FCM version changelog has been written to .package/changelog."
 echo "If anything goes wrong please report back to us. Thanks!"
 
-echo ${arr[0]} > .package/changelog
