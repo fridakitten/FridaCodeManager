@@ -4,14 +4,37 @@
 I made this project cause my parents took my mac and I still did wanted to code and AppInstaller iOS was the first person that helped me making this project, without them this would not exist so give him a follow!
 
 ## Compatibility
-iOS 15.0 - 17.0 was offcially tested on both, roothide and rootless
+iOS 15.0 - 17.0 was offcially tested on both, roothide and rootless.
+
+Compiled projects can run on lower iOS with the right API used. This is your choice for supported iOS for your app, not us.
 
 ## Compiling
-Its meant to be compiled on jailbroken iOS devices in terminal,
-compiling it using macos can cause certain anomalies with UI, etc
+It's meant to be compiled on jailbroken iOS devices as
+compiling on macOS can cause certain anomalies with UI, etc
 
-You need `swift`,`clang`,`git` and `make`. Run `make all` to compile and package it as a .deb
-To compile package for roothide use `make roothide`
+You need `swift`,`clang`,`git` and `make`. Run `make all` to compile and package it to a rootless .deb
+To compile package for roothide use `make roothide`.
+
+These are used and modifiable environment variables:
+
+<table>
+	<tr>
+		<th>Variable name</th>
+		<th>Usage</th>
+	<tr>
+	<tr>
+        <td>SDK_PATH</td>
+        <td>Relative path to the SDK. Defaults to an SDK from Theos that will be cloned if not found</td>
+    </tr>
+    <tr>
+         <td>NO_REBUILD_LIBS</td>
+         <td>Don't (re)build libroot and libfcm. Compiled binaries must present at where these libraries are placed.</td>
+    </tr>
+    <tr>
+        <td>SDK_URL</td>
+        <td>Full URL of SDKs for git to clone (defaults to theos/sdks on GitHub)</td>
+    </tr>
+</table>
 
 Was successfully compiled on
 </br>
