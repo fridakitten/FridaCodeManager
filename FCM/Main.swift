@@ -22,28 +22,11 @@
     
 import SwiftUI
 
-
-//global environment
-let jbroot: String = {
-    let preroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
-    if !fe(preroot) {
-        if let altroot = altroot(inPath: "/var/containers/Bundle/Application")?.path {
-            return altroot
-        }
-    }
-    return preroot
-}()
-let global_documents: String = {
-    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-    return paths[0].path
-}()
-let global_sdkpath: String = "\(global_documents)/../.sdk"
-let global_version: String = "v1.4 (non-release)"
-
 @main
 struct MyApp: App {
     @State var hello: UUID = UUID()
     @AppStorage("debug") var show: Bool = false
+   
     init() {
         let navigationBarAppearance = UINavigationBarAppearance()
         navigationBarAppearance.backgroundColor = UIColor.systemBackground
