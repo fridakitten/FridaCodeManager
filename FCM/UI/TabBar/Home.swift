@@ -46,12 +46,15 @@ struct Home: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("changelog")) {
+                Section(header: Text("Changelog")) {
                     VStack {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text(changeLog))
                                     .font(.system(size: 11))
+                                }
+                                Button("See older releases changelog") {
+									openURL(URL(string: "https://github.com/fridakitten/FridaCodeManager/releases"))
                                 }
                                 Spacer()
                             }
