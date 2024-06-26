@@ -39,6 +39,9 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //Entitlements info[6]
     //API Text     info[7]
 
+    //define build bash environment
+    let bashenv: [String] = ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks"]
+
     //Processing API
     var apiextension: ext = ext(build: "", bef: "", aft: "", ign: "")
     if !info[7].isEmpty {
@@ -66,7 +69,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
 
     //setting up command
     messenger(status,progress,"setting up compiler",0.2)
-    var EXEC = "\(!apiextension.bef.isEmpty ? "\(apiextension.bef) ; " : "")"
+    var EXEC = ""
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             let commands = MFiles.map { mFile in
@@ -79,7 +82,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         EXEC += "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'"
     }
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
-    let CLEANEXEC = "\(!apiextension.aft.isEmpty ? "\(apiextension.aft) ; " : "")rm -rf '\(info[4])'; rm -rf '\(info[0])'"
+    let CLEANEXEC = "rm -rf '\(info[4])'; rm -rf '\(info[0])'"
 
     //compiling app
     messenger(status,progress,"compiling \(ProjectInfo.Executable)",0.3)
@@ -96,10 +99,25 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     cfolder(atPath: info[4])
     try? copyc(from: info[2], to: info[1])
     shell("rm '\(info[1])/DontTouchMe.plist'")
-    if climessenger("compiler-stage","","\(CDEXEC) ; \(EXEC)", nil, ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks"]) != 0 {
+
+    if !apiextension.bef.isEmpty {
+        if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.bef)",nil,bashenv) != 0 {
+            _ = climessenger("error-occurred", "running api-exec-stage failed")
+            return 1
+        }
+    }
+
+    if climessenger("compiler-stage","","\(CDEXEC) ; \(EXEC)", nil, bashenv) != 0 {
         _ = climessenger("error-occurred","compiling \(ProjectInfo.Executable) failed")
         shell(CLEANEXEC)
         return 1
+    }
+
+    if !apiextension.aft.isEmpty {
+        if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.aft)",nil,bashenv) != 0 {
+            _ = climessenger("error-occurred", "running api-exec-stage failed")
+            return 1
+        }
     }
     messenger(status,progress,"compressing \(ProjectInfo.Executable) into .ipa archive",0.5)
     shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'")
