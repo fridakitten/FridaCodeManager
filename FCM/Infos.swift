@@ -43,4 +43,4 @@ let global_documents: String = {
     return paths[0].path
 }()
 let global_sdkpath: String = "\(global_documents)/../.sdk"
-let global_version: String = "v1.5 (non-release)"
+let global_version: String = "v1.4 (non-release)"
