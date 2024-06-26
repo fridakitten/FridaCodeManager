@@ -17,17 +17,7 @@ create:
 all: create compile_swift package deb clean
 roothide: create compile_swift package_roothide deb clean
 
-# Compilation rules
-
-## LibFCM
-libfcm:
-ifeq ($(NO_REBUILD_LIBS),1)
-	@echo "LibFCM compilation has been skipped (NO_REBUILD_LIBS is set to 1)."
-else
-	@make -C FCM/Libraries/libfcm SDK_PATH=$(CURDIR)/$(SDK_PATH)
-endif
-
-compile_swift: libfcm
+compile_swift:
 	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n"
 	swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libroot/libroot.a FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -target arm64-apple-ios15.0
 	ldid -S./FCM/ent.xml $(OUTPUT_DIR)/swifty

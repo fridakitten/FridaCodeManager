@@ -1,6 +1,0 @@
-[submodule "sdks"]
-	path = sdks
-	url = https://github.com/theos/sdks.git
-[submodule "FCM/Libraries/libfcm"]
-	path = FCM/Libraries/libfcm
-	url = https://github.com/fridakitten/libfcm/

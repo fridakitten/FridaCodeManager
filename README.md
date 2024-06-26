@@ -1,7 +1,7 @@
 # FridaCodeManager
 
 ## Notes
-I made this project cause my parents took my mac and I still did wanted to code and AppInstaller iOS was the first person that helped me making this project, without them this would not exist so give him a follow!
+I made this project because my parents took my mac and I still wanted to code and AppInstalleriOS was the first person that helped me making this project, without them this would not exist so give them a follow!
 
 ## Compatibility
 iOS 15.0 - 17.0 was offcially tested on both, roothide and rootless.
@@ -25,10 +25,6 @@ These are used and modifiable environment variables:
 	<tr>
         <td>SDK_PATH</td>
         <td>Relative path to the SDK. Defaults to an SDK from Theos that will be cloned if not found</td>
-    </tr>
-    <tr>
-         <td>NO_REBUILD_LIBS</td>
-         <td>Don't (re)build libroot and libfcm. Compiled binaries must present at where these libraries are placed.</td>
     </tr>
     <tr>
         <td>SDK_URL</td>
