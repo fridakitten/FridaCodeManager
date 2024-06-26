@@ -104,6 +104,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         messenger(status,progress,"running api-exec-stage (before)",0.3)
         if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.bef)",nil,bashenv) != 0 {
             _ = climessenger("error-occurred", "running api-exec-stage failed")
+            shell(CLEANEXEC)
             return 1
         }
     }
@@ -119,6 +120,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if !apiextension.aft.isEmpty {
         if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.aft)",nil,bashenv) != 0 {
             _ = climessenger("error-occurred", "running api-exec-stage failed")
+            shell(CLEANEXEC)
             return 1
         }
     }
