@@ -143,23 +143,18 @@ func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_ tstat: 
     }
 }
 
-func climessenger(_ title: String, _ text: String, _ command: String? = "",
+func climessenger(_ title: String, _ text: String, _ command: String = "",
 				  _ uid: uid_t? = 501, _ env: [String]? = []) -> Int {
     let marks: Int = (36 - title.count) / 2
     let slice = String(repeating: "+", count: marks)
     let delimiter = String(repeating: "+", count: 38)
 
-    print("\(slice) \(title) \(slice)\n\(text)\n")
-    var code = shell((command ?? "echo"), uid: (uid ?? 501), env: (env ?? []))
-    print(delimiter)
-
-    print("New and old printing ways comparison, upper is older)
-    if (command ?? "").isEmpty {
-        print("\(slice) \(title) \(slice)\n\(text)\n++++++++++++++++++++++++++++++++++++++\n\n")
+    if command.isEmpty {
+        print("\(slice) \(title) \(slice)\n\(text)\n\(delimiter)\n\n")
     } else {
         print("\(slice) \(title) \(slice)")
         //code = shell((command ?? "echo"), uid: (uid ?? 501), env: (env ?? []))
-        print("++++++++++++++++++++++++++++++++++++++\n")
+        print("\(delimiter)\n")
     }
     return code
 }
