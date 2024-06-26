@@ -89,9 +89,8 @@ func build(_ ProjectInfo: Project, _ erase: Bool,_ status: Binding<String>?,
     } else {
         EXEC += "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'"
     }
-    EXEC += " ; \(apiextension.aft)"
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
-    let CLEANEXEC = "rm -rf '\(info[4])'; rm -rf '\(info[0])'"
+    let CLEANEXEC = "\(!apiextension.aft.isEmpty ? "\(apiextension.aft) ; " : "")rm -rf '\(info[4])'; rm -rf '\(info[0])'"
 
     //compiling app
     messenger(status, progress, "compiling \(ProjectInfo.Executable)", 0.3)
