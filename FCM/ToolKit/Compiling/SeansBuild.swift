@@ -1,23 +1,23 @@
 /* 
- SeansBuild.swift 
+	 SeansBuild.swift
 
- Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
- Copyright (C) 2024 fridakitten 
+	 Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
+	 Copyright (C) 2024 fridakitten
 
- This file is part of FridaCodeManager. 
+	 This file is part of FridaCodeManager.
 
- FridaCodeManager is free software: you can redistribute it and/or modify 
- it under the terms of the GNU General Public License as published by 
- the Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version. 
+	 FridaCodeManager is free software: you can redistribute it and/or modify
+	 it under the terms of the GNU General Public License as published by
+	 the Free Software Foundation, either version 3 of the License, or
+	 (at your option) any later version.
 
- FridaCodeManager is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
+	 FridaCodeManager is distributed in the hope that it will be useful,
+	 but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License 
- along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
+	 You should have received a copy of the GNU General Public License
+	 along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
  */ 
     
  //Improved SparksBuild!
@@ -28,8 +28,18 @@ import Foundation
 //import UIKit
 import SwiftUI
 
-func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ progress: Binding<Double>?) -> Int {
-    let info: [String] = ["\(ProjectInfo.ProjectPath)/Payload","\(ProjectInfo.ProjectPath)/Payload/\(ProjectInfo.Executable).app","\(ProjectInfo.ProjectPath)/Resources","\(global_sdkpath)/\(ProjectInfo.SDK)","\(ProjectInfo.ProjectPath)/clang","\(ProjectInfo.ProjectPath)/bridge.h","\(ProjectInfo.ProjectPath)/entitlements.plist","\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
+func build(_ ProjectInfo: Project, _ erase: Bool,_ status: Binding<String>?,
+		   _ progress: Binding<Double>?) -> Int
+{
+    let info: [String] = ["\(ProjectInfo.ProjectPath)/Payload",
+    					  "\(ProjectInfo.ProjectPath)/Payload/\(ProjectInfo.Executable).app",
+    					  "\(ProjectInfo.ProjectPath)/Resources",
+    					  "\(global_sdkpath)/\(ProjectInfo.SDK)",
+    					  "\(ProjectInfo.ProjectPath)/clang",
+    					  "\(ProjectInfo.ProjectPath)/bridge.h",
+    					  "\(ProjectInfo.ProjectPath)/entitlements.plist",
+    					  "\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
+
     //PayloadPath  info[0]
     //AppPath      info[1]
     //Resources    info[2]
@@ -46,18 +56,19 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
 
     //finding code files
-    messenger(status,progress,"finding code files",0.1)
+    messenger(status, progress, "finding code files", 0.1)
     let SwiftFiles = (FindFiles(ProjectInfo.ProjectPath, ".swift") ?? "")
     let MFiles = findObjCFilesStack(ProjectInfo.ProjectPath, splitAndTrim(apiextension.ign) + ["Resources"])
 
     //finding frameworks
-    messenger(status,progress,"finding frameworks",0.15)
+    messenger(status, progress, "finding frameworks", 0.15)
     let frameworks: [String] = {
         if !MFiles.isEmpty, fe(info[3]) {
             return findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"), SDKPath: info[3])
         }
         return []
     }()
+
     let frameflags: String = {
         return frameworks.map { framework in
             return "-framework \(framework)"
@@ -65,7 +76,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }()
 
     //setting up command
-    messenger(status,progress,"setting up compiler",0.2)
+    messenger(status, progress, "setting up compiler", 0.2)
     var EXEC = "\(!apiextension.bef.isEmpty ? "\(apiextension.bef) ; " : "")"
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
@@ -83,7 +94,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let CLEANEXEC = "rm -rf '\(info[4])'; rm -rf '\(info[0])'"
 
     //compiling app
-    messenger(status,progress,"compiling \(ProjectInfo.Executable)",0.3)
+    messenger(status, progress, "compiling \(ProjectInfo.Executable)", 0.3)
     print("\n \nFridaCodeManager \(global_version)\n ")
     _ = climessenger("info","App Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\nSDK:      \(ProjectInfo.SDK)")
     if !info[7].isEmpty {
@@ -132,16 +143,23 @@ func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_ tstat: 
     }
 }
 
-func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: uid_t? = 501,_ env: [String]? = []) -> Int {
+func climessenger(_ title: String, _ text: String, _ command: String? = "",
+				  _ uid: uid_t? = 501, _ env: [String]? = []) -> Int {
     let marks: Int = (36 - title.count) / 2
     let slice = String(repeating: "+", count: marks)
-    var code = 0
+    let delimiter = String(repeating: "+", count: 38)
+
+    print("\(slice) \(title) \(slice)\n\(text)\n")
+    var code = shell((command ?? "echo"), uid: (uid ?? 501), env: (env ?? []))
+    print(delimiter)
+
+    print("New and old printing ways comparison, upper is older)
     if (command ?? "").isEmpty {
-        print("\(slice) \(title) \(slice)\n\(text)\n++++++++++++++++++++++++++++++++++++++\n \n")
+        print("\(slice) \(title) \(slice)\n\(text)\n++++++++++++++++++++++++++++++++++++++\n\n")
     } else {
         print("\(slice) \(title) \(slice)")
-        code = shell((command ?? "echo"),uid: (uid ?? 501), env: (env ?? []))
-        print("++++++++++++++++++++++++++++++++++++++\n ")
+        //code = shell((command ?? "echo"), uid: (uid ?? 501), env: (env ?? []))
+        print("++++++++++++++++++++++++++++++++++++++\n")
     }
     return code
 }
@@ -151,7 +169,5 @@ func splitAndTrim(_ inputString: String) -> [String] {
     let parts = inputString.split(separator: ";")
     
     // Trim whitespaces from each part and return the resulting array
-    let trimmedParts = parts.map { $0.trimmingCharacters(in: .whitespaces) }
-    
-    return trimmedParts
+    return parts.map { $0.trimmingCharacters(in: .whitespaces) }
 }
