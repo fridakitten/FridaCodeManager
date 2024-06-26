@@ -42,7 +42,7 @@ func FindFiles(_ ProjectPath: String, _ suffix: String) -> String? {
 }
 
 func findObjCFilesStack(_ projectPath: String, _ ignore: [String]) -> [String] {
-    let fileExtensions = [".m", ".c", ".mm", ".cpp",".a"]
+    let fileExtensions = [".m", ".c", ".mm", ".cpp"]
     
     do {
         var objCFiles: [String] = []
