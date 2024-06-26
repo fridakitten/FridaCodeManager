@@ -61,23 +61,23 @@ struct Home: View {
                             .frame(height: 200)
                         }
                         Section() {
-                            Button( action: {
+                            Button(action: {
                                 showProj = true
                                 hellnah = UUID()
                             }){
-                                listItem(label: "Create Project", systemImageName: "+", text: "Creates a FCM Project")
+                                listItem(label: "Create Project", systemImageName: "plus.rectangle", text: "Create a FCM Project")
                             }
-                            Button( action: {
+                            Button(action: {
                                 $fileimporter.trampolineIfNeeded(to: true)
                             }){
-                                listItem(label: "Import Project", systemImageName: "↑", text: "Imports a Project")
+                                listItem(label: "Import Project", systemImageName: "tray.and.arrow.down", text: "Import a Project")
                             }
                         }
                         Button( action: {
                             hello = UUID()
                             about = true
                         }){
-                            listItem(label: "About", systemImageName: "i", text: "Shows Information about this App")
+                            listItem(label: "About", systemImageName: "person.crop.rectangle", text: "Show informations about this App")
                         }
                         .sheet(isPresented: $about) {
                             Frida(hello: $hello)
@@ -114,17 +114,7 @@ struct Home: View {
                         .foregroundColor(.gray)
                 }
                 Spacer()
-                ZStack {
-                Rectangle()
-                    .foregroundColor(.secondary)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                    .cornerRadius(4)
-                Text(systemImageName)
-                    .foregroundColor(Color(.systemBackground))
-                    .frame(width: 20, height: 20)
-                    .font(Font.custom("Menlo", size: 16).bold())
-            }
+                Label("", systemImage: systemImageName)
         }
     }
 
