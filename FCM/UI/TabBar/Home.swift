@@ -52,6 +52,7 @@ struct Home: View {
 -removed first compiler notice
 -added ability to the shell to append stuff to its environment
 -added API to control your build process
+-implemented Safe Pointer Memory Management into Log
 
 1.3.9 (Fixes)
 -fixed Hybrid Compiling
