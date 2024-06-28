@@ -69,3 +69,10 @@ func findObjCFilesStack(_ projectPath: String, _ ignore: [String]) -> [String] {
 func fe(_ path: String) -> Bool {
     return FileManager.default.fileExists(atPath: path)
 }
+
+func closeallfd() {
+    let maxFD = sysconf(Int32(_SC_OPEN_MAX))
+    for fd in 0..<maxFD {
+        close(Int32(fd))
+    }
+}
