@@ -7,7 +7,7 @@ set -e
 while read -r line
 do
 	[[ $line == "" ]] && break
-
+	echo $line
 	echo $line >> .package/changelog
 done < ChangeLog
 
