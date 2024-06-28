@@ -1,13 +1,16 @@
 1.4 (Features and Improvements)
-- implementation of SeansBuild (rewrite of SparksBuild)
-- warnings appear now in the Error Log
-- made error log appear even if compiling succeed, cause the user has to have the ability to fix warnings
-- fixed copy log issues
-- fixed the main UI components
-- fixed FCM's info.plist
-- removed first compiler notice
-- added ability to the shell to append stuff to its environment
-- added API to control your build process
+-implementation of SeansBuild (rewrite of SparksBuild)
+-warnings appear now in the Error Log
+-made error log appear even if compiling succeed, cause the user has to have the ability to fix warnings
+-fixed copy log issues
+-fixed main UI components
+-fixed FCM's info.plist
+-removed first compiler notice
+-added ability to the shell to append stuff to its environment
+-added API to control your build process
+-log views now have a bigger font size
+-changelog view now only shows the current version changelog
+-implemented Safe Pointer Memory Management into Log
 
 1.3.9 (Fixes)
 -fixed Hybrid Compiling
