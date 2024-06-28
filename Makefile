@@ -31,14 +31,16 @@ pre_package:
 	bash getChangeLog.sh
 
 package: compile_swift pre_package
-	mkdir -p .package/var/jb/Applications/FridaCodeManager.app
+	mkdir -p .package/var/jb/Applications/FridaCodeManager.app/Templates
 	cp -r Blueprint/FridaCodeManager.app/* .package/var/jb/Applications/FridaCodeManager.app
+	cp -r FCM/Templates/* .package/var/jb/Applications/FridaCodeManager.app/Templates
 	@echo "Architecture: iphoneos-arm64 >> .package/DEBIAN/control"
 	mv .package/changelog .package/var/jb/Applications/FridaCodeManager.app/
 
 package_roothide: compile_swift pre_package
-	mkdir -p .package/Applications/FridaCodeManager.app
+	mkdir -p .package/Applications/FridaCodeManager.app/Templates
 	cp -r Blueprint/FridaCodeManager.app/* .package/Applications/FridaCodeManager.app
+	cp -r FCM/Templates/* .package/Applications/FridaCodeManager.app/Templates
 	@echo "Architecture: iphoneos-arm64e >> .package/DEBIAN/control"
 	mv .package/changelog .package/Applications/FridaCodeManager.app/
 
