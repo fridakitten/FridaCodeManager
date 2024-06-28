@@ -34,9 +34,10 @@ struct Frida: View {
                 Section(header: Text("Credits")) {
                     cell(credit: "SeanIsNotAConstant", role: "Main Developer", url: "https://github.com/fridakitten.png")
                     cell(credit: "AppInstaller iOS", role: "Compiling Genius", url: "https://github.com/AppInstalleriOSGH.png")
-                    cell(credit: "meighler", role: "Licensor", url: "https://github.com/meighler.png")
+                    cell(credit: "Snoolie", role: "Helping Hand", url: "https://github.com/0xilis.png")
                     cell(credit: "HAHALOSAH", role: "Helping Hand", url: "https://github.com/HAHALOSAH.png")
                     cell(credit: "MudSplasher", role: "Icon Designer", url: "https://github.com/MudSplasher.png")
+                    cell(credit: "meighler", role: "Licensor", url: "https://github.com/meighler.png")
                 }
                 Section(header: Text("Side Credits")) {
                     cell(credit: "Opa334", role: "Trollstore Helper", url: "https://github.com/opa334.png")
