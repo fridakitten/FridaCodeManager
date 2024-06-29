@@ -1,31 +1,11 @@
- /* 
- UIConsole.swift 
-
- Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
- Copyright (C) 2024 fridakitten 
-
- This file is part of FridaCodeManager. 
-
- FridaCodeManager is free software: you can redistribute it and/or modify 
- it under the terms of the GNU General Public License as published by 
- the Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version. 
-
- FridaCodeManager is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
-
- You should have received a copy of the GNU General Public License 
- along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
-    
-import SwiftUI
+ import SwiftUI
 import Foundation
 
 struct LogView: View {
     @State var LogItems: [String.SubSequence] = [""] 
     @Binding var show: Bool
+    @State private var logStream: LogStream?
+    
     var body: some View {
         Group {
             if show == true {
@@ -41,14 +21,12 @@ struct LogView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(4)
-                        //.flipped()
                     }
                     .padding(.horizontal)
-                    //.flipped()
                     .background(Color(UIColor.systemGray6))
                     .cornerRadius(15)
                 }
-                .frame(width: UIScreen.main.bounds.width / 1.2,height: UIScreen.main.bounds.height / 2)
+                .frame(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 2)
             }
         }
         .contextMenu {
@@ -59,13 +37,15 @@ struct LogView: View {
         }
         .onDisappear {
             LogItems = ["!waiting on execution!"]
+            logStream?.cancel()
         }
         Spacer().frame(height: 0)
         .onAppear {
-            _ = LogStream($LogItems)
+            logStream = LogStream($LogItems)
         }
     }
 }
+
 func copyToClipboard(text: String, alert: Bool? = true) {
     haptfeedback(1)
     if (alert ?? true) {ShowAlert(UIAlertController(title: "Copied", message: "", preferredStyle: .alert))}
@@ -78,8 +58,8 @@ class LogStream {
     private(set) var outputFd: [Int32] = [0, 0]
     private(set) var errFd: [Int32] = [0, 0]
     private let readQueue: DispatchQueue
-    private let outputSource: DispatchSourceRead
-    private let errorSource: DispatchSourceRead
+    private var outputSource: DispatchSourceRead?
+    private var errorSource: DispatchSourceRead?
     
     init(_ LogItems: Binding<[String.SubSequence]>) {
         readQueue = DispatchQueue(label: "com.sparklechan.swifty", qos: .userInteractive, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil)
@@ -97,14 +77,14 @@ class LogStream {
         outputSource = DispatchSource.makeReadSource(fileDescriptor: outputFd[0], queue: readQueue)
         errorSource = DispatchSource.makeReadSource(fileDescriptor: errFd[0], queue: readQueue)
         
-        outputSource.setCancelHandler {
+        outputSource?.setCancelHandler {
             close(self.outputFd[0])
             close(self.outputFd[1])
             dup2(origOutput, STDOUT_FILENO)
             close(origOutput)
         }
         
-        errorSource.setCancelHandler {
+        errorSource?.setCancelHandler {
             close(self.errFd[0])
             close(self.errFd[1])
             dup2(origErr, STDERR_FILENO)
@@ -113,16 +93,16 @@ class LogStream {
         
         let bufsiz = Int(BUFSIZ)
         
-        outputSource.setEventHandler { [weak self] in
+        outputSource?.setEventHandler { [weak self] in
             self?.handleOutputEvent(bufferSize: bufsiz, originalFd: origOutput, logItems: LogItems)
         }
         
-        errorSource.setEventHandler { [weak self] in
+        errorSource?.setEventHandler { [weak self] in
             self?.handleErrorEvent(bufferSize: bufsiz, originalFd: origErr, logItems: LogItems)
         }
         
-        outputSource.resume()
-        errorSource.resume()
+        outputSource?.resume()
+        errorSource?.resume()
     }
     
     private func handleOutputEvent(bufferSize: Int, originalFd: Int32, logItems: Binding<[String.SubSequence]>) {
@@ -143,9 +123,9 @@ class LogStream {
                 return
             }
             if fileDescriptor == outputFd[0] {
-                outputSource.cancel()
+                outputSource?.cancel()
             } else {
-                errorSource.cancel()
+                errorSource?.cancel()
             }
             return
         }
@@ -158,5 +138,10 @@ class LogStream {
             self.outputString.append(str)
             logItems.wrappedValue = self.outputString.split(separator: "\n")
         }
+    }
+    
+    func cancel() {
+        outputSource?.cancel()
+        errorSource?.cancel()
     }
 }

@@ -146,9 +146,6 @@ struct CodeSpace: View {
         FileList(directoryPath: ProjectInfo.ProjectPath, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
                 buildView(ProjectInfo: ProjectInfo, sdk: $sdk, buildv: $buildv)
-                   .onDisappear {
-                       closeallfd()
-                   }
             }
     }
 }
