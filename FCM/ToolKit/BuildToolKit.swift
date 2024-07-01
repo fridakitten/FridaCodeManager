@@ -29,20 +29,7 @@ func OpenApp(_ BundleID: String) {
     workspace?.perform(Selector(("openApplicationWithBundleID:")), with: BundleID)
 }
 
-func FindFiles(_ ProjectPath: String, _ suffix: String) -> String? {
-    do {
-        var Files: [String] = []
-        for File in try FileManager.default.subpathsOfDirectory(atPath: ProjectPath).filter({$0.hasSuffix(suffix)}) {
-            Files.append("'\(File)'")
-        }
-        return Files.joined(separator: " ")
-    } catch {
-        return nil
-    }
-}
-
-func findObjCFilesStack(_ projectPath: String, _ ignore: [String]) -> [String] {
-    let fileExtensions = [".m", ".c", ".mm", ".cpp"]
+func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore: [String]) -> [String] {
     
     do {
         var objCFiles: [String] = []
@@ -68,11 +55,4 @@ func findObjCFilesStack(_ projectPath: String, _ ignore: [String]) -> [String] {
 
 func fe(_ path: String) -> Bool {
     return FileManager.default.fileExists(atPath: path)
-}
-
-func closeallfd() {
-    let maxFD = sysconf(Int32(_SC_OPEN_MAX))
-    for fd in 0..<maxFD {
-        close(Int32(fd))
-    }
 }

@@ -38,7 +38,7 @@ let global_documents: String = {
     return paths[0].path
 }()
 let global_sdkpath: String = "\(global_documents)/../.sdk"
-let global_version: String = "v1.4"
+let global_version: String = "v1.4.1 (non-release)"
 
 @main
 struct MyApp: App {

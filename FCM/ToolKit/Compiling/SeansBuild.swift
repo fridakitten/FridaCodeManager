@@ -50,9 +50,9 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
 
     //finding code files
     messenger(status,progress,"finding code files",0.1)
-    let SwiftFiles = "\((FindFiles(ProjectInfo.ProjectPath, ".swift") ?? ""))"
-    let AFiles = "\((FindFiles(ProjectInfo.ProjectPath, ".a") ?? ""))"
-    let MFiles = findObjCFilesStack(ProjectInfo.ProjectPath, splitAndTrim(apiextension.ign) + ["Resources"])
+    let SwiftFiles = FindFilesStack(ProjectInfo.ProjectPath, [".swift"], splitAndTrim(apiextension.ign) + ["Resources"])
+    let AFiles = FindFilesStack(ProjectInfo.ProjectPath, [".a"], splitAndTrim(apiextension.ign) + ["Resources"])
+    let MFiles = FindFilesStack(ProjectInfo.ProjectPath, [".m", ".c", ".mm", ".cpp"], splitAndTrim(apiextension.ign) + ["Resources"])
 
     //finding frameworks
     messenger(status,progress,"finding frameworks",0.15)
@@ -75,13 +75,13 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             let commands = MFiles.map { mFile in
-                return "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles) -o '\(info[4])/\(UUID()).o' &>> \(global_documents)/log.txt ; "
+                return "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' &>> \(global_documents)/log.txt ; "
             }
             EXEC += commands.joined()
         }
-        EXEC += "swiftc \(SwiftFiles) \(AFiles) \( !MFiles.isEmpty ? "clang/*.o" : "") \(apiextension.build) \(fe(info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)' &>> \(global_documents)/log.txt"
+        EXEC += "swiftc \(SwiftFiles.joined(separator: " ")) \(AFiles.joined(separator: " ")) \( !MFiles.isEmpty ? "clang/*.o" : "") \(apiextension.build) \(fe(info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)' &>> \(global_documents)/log.txt"
     } else {
-        EXEC += "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) \(AFiles) -o '\(info[1])/\(ProjectInfo.Executable)'  &>> \(global_documents)/log.txt"
+        EXEC += "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) \(AFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'  &>> \(global_documents)/log.txt"
     }
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
     let CLEANEXEC = "rm -rf '\(info[4])'; rm -rf '\(info[0])'"
