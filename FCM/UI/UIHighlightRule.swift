@@ -104,10 +104,10 @@ extension HighlightingTextEditor {
         let highlightedString = NSMutableAttributedString(string: text)
         let all = NSRange(location: 0, length: text.utf16.count)
 
-        //let editorFont = defaultEditorFont
+        let editorFont = defaultEditorFont
         let editorTextColor = defaultEditorTextColor
 
-        //highlightedString.addAttribute(.font, value: editorFont, range: all)
+        highlightedString.addAttribute(.font, value: editorFont, range: all)
         highlightedString.addAttribute(.foregroundColor, value: editorTextColor, range: all)
 
         highlightRules.forEach { rule in
