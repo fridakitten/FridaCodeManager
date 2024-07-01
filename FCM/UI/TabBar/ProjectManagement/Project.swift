@@ -54,142 +54,7 @@ func GetProjects() -> [Project] {
 //TODO: Use NSDictionary!!
 func MakeApplicationProject(_ Name: String, _ BundleID: String, SDK: String, type: Int) {
     let v2uuid = UUID()
-    let rvch = """
-\(authorgen(file: "myRootViewController.h"))#import <UIKit/UIKit.h>
 
-@interface myRootViewController : UIViewController
-
-@end
-"""
-    let rvc = """
-\(authorgen(file: "myRootViewController.m"))#import "myRootViewController.h"
-
-@interface myRootViewController () <UITableViewDataSource>
-@property (nonatomic, strong) UITableView *logTableView;
-@property (nonatomic, strong) NSMutableArray *logEntries;
-@end
-
-@implementation myRootViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    self.title = @"ObjevtiveC support!";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addButtonTapped:)];
-
-    // Create and configure UITableView for log display
-    self.logTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-    self.logTableView.dataSource = self;
-    [self.view addSubview:self.logTableView];
-
-    // Initialize log entries array
-    self.logEntries = [NSMutableArray array];
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.logEntries.count;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
-
-    cell.textLabel.text = self.logEntries[indexPath.row];
-    return cell;
-}
-
-- (void)addButtonTapped:(id)sender {
-    @try {
-        // Add log entry
-        NSString *logEntry = @"Hello, World!";
-        [self.logEntries insertObject:logEntry atIndex:0];
-
-        // Update UITableView
-        [self.logTableView reloadData];
-    } @catch (NSException *exception) {
-        NSLog(@"Exception: %@", exception);
-    } @finally {
-        NSLog(@"Add button tapped");
-    }
-}
-
-@end
-"""
-    let apdh = """
-\(authorgen(file: "myAppDelegate.h"))#import <UIKit/UIKit.h>
-
-@interface myAppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (nonatomic, strong) UIWindow *window;
-@property (nonatomic, strong) UINavigationController *rootViewController;
-
-@end
-"""
-    let apd = """
-\(authorgen(file: "myAppDelegate.m"))#import "myAppDelegate.h"
-#import "myRootViewController.h"
-
-@implementation myAppDelegate
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	_window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_rootViewController = [[UINavigationController alloc] initWithRootViewController:[[myRootViewController alloc] init]];
-	_window.rootViewController = _rootViewController;
-	[_window makeKeyAndVisible];
-	return YES;
-}
-
-@end
-"""
-    let mainv = """
-\(authorgen(file: "main.m"))#import <Foundation/Foundation.h>
-#import "myAppDelegate.h"
-
-int main(int argc, char *argv[]) {
-	@autoreleasepool {
-		return UIApplicationMain(argc, argv, nil, NSStringFromClass(myAppDelegate.class));
-	}
-}
-"""
-
-    let mainh = """
-\(authorgen(file: "main.h"))#import <Foundation/Foundation.h>
-
-@interface MyObjectiveCClass : NSObject
-
-- (NSString *)hello;
-
-@end
-"""
-    let mainm = """
-\(authorgen(file: "main.m"))#import "main.h"
-
-@implementation MyObjectiveCClass
-
-- (NSString *)hello {
-    return @"Hello ObjectiveC World!";
-}
-
-@end
-"""
-    let objcswift = """
-\(authorgen(file: "ContentView.swift"))import Foundation
-import SwiftUI
-
-struct ContentView: View {
-    var body: some View {
-       Text(hello())
-    }
-    func hello() -> String {
-        let myObjCInstance = MyObjectiveCClass()
-        return myObjCInstance.hello()
-    }
-}
-"""
     do {
         let ResourcesPath = "\(global_documents)/\(v2uuid)/Resources"
         try FileManager.default.createDirectory(atPath: ResourcesPath, withIntermediateDirectories: true)
@@ -201,18 +66,18 @@ struct ContentView: View {
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: Data("\(authorgen(file: "ContentView.swift"))import SwiftUI\n\nstruct ContentView: View {\n    var body: some View {\n        Text(\"Hello, World!\")\n    }\n}".utf8))
                 break
             case 2:
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: mainv.data(using: .utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myAppDelegate.h", contents: apdh.data(using: .utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myAppDelegate.m", contents: apd.data(using: .utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myRootViewController.h", contents: rvch.data(using: .utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myRootViewController.m", contents: rvc.data(using: .utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: Data("\(authorgen(file: "main.m"))#import <Foundation/Foundation.h>\n#import \"myAppDelegate.h\"\n\nint main(int argc, char *argv[]) {\n\t@autoreleasepool {\n\t\treturn UIApplicationMain(argc, argv, nil, NSStringFromClass(myAppDelegate.class));\n\t}\n}".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myAppDelegate.h", contents: Data("\(authorgen(file: "myAppDelegate.h"))#import <UIKit/UIKit.h>\n \n@interface myAppDelegate : UIResponder <UIApplicationDelegate>\n \n@property (nonatomic, strong) UIWindow *window;\n@property (nonatomic, strong) UINavigationController *rootViewController;\n \n@end".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myAppDelegate.m", contents: Data("\(authorgen(file: "myAppDelegate.m"))#import \"myAppDelegate.h\"\n#import \"myRootViewController.h\"\n\n@implementation myAppDelegate\n\n- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {\n\t_window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];\n\t_rootViewController = [[UINavigationController alloc] initWithRootViewController:[[myRootViewController alloc] init]];\n\t_window.rootViewController = _rootViewController;\n\t[_window makeKeyAndVisible];\n\treturn YES;\n}\n\n@end".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myRootViewController.h", contents: Data("\(authorgen(file: "myRootViewController.h"))#import <UIKit/UIKit.h>\n \n@interface myRootViewController : UIViewController\n \n@end".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myRootViewController.m", contents: Data("\(authorgen(file: "myRootViewController.m"))#import \"myRootViewController.h\"\n \n@interface myRootViewController () <UITableViewDataSource>\n@property (nonatomic, strong) UITableView *logTableView;\n@property (nonatomic, strong) NSMutableArray *logEntries;\n@end\n \n@implementation myRootViewController\n \n- (void)viewDidLoad {\n    [super viewDidLoad];\n \n    self.title = @\"ObjevtiveC support!\";\n \n    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addButtonTapped:)];\n \n    // Create and configure UITableView for log display\n    self.logTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];\n    self.logTableView.dataSource = self;\n    [self.view addSubview:self.logTableView];\n \n    // Initialize log entries array\n    self.logEntries = [NSMutableArray array];\n}\n \n- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {\n    return self.logEntries.count;\n}\n \n- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {\n    static NSString *CellIdentifier = @\"Cell\";\n    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];\n \n    if (!cell) {\n        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];\n    }\n \n    cell.textLabel.text = self.logEntries[indexPath.row];\n    return cell;\n}\n \n- (void)addButtonTapped:(id)sender {\n    @try {\n        // Add log entry\n        NSString *logEntry = @\"Hello, World!\";\n        [self.logEntries insertObject:logEntry atIndex:0];\n \n        // Update UITableView\n        [self.logTableView reloadData];\n    } @catch (NSException *exception) {\n        NSLog(@\"Exception: %@\", exception);\n    } @finally {\n        NSLog(@\"Add button tapped\");\n    }\n}\n \n@end".utf8))
                 break;
             case 3:
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/My App.swift", contents: Data("\(authorgen(file: "My App.swift"))import SwiftUI\n\n@main\nstruct MyApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}".utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: objcswift.data(using: .utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: Data("\(authorgen(file: "ContentView.swift"))import Foundation\nimport SwiftUI\n\nstruct ContentView: View {\n    var body: some View {\n       Text(hello())\n    }\n    func hello() -> String {\n        let myObjCInstance = MyObjectiveCClass()\n        return myObjCInstance.hello()\n    }\n}".utf8))
                 FileManager.default.createFile(atPath:"\(global_documents)/\(v2uuid)/bridge.h", contents: Data("\(authorgen(file: "bridge.h"))#import \"main.h\"".utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.h", contents: mainh.data(using: .utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: mainm.data(using: .utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.h", contents: Data("\(authorgen(file: "main.h"))#import <Foundation/Foundation.h>\n \n@interface MyObjectiveCClass : NSObject\n \n- (NSString *)hello;\n \n@end".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: Data("\(authorgen(file: "main.m"))#import \"main.h\"\n \n@implementation MyObjectiveCClass\n \n- (NSString *)hello {\n    return @\"Hello ObjectiveC World!\";\n}\n \n@end".utf8))
             default:
                 return
         }

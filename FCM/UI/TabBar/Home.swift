@@ -42,18 +42,10 @@ struct Home: View {
                         Spacer().frame(height: 10)
                             ScrollView {
                                 Text("""
-1.4 (Features and Improvements)
--implementation of SeansBuild(rewrite of SparksBuild)
--warnings appear now in the Error Log
--made error log appear even if compiling succeed, cause the user has to have the ability to fix warnings
--fixed copy log issues
--fixed the main UI components
--fixed FCM's info.plist
--removed first compiler notice
--added ability to the shell to append stuff to its environment
--added API to control your build process
--implemented Safe Pointer Memory Management into Log
--fixed a bug where the log opens a indefinite amount of file descriptors
+1.4.1 (Fixes)
+-removed LogStream
+-now content ignore class in api will also ignore .swift files and .a files
+-fixed this awful auto scrolling
 """)
                                     .font(.system(size: 11))
                                 }
