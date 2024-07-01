@@ -43,7 +43,6 @@ let global_version: String = "v1.4"
 @main
 struct MyApp: App {
     @State var hello: UUID = UUID()
-    @AppStorage("debug") var show: Bool = false
     init() {
         let navigationBarAppearance = UINavigationBarAppearance()
         navigationBarAppearance.backgroundColor = UIColor.systemBackground
@@ -69,16 +68,11 @@ struct MyApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                ContentView(hello: $hello)
-                    .onOpenURL { url in
+            ContentView(hello: $hello)
+                .onOpenURL { url in
                         importProj(target: url.path)
-                        hello = UUID()
-                    }
-                if show {
-                    Debug()
+                   hello = UUID()
                 }
-            }
         }
     }
 }

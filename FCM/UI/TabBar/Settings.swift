@@ -48,9 +48,6 @@ struct Settings: View {
                     NavigationLink(destination: AuthorSettings()) {
                         Label("Author", systemImage: "person.fill")
                     }
-                    NavigationLink(destination: DebugSettings()) {
-                        Label("Debug", systemImage: "ant.fill")
-                    }
                     NavigationLink(destination: Cleaner()) {
                         Label("Cleaner", systemImage: "trash.fill")
                     }
@@ -68,20 +65,6 @@ struct Settings: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         }
-    }
-}
-
-struct DebugSettings: View {
-    @AppStorage("debug") var show: Bool = false
-    var body: some View {
-        List {
-            Section() {
-                Toggle("Debug Log",isOn: $show)
-            }
-        }
-        .listStyle(InsetGroupedListStyle())
-        .navigationTitle("Debug")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

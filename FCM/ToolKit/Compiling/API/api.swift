@@ -22,7 +22,7 @@
     
 import Foundation
 
-func apicall(_ text: String,_ proj:Project) -> String {
+func apicall(_ text: String,_ proj:Project, _ shell: Bool) -> String {
     var ret = text
     ret = ret.replacingOccurrences(of: "<apiver>", with: "0.2")
     ret = ret.replacingOccurrences(of: "<fcmver>", with: "\(global_version)")
@@ -37,7 +37,11 @@ func apicall(_ text: String,_ proj:Project) -> String {
     ret = ret.replacingOccurrences(of: "<project-path>", with: "\(proj.ProjectPath)")
     ret = ret.replacingOccurrences(of: "<theos-path>", with: "\(Bundle.main.bundlePath)/include")
     ret = ret.replacingOccurrences(of: "<container-path>", with: "\(global_documents)/../")
-    ret = repla(ret)
+    if shell {
+        ret = replaadv(ret)
+    } else {
+        ret = repla(ret)
+    }
     ret = rsc(ret)
     return ret
 }
@@ -51,6 +55,17 @@ func repla(_ inputString: String) -> String {
     
     // Join the trimmed lines with " ; " as the delimiter
     return trimmedLines.joined(separator: " ; ")
+}
+
+func replaadv(_ inputString: String) -> String {
+    // Split the string into lines
+    let lines = inputString.split(separator: "\n")
+    
+    // Trim each line and store the results
+    let trimmedLines = lines.map { $0.trimmingCharacters(in: .whitespaces) }
+    
+    // Join the trimmed lines with " ; " as the delimiter
+    return trimmedLines.joined(separator: " &>> \(global_documents)/log.txt ; ")
 }
 
 func rsc(_ inputString: String) -> String {

@@ -158,9 +158,12 @@ struct buildView: View {
     @State var console: Bool = false
     @State var status: String = ""
     @State private var progress = 0.0
+    @State private var Log: [String] = []
     var body: some View {
         VStack {
-            LogView(show: $console)
+            if console {
+                LogView(LogItems: $Log)
+            }
             Spacer().frame(height: 25)
             if console == true {
                 Button( action: {
@@ -190,16 +193,10 @@ struct buildView: View {
             DispatchQueue.global(qos: .utility).async {
                 compiling = true
                 _ = build(ProjectInfo, true, $status, $progress)
+                Log = load("\(global_documents)/log.txt").components(separatedBy: "\n")
                 withAnimation {
                     console = true
                 }
-                /*if result != 0 {
-                    withAnimation {
-                        console = true
-                    }
-                } else {
-                    //buildv = false
-                }*/
                 compiling = false
             }
         }

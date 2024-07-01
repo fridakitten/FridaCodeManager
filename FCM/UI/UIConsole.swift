@@ -24,13 +24,9 @@ import SwiftUI
 import Foundation
 
 struct LogView: View {
-    @State var LogItems: [String.SubSequence] = [""] 
-    @Binding var show: Bool
-    @State private var logStream: LogStream?
+    @Binding var LogItems: [String]
     
     var body: some View {
-        Group {
-            if show == true {
                 VStack {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading) {
@@ -49,21 +45,11 @@ struct LogView: View {
                     .cornerRadius(15)
                 }
                 .frame(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 2)
-            }
-        }
         .contextMenu {
             Button("Copy Log") {
                 let fullstring: String = "\(LogItems.filter { !$0.contains("perform implicit import") && !$0.contains("clang-14: warning: -framework") }.joined(separator: "\n"))"
                 copyToClipboard(text: fullstring, alert: false)
             }
-        }
-        .onDisappear {
-            LogItems = ["!waiting on execution!"]
-            logStream?.cancel()
-        }
-        Spacer().frame(height: 0)
-        .onAppear {
-            logStream = LogStream($LogItems)
         }
     }
 }
@@ -73,97 +59,4 @@ func copyToClipboard(text: String, alert: Bool? = true) {
     if (alert ?? true) {ShowAlert(UIAlertController(title: "Copied", message: "", preferredStyle: .alert))}
     UIPasteboard.general.string = text
     if (alert ?? true) {DismissAlert()}
-}
-
-class LogStream {
-    private(set) var outputString = ""
-    private(set) var outputFd: [Int32] = [0, 0]
-    private(set) var errFd: [Int32] = [0, 0]
-    private let readQueue: DispatchQueue
-    private var outputSource: DispatchSourceRead?
-    private var errorSource: DispatchSourceRead?
-    
-    init(_ LogItems: Binding<[String.SubSequence]>) {
-        readQueue = DispatchQueue(label: "com.sparklechan.swifty", qos: .userInteractive, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil)
-        
-        pipe(&outputFd)
-        pipe(&errFd)
-        
-        let origOutput = dup(STDOUT_FILENO)
-        let origErr = dup(STDERR_FILENO)
-        
-        setvbuf(stdout, nil, _IONBF, 0)
-        dup2(outputFd[1], STDOUT_FILENO)
-        dup2(errFd[1], STDERR_FILENO)
-        
-        outputSource = DispatchSource.makeReadSource(fileDescriptor: outputFd[0], queue: readQueue)
-        errorSource = DispatchSource.makeReadSource(fileDescriptor: errFd[0], queue: readQueue)
-        
-        outputSource?.setCancelHandler {
-            close(self.outputFd[0])
-            close(self.outputFd[1])
-            dup2(origOutput, STDOUT_FILENO)
-            close(origOutput)
-        }
-        
-        errorSource?.setCancelHandler {
-            close(self.errFd[0])
-            close(self.errFd[1])
-            dup2(origErr, STDERR_FILENO)
-            close(origErr)
-        }
-        
-        let bufsiz = Int(BUFSIZ)
-        
-        outputSource?.setEventHandler { [weak self] in
-            self?.handleOutputEvent(bufferSize: bufsiz, originalFd: origOutput, logItems: LogItems)
-        }
-        
-        errorSource?.setEventHandler { [weak self] in
-            self?.handleErrorEvent(bufferSize: bufsiz, originalFd: origErr, logItems: LogItems)
-        }
-        
-        outputSource?.resume()
-        errorSource?.resume()
-    }
-    
-    private func handleOutputEvent(bufferSize: Int, originalFd: Int32, logItems: Binding<[String.SubSequence]>) {
-        handleEvent(fileDescriptor: outputFd[0], bufferSize: bufferSize, originalFd: originalFd, logItems: logItems)
-    }
-    
-    private func handleErrorEvent(bufferSize: Int, originalFd: Int32, logItems: Binding<[String.SubSequence]>) {
-        handleEvent(fileDescriptor: errFd[0], bufferSize: bufferSize, originalFd: originalFd, logItems: logItems)
-    }
-    
-    private func handleEvent(fileDescriptor: Int32, bufferSize: Int, originalFd: Int32, logItems: Binding<[String.SubSequence]>) {
-        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
-        defer { buffer.deallocate() }
-        
-        let bytesRead = read(fileDescriptor, buffer, bufferSize)
-        guard bytesRead > 0 else {
-            if bytesRead == -1 && errno == EAGAIN {
-                return
-            }
-            if fileDescriptor == outputFd[0] {
-                outputSource?.cancel()
-            } else {
-                errorSource?.cancel()
-            }
-            return
-        }
-        
-        write(originalFd, buffer, bytesRead)
-        
-        let array = Array(UnsafeBufferPointer(start: buffer, count: bytesRead)) + [UInt8(0)]
-        array.withUnsafeBufferPointer { ptr in
-            let str = String(cString: unsafeBitCast(ptr.baseAddress, to: UnsafePointer<CChar>.self))
-            self.outputString.append(str)
-            logItems.wrappedValue = self.outputString.split(separator: "\n")
-        }
-    }
-    
-    func cancel() {
-        outputSource?.cancel()
-        errorSource?.cancel()
-    }
 }

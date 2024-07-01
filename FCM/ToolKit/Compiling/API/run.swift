@@ -41,5 +41,5 @@ func api(_ text: String,_ Project:Project) -> ext {
     //ignore subclass
     let ignore: String = tags(apiclass,"compiler-ignore-content")
 
-    return ext(build: apicall(build,Project), bef: apicall(before,Project), aft: apicall(after,Project), ign: apicall(ignore,Project))
+    return ext(build: apicall(build,Project,false), bef: apicall(before,Project,true), aft: apicall(after,Project,true), ign: apicall(ignore,Project,false))
 }

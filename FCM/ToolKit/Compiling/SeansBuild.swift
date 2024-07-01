@@ -69,24 +69,25 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }()
 
     //setting up command
+    clearlog()
     messenger(status,progress,"setting up compiler",0.2)
     var EXEC = ""
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             let commands = MFiles.map { mFile in
-                return "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles) -o '\(info[4])/\(UUID()).o' ; "
+                return "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles) -o '\(info[4])/\(UUID()).o' &>> \(global_documents)/log.txt ; "
             }
             EXEC += commands.joined()
         }
-        EXEC += "swiftc \(SwiftFiles) \(AFiles) \( !MFiles.isEmpty ? "clang/*.o" : "") \(apiextension.build) \(fe(info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)'"
+        EXEC += "swiftc \(SwiftFiles) \(AFiles) \( !MFiles.isEmpty ? "clang/*.o" : "") \(apiextension.build) \(fe(info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)' &>> \(global_documents)/log.txt"
     } else {
-        EXEC += "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) \(AFiles) -o '\(info[1])/\(ProjectInfo.Executable)'"
+        EXEC += "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) \(AFiles) -o '\(info[1])/\(ProjectInfo.Executable)'  &>> \(global_documents)/log.txt"
     }
     let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
     let CLEANEXEC = "rm -rf '\(info[4])'; rm -rf '\(info[0])'"
 
     //compiling app
-    print("\n \nFridaCodeManager \(global_version)\n ")
+    printlog("FridaCodeManager \(global_version)\n ")
     _ = climessenger("info","App Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\nSDK:      \(ProjectInfo.SDK)")
     if !info[7].isEmpty {
         _ = climessenger("api-call-fetcher","build: \(apiextension.build)\n \nexec-before: \(apiextension.bef)\n \nexec-after: \(apiextension.aft)\n \ncompiler-ignore-content: \(apiextension.ign)")
@@ -152,20 +153,6 @@ func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_ tstat: 
             }
         }
     }
-}
-
-func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: uid_t? = 501,_ env: [String]? = []) -> Int {
-    let marks: Int = (36 - title.count) / 2
-    let slice = String(repeating: "+", count: marks)
-    var code = 0
-    if (command ?? "").isEmpty {
-        print("\(slice) \(title) \(slice)\n\(text)\n++++++++++++++++++++++++++++++++++++++\n \n")
-    } else {
-        print("\(slice) \(title) \(slice)")
-        code = shell((command ?? "echo"),uid: (uid ?? 501), env: (env ?? []))
-        print("++++++++++++++++++++++++++++++++++++++\n ")
-    }
-    return code
 }
 
 func splitAndTrim(_ inputString: String) -> [String] {
