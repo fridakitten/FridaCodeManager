@@ -156,7 +156,7 @@ struct Cleaner: View {
                             return "\(global_documents)/../.cache/clang/ModuleCache"
                     }
                 }()
-                if fe(path) {
+                if FileManager.default.fileExists(atPath: path) {
                     shell("rm -rf \(path)/*")
                 }
             DismissAlert()

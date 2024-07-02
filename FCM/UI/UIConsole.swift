@@ -31,7 +31,7 @@ struct LogView: View {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading) {
                             HStack {
-                                Text("\(LogItems.filter { !$0.contains("perform implicit import") && !$0.contains("clang-14: warning: -framework") }.joined(separator: "\n"))")
+                                Text("\(LogItems.filter { !$0.contains("perform implicit import") && !$0.contains("clang-16: warning: -framework") }.joined(separator: "\n"))")
                                     .font(.system(size: 9, design: .monospaced))
                                     .foregroundColor(.primary)
                                 Spacer()

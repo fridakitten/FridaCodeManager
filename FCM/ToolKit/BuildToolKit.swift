@@ -32,27 +32,18 @@ func OpenApp(_ BundleID: String) {
 func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore: [String]) -> [String] {
     
     do {
+        let (fileExtensionsSet, ignoreSet, allFiles) = (Set(fileExtensions), Set(ignore), try FileManager.default.subpathsOfDirectory(atPath: projectPath))
+
         var objCFiles: [String] = []
         
-        let allFiles = try FileManager.default.subpathsOfDirectory(atPath: projectPath)
-        
-        for fileExtension in fileExtensions {
-            let files = allFiles
-                .filter { $0.hasSuffix(fileExtension) }
-                .filter { file in
-                    ignore.isEmpty || !ignore.contains { file.hasPrefix($0) }
-                }
-                .map { "'\($0)'" }
-            
-            objCFiles.append(contentsOf: files)
+        for file in allFiles {
+            if fileExtensionsSet.contains(where: { file.hasSuffix($0) }) &&
+               !ignoreSet.contains(where: { file.hasPrefix($0) }) {
+                objCFiles.append("'\(file)'")
+            }
         }
-        
         return objCFiles
     } catch {
         return []
     }
-}
-
-func fe(_ path: String) -> Bool {
-    return FileManager.default.fileExists(atPath: path)
 }

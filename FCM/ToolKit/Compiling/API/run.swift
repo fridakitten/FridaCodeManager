@@ -29,17 +29,8 @@ func api(_ text: String,_ Project:Project) -> ext {
     //api class
     let apiclass: String = tags(text,"api")
 
-    //build subclass
-    let build: String = tags(apiclass,"build")
-
-    //exec-before subclass
-    let before: String = tags(apiclass,"exec-before")
-
-    //exec-after subclass
-    let after: String = tags(apiclass,"exec-after")
-
-    //ignore subclass
-    let ignore: String = tags(apiclass,"compiler-ignore-content")
+    //subclasses
+    let (build, before, after, ignore) = (tags(apiclass,"build"),tags(apiclass,"exec-before"), tags(apiclass,"exec-after"), tags(apiclass,"compiler-ignore-content"))
 
     return ext(build: apicall(build,Project,false), bef: apicall(before,Project,true), aft: apicall(after,Project,true), ign: apicall(ignore,Project,false))
 }

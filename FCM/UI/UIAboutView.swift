@@ -21,32 +21,61 @@
  */ 
 
 import SwiftUI
-import UIKit
 
 struct Frida: View {
     @Binding var hello: UUID
+    
+    private let credits = [
+        ("SeanIsNotAConstant", "Main Developer", "https://github.com/fridakitten.png"),
+        ("AppInstaller iOS", "Compiling Genius", "https://github.com/AppInstalleriOSGH.png"),
+        ("Snoolie", "Helping Hand", "https://github.com/0xilis.png"),
+        ("HAHALOSAH", "Helping Hand", "https://github.com/HAHALOSAH.png"),
+        ("MudSplasher", "Icon Designer", "https://github.com/MudSplasher.png"),
+        ("meighler", "Licensor", "https://github.com/meighler.png")
+    ]
+
+    private let sideCredits = [
+        ("Opa334", "Trollstore Helper", "https://github.com/opa334.png"),
+        ("Theos", "SDK", "https://github.com/theos.png")
+    ]
+
+    private let supporters = [
+        ("RoothideDev", "Giving me Power", "https://github.com/roothide.png"),
+        ("Speedyfriend67", "Making Projects using FCM", "https://github.com/speedyfriend433.png"),
+        ("Burhan Rana", "Making videos about my tools", "https://github.com/burhangee.png")
+    ]
+    
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("About")) {
                     Text("FridaCodeManager \(global_version)")
                 }
-                Section(header: Text("Credits")) {
-                    cell(credit: "SeanIsNotAConstant", role: "Main Developer", url: "https://github.com/fridakitten.png")
-                    cell(credit: "AppInstaller iOS", role: "Compiling Genius", url: "https://github.com/AppInstalleriOSGH.png")
-                    cell(credit: "Snoolie", role: "Helping Hand", url: "https://github.com/0xilis.png")
-                    cell(credit: "HAHALOSAH", role: "Helping Hand", url: "https://github.com/HAHALOSAH.png")
-                    cell(credit: "MudSplasher", role: "Icon Designer", url: "https://github.com/MudSplasher.png")
-                    cell(credit: "meighler", role: "Licensor", url: "https://github.com/meighler.png")
-                }
-                Section(header: Text("Side Credits")) {
-                    cell(credit: "Opa334", role: "Trollstore Helper", url: "https://github.com/opa334.png")
-                    cell(credit: "Theos", role: "SDK", url: "https://github.com/theos.png")
-                }
-                Section(header: Text("Supporters")) {
-                    cell(credit: "RoothideDev", role: "Giving me Power", url: "https://github.com/roothide.png")
-                    cell(credit: "Speedyfriend67", role: "Making Projects using FCM", url: "https://github.com/speedyfriend433.png")
-                    cell(credit: "Burhan Rana", role: "Making videos about my tools", url: "https://github.com/burhangee.png")
+                
+                ForEach([
+                    ("Credits", credits),
+                    ("Side Credits", sideCredits),
+                    ("Supporters", supporters)
+                ], id: \.0) { sectionTitle, sectionCredits in
+                    Section(header: Text(sectionTitle)) {
+                        ForEach(sectionCredits.indices, id: \.self) { index in
+                            HStack {
+                                AsyncImageLoaderView(urlString: sectionCredits[index].2, width: 50, height: 50)
+                                    .shadow(color: Color.black.opacity(0.5), radius: 2, x: 0, y: 2)
+                                Spacer()
+                                VStack {
+                                    Text(sectionCredits[index].0)
+                                        .foregroundColor(.primary)
+                                        .font(.system(size: 14, weight: .bold))
+                                    Text(sectionCredits[index].1)
+                                        .foregroundColor(.secondary)
+                                        .font(.system(size: 12, weight: .semibold))
+                                }
+                                .frame(width: 200)
+                                Spacer()
+                            }
+                        }
+                    }
                 }
             }
             .id(hello)

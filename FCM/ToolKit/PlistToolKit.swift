@@ -23,100 +23,87 @@
 import Foundation
 
 func rplist(forKey key: String, plistPath: String) -> String? {
-    if let plistDict = NSDictionary(contentsOfFile: plistPath) as? [String: Any], let value = plistDict[key] as? String {
-        return value
-    } else {
-        print("Error reading value from \(plistPath) for key: \(key)")
+    guard let plistDict = NSDictionary(contentsOfFile: plistPath) as? [String: Any] else {
+        print("Error reading plist file at \(plistPath)")
         return nil
     }
+    
+    guard let value = plistDict[key] as? String else {
+        print("Value not found for key '\(key)' in plist file at \(plistPath)")
+        return nil
+    }
+    
+    return value
 }
 
 func wplist(value: Any, forKey key: String, plistPath: String) {
-    var plistDict: [String: Any]
-
-    if let existingDict = NSDictionary(contentsOfFile: plistPath) as? [String: Any] {
-        plistDict = existingDict
-    } else {
-        plistDict = [String: Any]()
-    }
+    var plistDict = (NSDictionary(contentsOfFile: plistPath) as? [String: Any]) ?? [:]
     plistDict[key] = value
-
+    
     if (plistDict as NSDictionary).write(toFile: plistPath, atomically: true) {
         print("Value successfully written to \(plistPath) for key: \(key)")
     } else {
-        print("Error writing value to \(plistPath)")
+        print("Error writing value to \(plistPath) for key: \(key)")
     }
 }
 
 func paeplist(aname arrayName: String, path plistPath: String) -> Bool {
-    guard let plistData = FileManager.default.contents(atPath: plistPath), let plistDictionary = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any], let targetArray = plistDictionary[arrayName] as? [Any] else {
+    guard let plistData = FileManager.default.contents(atPath: plistPath),
+          let plistDictionary = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any],
+          let _ = plistDictionary[arrayName] as? [Any] else {
         return false
     }
-
-    return targetArray is [Any]
+    
+    return true
 }
 
 func caplist(aname arrayName: String, path plistPath: String, arrayData: [Any]) {
-    var plistDictionary: [String: Any] = [:]
-
-    if let existingPlistData = FileManager.default.contents(atPath: plistPath), let existingPlist = try? PropertyListSerialization.propertyList(from: existingPlistData, options: [], format: nil) as? [String: Any] {
-        plistDictionary = existingPlist
-    }
+    var plistDictionary = (try? PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: plistPath)), options: [], format: nil) as? [String: Any]) ?? [:]
+    
     plistDictionary[arrayName] = arrayData
-    if let updatedPlistData = try? PropertyListSerialization.data(fromPropertyList: plistDictionary, format: .xml, options: 0) {
-        do {
-            try updatedPlistData.write(to: URL(fileURLWithPath: plistPath))
-            print("Array '\(arrayName)' created successfully in plist file at '\(plistPath)'.")
-        } catch {
-            print("Error writing to plist file: \(error)")
-        }
-    } else {
-        print("Error converting dictionary to plist data.")
+    
+    do {
+        let updatedPlistData = try PropertyListSerialization.data(fromPropertyList: plistDictionary, format: .xml, options: 0)
+        try updatedPlistData.write(to: URL(fileURLWithPath: plistPath))
+        print("Array '\(arrayName)' created successfully in plist file at '\(plistPath)'.")
+    } catch {
+        print("Error writing to plist file: \(error)")
     }
 }
 
 func rmaplist(aname arrayName: String, path plistPath: String) {
     guard var plistDictionary = try? PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: plistPath)), options: [], format: nil) as? [String: Any] else {
-        print("Error reading plist file.")
+        print("Error reading plist file at \(plistPath)")
         return
     }
-    guard plistDictionary[arrayName] != nil else {
-        print("Array '\(arrayName)' does not exist in the plist file.")
-        return
-    }
-plistDictionary.removeValue(forKey: arrayName)
-    if let updatedPlistData = try? PropertyListSerialization.data(fromPropertyList: plistDictionary, format: .xml, options: 0) {
-        do {
-            try updatedPlistData.write(to: URL(fileURLWithPath: plistPath))
-            print("Array '\(arrayName)' and its items removed successfully from plist file at '\(plistPath)'.")
-        } catch {
-            print("Error writing to plist file: \(error)")
-        }
-    } else {
-        print("Error converting dictionary to plist data.")
+    
+    plistDictionary.removeValue(forKey: arrayName)
+    
+    do {
+        let updatedPlistData = try PropertyListSerialization.data(fromPropertyList: plistDictionary, format: .xml, options: 0)
+        try updatedPlistData.write(to: URL(fileURLWithPath: plistPath))
+        print("Array '\(arrayName)' removed successfully from plist file at '\(plistPath)'.")
+    } catch {
+        print("Error writing to plist file: \(error)")
     }
 }
 
-func aiaplist(item: Any,aname arrayName: String,path plistPath: String) {
-    guard var plistDictionary = try? PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: plistPath)), options: [], format: nil) as? [String: Any] else {
-        print("Error reading plist file.")
+func aiaplist(item: Any, aname arrayName: String, path plistPath: String) {
+    guard var plistDictionary = try? PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: plistPath)), options: [], format: nil) as? [String: Any],
+          var targetArray = plistDictionary[arrayName] as? [Any] else {
+        print("Error reading or finding array '\(arrayName)' in plist file at \(plistPath)")
         return
     }
-    guard var targetArray = plistDictionary[arrayName] as? [Any] else {
-        print("Array '\(arrayName)' does not exist in the plist file.")
-        return
-    }
+    
     targetArray.append(item)
     plistDictionary[arrayName] = targetArray
-    if let updatedPlistData = try? PropertyListSerialization.data(fromPropertyList: plistDictionary, format: .xml, options: 0) {
-        do {
-            try updatedPlistData.write(to: URL(fileURLWithPath: plistPath))
-            print("Item '\(item)' added successfully to array '\(arrayName)' in plist file at '\(plistPath)'.")
-        } catch {
-            print("Error writing to plist file: \(error)")
-        }
-    } else {
-        print("Error converting dictionary to plist data.")
+    
+    do {
+        let updatedPlistData = try PropertyListSerialization.data(fromPropertyList: plistDictionary, format: .xml, options: 0)
+        try updatedPlistData.write(to: URL(fileURLWithPath: plistPath))
+        print("Item '\(item)' added successfully to array '\(arrayName)' in plist file at '\(plistPath)'.")
+    } catch {
+        print("Error writing to plist file: \(error)")
     }
 }
 

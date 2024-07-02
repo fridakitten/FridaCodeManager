@@ -21,6 +21,7 @@
  */ 
 
 import SwiftUI
+import Combine
 import UIKit
 
 struct PubImg: View {
@@ -47,10 +48,73 @@ struct PubImg: View {
             Spacer().frame(width: 0, height:0)
             .onAppear {
                 if selectedImage == nil {
-                    if fe("\(projpath)/Resources/AppIcon.png") {
+                    if FileManager.default.fileExists(atPath: "\(projpath)/Resources/AppIcon.png") {
                         selectedImage = loadImage(fromPath: "\(projpath)/Resources/AppIcon.png")
                     }
                 }
         }
+    }
+}
+
+struct AsyncImageLoaderView: View {
+    @StateObject private var imageLoader = ImageLoader()
+    private let urlString: String
+    private let width: CGFloat?
+    private let height: CGFloat?
+
+    init(urlString: String, width: CGFloat? = nil, height: CGFloat? = nil) {
+        self.urlString = urlString
+        self.width = width
+        self.height = height
+    }
+
+    private var url: URL? {
+        URL(string: urlString)
+    }
+
+    var body: some View {
+        if let uiImage = imageLoader.image {
+            Image(uiImage: uiImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: width, height: height)
+                .clipShape(Circle())
+        } else {
+            ProgressView()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: width, height: height)
+                .onAppear {
+                    if let url = url {
+                        imageLoader.loadImage(from: url)
+                    }
+                }
+        }
+    }
+}
+
+class ImageLoader: ObservableObject {
+    @Published var image: UIImage?
+
+    private var cancellable: AnyCancellable?
+
+    func loadImage(from url: URL) {
+        cancellable?.cancel()
+        cancellable = URLSession.shared.dataTaskPublisher(for: url)
+            .tryMap { (data, response) in
+                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                    throw URLError(.badServerResponse)
+                }
+                return data
+            }
+            .compactMap { UIImage(data: $0) }
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in
+            }, receiveValue: { [weak self] loadedImage in
+                self?.image = loadedImage
+            })
+    }
+
+    deinit {
+        cancellable?.cancel()
     }
 }

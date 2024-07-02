@@ -26,8 +26,6 @@ struct ProjPreferences: View {
     @Binding var ProjectName: String
     @Binding var hello: UUID
     @Binding var rname: String
-    @State var FrameworkPath = "\(global_documents)/frameworks"
-    @State var ProjectPath = ""
     var body: some View {
         NavigationView {
             List {
@@ -41,14 +39,11 @@ struct ProjPreferences: View {
                     Label("SDK", systemImage: "sdcard.fill")
                 }
             }
-            .accentColor(.primary)
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("\(rname)")
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                ProjectPath = "\(global_documents)/\(ProjectName)/Frameworks"
-            }
         }
+        .accentColor(.primary)
     }
 }
 
@@ -98,24 +93,21 @@ struct PrefsInfo: View {
         .id(rfresh)
         .onAppear {
             PlistPath = "\(global_documents)/\(ProjectName)/Resources/Info.plist"
-            AppName = (rplist(forKey: "CFBundleName", plistPath: PlistPath) ?? "")
-            AppliName = (rplist(forKey: "CFBundleExecutable", plistPath: PlistPath) ?? "")
-            BundleID = (rplist(forKey: "CFBundleIdentifier", plistPath: PlistPath) ?? "")
-            Version = (rplist(forKey: "CFBundleVersion", plistPath: PlistPath) ?? "")
-            MIOS = (rplist(forKey: "MinimumOSVersion", plistPath: PlistPath) ?? "")
+            (AppName, AppliName, BundleID, Version, MIOS) = ((rplist(forKey: "CFBundleName", plistPath: PlistPath) ?? ""), (rplist(forKey: "CFBundleExecutable", plistPath: PlistPath) ?? ""), (rplist(forKey: "CFBundleIdentifier", plistPath: PlistPath) ?? ""), (rplist(forKey: "CFBundleVersion", plistPath: PlistPath) ?? ""), (rplist(forKey: "MinimumOSVersion", plistPath: PlistPath) ?? ""))
             rfresh = UUID()
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("App Information")
         .navigationBarTitleDisplayMode(.inline)
     }
-    func save() {
-        wplist(value: AppName, forKey: "CFBundleName", plistPath: PlistPath)
-        wplist(value: AppliName, forKey: "CFBundleExecutable", plistPath: PlistPath)
-        wplist(value: BundleID, forKey: "CFBundleIdentifier", plistPath: PlistPath)
-        wplist(value: Version, forKey: "CFBundleVersion", plistPath: PlistPath)
-        wplist(value: Version, forKey: "CFBundleShortVersionString", plistPath: PlistPath)
-        wplist(value: MIOS, forKey: "MinimumOSVersion", plistPath: PlistPath)
+    private func save() {
+        let keys = ["CFBundleName", "CFBundleExecutable", "CFBundleIdentifier", "CFBundleVersion", "CFBundleShortVersionString", "MinimumOSVersion"]
+        let values = [AppName, AppliName, BundleID, Version, Version, MIOS]
+        
+        for i in 0..<keys.count {
+            wplist(value: values[i], forKey: keys[i], plistPath: PlistPath)
+        }
+
         hello = UUID()
     }
 }

@@ -26,7 +26,7 @@ import SwiftUI
 //global environment
 let jbroot: String = {
     let preroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
-    if !fe(preroot) {
+    if !FileManager.default.fileExists(atPath: preroot) {
         if let altroot = altroot(inPath: "/var/containers/Bundle/Application")?.path {
             return altroot
         }

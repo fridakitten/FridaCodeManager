@@ -21,74 +21,30 @@
  */ 
     
 import SwiftUI
-import UIKit
 import UniformTypeIdentifiers
 
 struct Home: View {
-    @State var fileimporter: Bool = false
-    @State var showProj: Bool = false
+    @State private var fileImporter = false
+    @State private var showProj = false
     @Binding var SDK: String
-    @State var app: String = ""
-    @State var bundleid: String = ""
-    @State var about: Bool = false
-    @State var hello: UUID = UUID()
+    @State private var app = ""
+    @State private var bundleid = ""
+    @State private var about = false
+    @State private var hello = UUID()
     @Binding var hellnah: UUID
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentationMode) private var presentationMode
+    
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("changelog")) {
-                    VStack {
-                        Spacer().frame(height: 10)
-                            ScrollView {
-                                Text("""
-1.4.1 (Fixes)
--removed LogStream
--now content ignore class in api will also ignore .swift files and .a files
--fixed this awful auto scrolling
-""")
-                                    .font(.system(size: 11))
-                                }
-                                Spacer()
-                            }
-                            .frame(height: 200)
-                        }
-                        Section() {
-                            Button( action: {
-                                showProj = true
-                                hellnah = UUID()
-                            }){
-                                listItem(label: "Create Project", systemImageName: "+", text: "Creates a FCM Project")
-                            }
-                            Button( action: {
-                                $fileimporter.trampolineIfNeeded(to: true)
-                            }){
-                                listItem(label: "Import Project", systemImageName: "↑", text: "Imports a Project")
-                            }
-                        }
-                        Button( action: {
-                            hello = UUID()
-                            about = true
-                        }){
-                            listItem(label: "About", systemImageName: "i", text: "Shows Information about this App")
-                        }
-                        .sheet(isPresented: $about) {
-                            Frida(hello: $hello)
-                        }
-                    }
-                    .listStyle(InsetGroupedListStyle())
-                    .navigationTitle("FridaCodeManager")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .fileImporter(isPresented: $fileimporter,allowedContentTypes: [.project]) { result in
-                    do {
-                        let fileURL = try result.get()
-                        importProj(target: fileURL.path)
-                        hellnah = UUID()
-                    } catch {
-                        print("Error importing file: \(error.localizedDescription)")
-                    }
-                }
+                changelogSection
+                projectButtonsSection
+                aboutButton
             }
+            .listStyle(InsetGroupedListStyle())
+            .navigationTitle("FridaCodeManager")
+            .navigationBarTitleDisplayMode(.inline)
+            .fileImporter(isPresented: $fileImporter, allowedContentTypes: [.project], onCompletion: handleFileImport)
             .sheet(isPresented: $showProj) {
                 BottomPopupView {
                     ProjPopupView(isPresented: $showProj, AppName: $app, BundleID: $bundleid, SDK: $SDK, hellnah: $hellnah)
@@ -96,17 +52,58 @@ struct Home: View {
                 .background(BackgroundClearView())
             }
         }
-        func listItem(label: String, systemImageName: String, text: String) -> some View {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(label)
-                        .font(.headline)
-                    Text(text)
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
+    }
+    
+    private var changelogSection: some View {
+        Section(header: Text("Changelog")) {
+            VStack {
+                Spacer().frame(height: 10)
+                ScrollView {
+                    Text("1.4.1 (Fixes)\n-LogStream removed\n-now content ignore class in API will also ignore .swift files and .a files\n-fixed this awful auto scrolling\n-some optimisations")
+                        .font(.system(size: 11))
                 }
                 Spacer()
-                ZStack {
+            }
+            .frame(height: 200)
+        }
+    }
+    
+    private var projectButtonsSection: some View {
+        Section {
+            Button(action: {
+                showProj = true
+                hellnah = UUID()
+            }) {
+                listItem(label: "Create Project", systemImageName: "+", text: "Creates a FCM Project")
+            }
+            Button(action: {
+                fileImporter = true
+            }) {
+                listItem(label: "Import Project", systemImageName: "↑", text: "Imports a Project")
+            }
+        }
+    }
+    
+    private var aboutButton: some View {
+        Button(action: {
+            hello = UUID()
+            about = true
+        }) {
+            listItem(label: "About", systemImageName: "i", text: "Shows Information about this App")
+        }
+        .sheet(isPresented: $about) {
+            Frida(hello: $hello)
+        }
+    }
+    
+    private func listItem(label: String, systemImageName: String, text: String) -> some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(label).font(.headline)
+                Text(text).font(.subheadline).foregroundColor(.gray)
+            }
+            Spacer()
+            ZStack {
                 Rectangle()
                     .foregroundColor(.secondary)
                     .aspectRatio(contentMode: .fit)
@@ -119,26 +116,18 @@ struct Home: View {
             }
         }
     }
-    func handleFileImport(_ fileURL: URL) {
-    do {
-        let documentsURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        let targetURL = documentsURL.appendingPathComponent("target.sproj")
-
-        try FileManager.default.copyItem(at: fileURL, to: targetURL)
-
-        // Additional logic after successful import
-        print("File copied successfully to \(targetURL)")
-    } catch {
-        print("Error handling file import: \(error.localizedDescription)")
+    
+    private func handleFileImport(result: Result<URL, Error>) {
+        switch result {
+        case .success(let fileURL):
+            importProj(target: fileURL.path)
+            hellnah = UUID()
+        case .failure(let error):
+            print("Error importing file: \(error.localizedDescription)")
+        }
     }
-  }
 }
 
 extension UTType {
-    static var project: UTType {
-        UTType(filenameExtension: "sproj")!
-    }
-    static var all: UTType {
-        UTType(filenameExtension: "txt")!
-    }
+    static var project: UTType { UTType(filenameExtension: "sproj")! }
 }

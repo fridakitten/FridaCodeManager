@@ -18,14 +18,9 @@
 
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
-    
- //Improved SparksBuild!
- //Better and Efficient checks
-
+ */
 
 import Foundation
-//import UIKit
 import SwiftUI
 
 func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ progress: Binding<Double>?) -> Int {
@@ -50,41 +45,36 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
 
     //finding code files
     messenger(status,progress,"finding code files",0.1)
-    let SwiftFiles = FindFilesStack(ProjectInfo.ProjectPath, [".swift"], splitAndTrim(apiextension.ign) + ["Resources"])
-    let AFiles = FindFilesStack(ProjectInfo.ProjectPath, [".a"], splitAndTrim(apiextension.ign) + ["Resources"])
-    let MFiles = FindFilesStack(ProjectInfo.ProjectPath, [".m", ".c", ".mm", ".cpp"], splitAndTrim(apiextension.ign) + ["Resources"])
+    let (MFiles, AFiles, SwiftFiles) = (FindFilesStack(ProjectInfo.ProjectPath, [".m", ".c", ".mm", ".cpp"], splitAndTrim(apiextension.ign) + ["Resources"]), FindFilesStack(ProjectInfo.ProjectPath, [".a"], splitAndTrim(apiextension.ign) + ["Resources"]), FindFilesStack(ProjectInfo.ProjectPath, [".swift"], splitAndTrim(apiextension.ign) + ["Resources"]))
 
     //finding frameworks
     messenger(status,progress,"finding frameworks",0.15)
-    let frameworks: [String] = {
-        if !MFiles.isEmpty, fe(info[3]) {
-            return findFrameworks(in: URL(fileURLWithPath: "\(ProjectInfo.ProjectPath)"), SDKPath: info[3])
-        }
-        return []
-    }()
-    let frameflags: String = {
-        return frameworks.map { framework in
-            return "-framework \(framework)"
-        }.joined(separator: " ")
-    }()
+    let frameworks = !MFiles.isEmpty && FileManager.default.fileExists(atPath: info[3]) ? findFrameworks(in: URL(fileURLWithPath: ProjectInfo.ProjectPath), SDKPath: info[3]) : []
+    let frameflags = frameworks.map { "-framework \($0)" }.joined(separator: " ")
 
     //setting up command
     clearlog()
     messenger(status,progress,"setting up compiler",0.2)
+
     var EXEC = ""
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
-            let commands = MFiles.map { mFile in
-                return "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' &>> \(global_documents)/log.txt ; "
-            }
-            EXEC += commands.joined()
+            EXEC += MFiles.map { mFile in
+                "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' &>> \(global_documents)/log.txt ; "
+            }.joined()
         }
-        EXEC += "swiftc \(SwiftFiles.joined(separator: " ")) \(AFiles.joined(separator: " ")) \( !MFiles.isEmpty ? "clang/*.o" : "") \(apiextension.build) \(fe(info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)' &>> \(global_documents)/log.txt"
+        EXEC += """
+        swiftc \(SwiftFiles.joined(separator: " ")) \(AFiles.joined(separator: " ")) \(MFiles.isEmpty ? "" : "clang/*.o") \(apiextension.build) \
+        \(FileManager.default.fileExists(atPath: info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)' &>> \(global_documents)/log.txt
+        """
     } else {
-        EXEC += "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) \(AFiles.joined(separator: " ")) -o '\(info[1])/\(ProjectInfo.Executable)'  &>> \(global_documents)/log.txt"
+        EXEC += """
+        clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) \(AFiles.joined(separator: " ")) \
+        -o '\(info[1])/\(ProjectInfo.Executable)' &>> \(global_documents)/log.txt
+        """
     }
-    let CDEXEC = "cd '\(ProjectInfo.ProjectPath)'"
-    let CLEANEXEC = "rm -rf '\(info[4])'; rm -rf '\(info[0])'"
+
+    let (CDEXEC,CLEANEXEC) = ("cd '\(ProjectInfo.ProjectPath)'", "rm -rf '\(info[4])'; rm -rf '\(info[0])'")
 
     //compiling app
     printlog("FridaCodeManager \(global_version)\n ")
@@ -93,7 +83,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         _ = climessenger("api-call-fetcher","build: \(apiextension.build)\n \nexec-before: \(apiextension.bef)\n \nexec-after: \(apiextension.aft)\n \ncompiler-ignore-content: \(apiextension.ign)")
     }
     if !frameworks.isEmpty {
-        _ = climessenger("framework-finder","\(frameworks.map { "\($0)" }.joined(separator: "\n") + "\n")")
+        _ = climessenger("framework-finder","\(frameworks.map { "\($0)" }.joined(separator: "\n"))")
     }
     cfolder(atPath: info[0])
     cfolder(atPath: info[1])
