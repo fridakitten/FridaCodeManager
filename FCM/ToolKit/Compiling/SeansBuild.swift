@@ -60,7 +60,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             EXEC += MFiles.map { mFile in
-                "clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' &>> \(global_documents)/log.txt ; "
+                "clang -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' &>> \(global_documents)/log.txt ; "
             }.joined()
         }
         EXEC += """
