@@ -57,7 +57,10 @@ UIColor.black.cgColor
     
     editor.textView.autocorrectionType = .no
     editor.textView.autocapitalizationType = .none
-    
+    editor.textView.textContentType = .none
+    editor.textView.smartQuotesType = .no
+    editor.textView.smartDashesType = .no
+    editor.textView.smartInsertDeleteType = .no
    editor.textView.layoutManager.allowsNonContiguousLayout = false
 
 editor.textView.layer.shouldRasterize = true
