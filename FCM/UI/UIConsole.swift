@@ -32,10 +32,12 @@ struct NeoLog: View {
             ScrollViewReader { scroll in
                 VStack(alignment: .leading) {
                     ForEach(LogItems) { Item in
-                        Text(Item.Message.lineFix())
-                        .font(.system(size: 9, weight: .regular, design: .monospaced))
-                        .foregroundColor(.primary)
-                        .id(Item.id)
+                        if !Item.Message.contains("perform implicit import of") {
+                            Text("\(Item.Message.lineFix())")
+                                .font(.system(size: 9, weight: .regular, design: .monospaced))
+                                .foregroundColor(.primary)
+                                .id(Item.id)
+                        }
                     }
                 }
                 .onChange(of: LogItems) { _ in
