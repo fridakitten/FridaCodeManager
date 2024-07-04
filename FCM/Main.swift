@@ -22,6 +22,20 @@
     
 import SwiftUI
 
+//global environment
+let jbroot: String = {
+    let preroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
+    if !FileManager.default.fileExists(atPath: preroot) {
+        if let altroot = altroot(inPath: "/var/containers/Bundle/Application")?.path {
+            return altroot
+        }
+    }
+    return preroot
+}()
+let global_documents: String = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].path
+let global_sdkpath: String = "\(global_documents)/../.sdk"
+let global_version: String = "v1.4.1 (non-release)"
+
 @main
 struct MyApp: App {
     @State var hello: UUID = UUID()

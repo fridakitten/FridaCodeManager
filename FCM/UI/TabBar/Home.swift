@@ -1,24 +1,24 @@
-/* 
-    Home.swift 
+ /* 
+ Home.swift 
 
-    Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
-    Copyright (C) 2024 fridakitten 
+ Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
+ Copyright (C) 2024 fridakitten 
 
-    This file is part of FridaCodeManager. 
+ This file is part of FridaCodeManager. 
 
-    FridaCodeManager is free software: you can redistribute it and/or modify 
-    it under the terms of the GNU General Public License as published by 
-    the Free Software Foundation, either version 3 of the License, or 
-    (at your option) any later version. 
+ FridaCodeManager is free software: you can redistribute it and/or modify 
+ it under the terms of the GNU General Public License as published by 
+ the Free Software Foundation, either version 3 of the License, or 
+ (at your option) any later version. 
 
-    FridaCodeManager is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of 
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-    GNU General Public License for more details. 
+ FridaCodeManager is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ GNU General Public License for more details. 
 
-    You should have received a copy of the GNU General Public License 
-    along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
-*/ 
+ You should have received a copy of the GNU General Public License 
+ along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
+ */ 
     
 import SwiftUI
 import UniformTypeIdentifiers
@@ -33,15 +33,6 @@ struct Home: View {
     @State private var hello = UUID()
     @Binding var hellnah: UUID
     @Environment(\.presentationMode) private var presentationMode
-    
-
-	private func changeLog() -> String {
-		do {
-			String(contentsOfFile: Bundle.main.bundlePath + "/changelog", encoding: .utf8)
-		} catch {
-			"Unable to read the changelog file: \(error.localizedDescription)"
-		}
-	}
     
     var body: some View {
         NavigationView {
@@ -132,9 +123,7 @@ struct Home: View {
             importProj(target: fileURL.path)
             hellnah = UUID()
         case .failure(let error):
-            ShowAlert(UIAlertController(title: "Error importing file", message: error.localizedDescription, preferredStyle: .alert))
             print("Error importing file: \(error.localizedDescription)")
-            // DismissAlert() // should I?
         }
     }
 }
