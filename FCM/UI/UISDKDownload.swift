@@ -7,7 +7,7 @@ struct SDKDownload: View {
     var body: some View {
         List {
             ForEach(sdks, id:\.self) { item in
-                if !fe("\(global_sdkpath)/iPhoneOS\(item).sdk") {
+                if !FileManager.default.fileExists(atPath: "\(global_sdkpath)/iPhoneOS\(item).sdk") {
                     Button( action: {
                         download(item)
                     }) {

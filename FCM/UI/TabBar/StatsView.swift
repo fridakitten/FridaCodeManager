@@ -23,31 +23,26 @@
 import SwiftUI
 
 struct StatsView: View {
+    @State private var stats: [(size: Double, count: Int, color: Color, language: String)] = []
     @State private var totalSize: Double = 0.0
-    @State private var swiftSize: Double = 0.0
-    @State private var cSize: Double = 0.0
-    @State private var cppSize: Double = 0.0
-    @State private var objCSize: Double = 0.0
-    @State private var objCppSize: Double = 0.0
     @State private var graph: UUID = UUID()
+
     var body: some View {
         NavigationView {
             List {
                 if totalSize != 0.0 {
-                    Section(header: Text("chart")) {
+                    Section(header: Text("Chart")) {
                         HStack {
                             Spacer()
-                            NestedCircleProgressView(progressValues: [swiftSize, cSize, cppSize, objCSize, objCppSize], totalSize: totalSize)
+                            NestedCircleProgressView(stats: stats, totalSize: totalSize)
                                 .id(graph)
                             Spacer()
                         }
-                     }
-                     Section(header: Text("Information")) {
-                         statsbox(color: Color.red, language: "Swift", doub: swiftSize, per: cp(value: swiftSize, of: totalSize))
-                         statsbox(color: Color.blue, language: "C", doub: cSize, per: cp(value: cSize, of: totalSize))
-                         statsbox(color: Color.green, language: "C++", doub: cppSize, per: cp(value: cppSize, of: totalSize))
-                         statsbox(color: Color.orange, language: "ObjectiveC", doub: objCSize, per: cp(value: objCSize, of: totalSize))
-                         statsbox(color: Color.yellow, language: "ObjectiveC++", doub: objCppSize, per: cp(value: objCppSize, of: totalSize))
+                    }
+                    Section(header: Text("Information")) {
+                        ForEach(stats.filter { $0.count > 0 }, id: \.language) { stat in
+                            StatsBox(stat: stat, totalSize: totalSize)
+                        }
                     }
                 } else {
                     Text("No Projects found")
@@ -62,25 +57,30 @@ struct StatsView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
     }
-    func cp(value: Double, of specificValue: Double) -> Double {
-        guard specificValue != 0.0 else {
-            return 0.0
-        }
-        let percentage = Double(value) / Double(specificValue) * 100.0
-        return percentage
-    }
+
     func updateFileSizes() {
-        swiftSize = calculateFileSize(path: global_documents, fileExtension: "swift")
-        cSize = calculateFileSize(path: global_documents, fileExtension: "c")
-        cppSize = calculateFileSize(path: global_documents, fileExtension: "cpp")
-        objCSize = calculateFileSize(path: global_documents, fileExtension: "m")
-        objCppSize = calculateFileSize(path: global_documents, fileExtension: "mm")
-        totalSize = swiftSize + cSize + cppSize + objCSize + objCppSize
+        let fileExtensions: [(String, Color, String)] = [
+            ("swift", .red, "Swift"),
+            ("c", .blue, "C"),
+            ("cpp", .green, "C++"),
+            ("m", .orange, "Objective-C"),
+            ("mm", .yellow, "Objective-C++")
+        ]
+
+        stats = fileExtensions.map { ext, color, lang in
+            let result = calculateFileSizeAndCount(path: global_documents, fileExtension: ext)
+            return (result.size, result.count, color, lang)
+        }
+        
+        totalSize = stats.reduce(0) { $0 + $1.size }
     }
-    func calculateFileSize(path: String, fileExtension: String) -> Double {
+
+    func calculateFileSizeAndCount(path: String, fileExtension: String) -> (size: Double, count: Int) {
         var totalSizeKB: Double = 0.0
+        var fileCount: Int = 0
         let fileManager = FileManager.default
         let enumerator = fileManager.enumerator(atPath: path)
+
         while let file = enumerator?.nextObject() as? String {
             if !file.contains("Frameworks") && !file.contains("frameworks") && file.hasSuffix(fileExtension) {
                 let filePath = (path as NSString).appendingPathComponent(file)
@@ -88,26 +88,30 @@ struct StatsView: View {
                     let attributes = try fileManager.attributesOfItem(atPath: filePath)
                     if let fileSize = attributes[FileAttributeKey.size] as? Double {
                         totalSizeKB += fileSize / 1024  // Convert bytes to kilobytes
+                        fileCount += 1
                     }
                 } catch {
                     print("Error reading file attributes for \(filePath): \(error)")
                 }
             }
         }
-        return totalSizeKB
+        return (totalSizeKB, fileCount)
     }
 }
 
 struct NestedCircleProgressView: View {
-    let progressValues: [Double]
+    let stats: [(size: Double, count: Int, color: Color, language: String)]
     let totalSize: Double
-    let colors: [Color] = [.red, .blue, .green, .orange, .yellow]
+
     var body: some View {
         ZStack {
-            ForEach(0..<progressValues.count) { index in
+            ForEach(0..<stats.count) { index in
                 Circle()
-                    .trim(from: index == 0 ? 0.0 : CGFloat(progressValues[0..<index].reduce(0, +) / totalSize),to: CGFloat(progressValues[0...index].reduce(0, +) / totalSize))
-                    .stroke(colors[index], lineWidth: 20)
+                    .trim(
+                        from: index == 0 ? 0.0 : CGFloat(stats[0..<index].map { $0.size }.reduce(0, +) / totalSize),
+                        to: CGFloat(stats[0...index].map { $0.size }.reduce(0, +) / totalSize)
+                    )
+                    .stroke(stats[index].color, lineWidth: 20)
                     .frame(width: 100, height: 100)
             }
         }
@@ -115,22 +119,23 @@ struct NestedCircleProgressView: View {
     }
 }
 
-struct statsbox: View {
-    let color: Color
-    let language: String
-    let doub: Double
-    let per: Double
+struct StatsBox: View {
+    let stat: (size: Double, count: Int, color: Color, language: String)
+    let totalSize: Double
+
     var body: some View {
-        if doub != 0.0 {
-            HStack {
-                Rectangle()
-                    .foregroundColor(color)
-                    .cornerRadius(360)
-                    .frame(width: 20, height: 20)
-                Text("\(language)")
-                Spacer()
-                Text("\(String(format: "%.2f", per))% • \(String(format: "%.2f", doub)) KB")
+        HStack {
+            Rectangle()
+                .foregroundColor(stat.color)
+                .cornerRadius(360)
+                .frame(width: 20, height: 20)
+            Text(stat.language)
+            Spacer()
+            VStack(alignment: .trailing) {
+                Text("\(String(format: "%.2f", stat.size / totalSize * 100))% • \(String(format: "%.2f", stat.size)) KB")
                     .font(.system(size: 12, weight: .semibold))
+                Text("Files: \(stat.count) • Avg size: \(String(format: "%.2f", stat.size / Double(stat.count))) KB")
+                    .font(.system(size: 12, weight: .regular))
             }
         }
     }

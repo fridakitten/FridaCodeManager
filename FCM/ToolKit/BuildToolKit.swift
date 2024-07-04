@@ -29,52 +29,21 @@ func OpenApp(_ BundleID: String) {
     workspace?.perform(Selector(("openApplicationWithBundleID:")), with: BundleID)
 }
 
-// Return a String? that has all items matching required suffix (if any), seperated using spaces.
-func FindFiles(_ ProjectPath: String, _ suffix: String) -> String? {
-    do {
-        var Files: [String] = []
-        for File in try FileManager.default.subpathsOfDirectory(atPath: ProjectPath).filter({$0.hasSuffix(suffix)}) {
-            Files.append("'\(File)'")
-        }
-        return Files.joined(separator: " ")
-    } catch {
-        return nil
-    }
-}
-
-// Find (Objective)C files stored in a folder, ignore cases are excluded.
-func findObjCFilesStack(_ projectPath: String, _ ignore: [String]) -> [String] {
+func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore: [String]) -> [String] {
     
     do {
+        let (fileExtensionsSet, ignoreSet, allFiles) = (Set(fileExtensions), Set(ignore), try FileManager.default.subpathsOfDirectory(atPath: projectPath))
+
         var objCFiles: [String] = []
         
-        let allFiles = try FileManager.default.subpathsOfDirectory(atPath: projectPath)
-        
-        for fileExtension in CLangExts {
-            let files = allFiles
-                .filter { $0.hasSuffix(fileExtension) }
-                .filter { file in
-                    ignore.isEmpty || !ignore.contains { file.hasPrefix($0) }
-                }
-                .map { "'\($0)'" }
-            
-            objCFiles.append(contentsOf: files)
+        for file in allFiles {
+            if fileExtensionsSet.contains(where: { file.hasSuffix($0) }) &&
+               !ignoreSet.contains(where: { file.hasPrefix($0) }) {
+                objCFiles.append("'\(file)'")
+            }
         }
-        
         return objCFiles
     } catch {
         return []
-    }
-}
-
-// Checks if a file exists.
-func fe(_ path: String) -> Bool {
-    return FileManager.default.fileExists(atPath: path)
-}
-
-func closeallfd() {
-    let maxFD = sysconf(Int32(_SC_OPEN_MAX))
-    for fd in 0..<maxFD {
-        close(Int32(fd))
     }
 }

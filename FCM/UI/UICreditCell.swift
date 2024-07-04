@@ -23,30 +23,6 @@
 import SwiftUI
 import Combine
 
-struct cell: View {
-    @State var credit: String
-    @State var role: String
-    @State var url: String
-
-    var body: some View {
-        HStack {
-            AsyncImageLoaderView(urlString: url, width: 50, height: 50)
-                .shadow(color: Color.black.opacity(0.5), radius: 2, x: 0, y: 2)
-            Spacer()
-            VStack {
-                Text(credit)
-                    .foregroundColor(.primary)
-                    .font(.system(size: 14, weight: .bold))
-                Text(role)
-                    .foregroundColor(.secondary)
-                    .font(.system(size: 12, weight: .semibold))
-            }
-            .frame(width: 200)
-            Spacer()
-        }
-    }
-}
-
 struct AsyncImageLoaderView: View {
     @StateObject private var imageLoader = ImageLoader()
     private let urlString: String
@@ -105,3 +81,4 @@ class ImageLoader: ObservableObject {
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] loadedImage in self?.image = loadedImage })
     }
 }
+

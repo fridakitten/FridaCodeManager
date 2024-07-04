@@ -151,9 +151,6 @@ struct CodeSpace: View {
         FileList(directoryPath: ProjectInfo.ProjectPath, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
                 buildView(ProjectInfo: ProjectInfo, sdk: $sdk, buildv: $buildv)
-                   .onDisappear {
-                       closeallfd()
-                   }
             }
     }
 }
@@ -166,11 +163,14 @@ struct buildView: View {
     @State var console: Bool = false
     @State var status: String = ""
     @State private var progress = 0.0
+    @State private var Log: [String] = []
     var body: some View {
         VStack {
-            LogView(show: $console)
+            //if console {
+                NeoLog()
+            //}
             Spacer().frame(height: 25)
-            if console == true {
+            if !compiling {
                 Button( action: {
                     buildv = false
                 }){
@@ -184,13 +184,21 @@ struct buildView: View {
                 }
                 .frame(width: UIScreen.main.bounds.width / 1.2, height: 50)
             } else {
+                    ZStack {
+                        Rectangle()
+                            .foregroundColor(Color(UIColor.systemGray6))
+                            .cornerRadius(15)
+                VStack {
                 ProgressView(value: progress, total: 1.0)
                     .progressViewStyle(LinearProgressViewStyle())
-                    .frame(width: 250)
+                    .frame(width: UIScreen.main.bounds.width / 1.4)
                     .accentColor(.primary)
                 Spacer().frame(height: 10)
                 Text("\(status)")
                     .font(.system(size: 11, weight: .semibold))
+                }
+                }
+                .frame(width: UIScreen.main.bounds.width / 1.2, height: 65)
             }
         }
         .disabled(compiling)
@@ -198,17 +206,11 @@ struct buildView: View {
             DispatchQueue.global(qos: .utility).async {
                 compiling = true
                 _ = build(ProjectInfo, true, $status, $progress)
-                withAnimation {
-                    console = true
-                }
-                /*if result != 0 {
+                DispatchQueue.main.async {
                     withAnimation {
-                        console = true
+                        compiling = false
                     }
-                } else {
-                    //buildv = false
-                }*/
-                compiling = false
+                }
             }
         }
     }

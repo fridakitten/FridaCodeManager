@@ -43,7 +43,9 @@ func copyf(sourcePath: String, destinationPath: String) {
     let fileManager = FileManager.default
         
     do {   
-        try! fileManager.copyItem(atPath: sourcePath, toPath: destinationPath)
+        try fileManager.copyItem(atPath: sourcePath, toPath: destinationPath)
+    } catch {
+        print("Error creating file: \(error.localizedDescription)")
     }
 }
 

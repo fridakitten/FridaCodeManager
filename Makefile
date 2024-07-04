@@ -4,7 +4,7 @@ SDK_URL = https://github.com/theos/sdks.git
 
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
 SWIFT := $(wildcard ./FCM/*.swift)
-VERSION = 1.4
+VERSION = 1.4.1
 
 # Check if SDK exists. If not, get.
 create:

@@ -108,7 +108,7 @@ struct ImgView: View {
                 ImagePickerView(selectedImage: $selectedImage)
             }
         }
-        if fe("\(projpath)/Resources/AppIcon.png") {
+        if FileManager.default.fileExists(atPath: "\(projpath)/Resources/AppIcon.png") {
             Section {
                 Button("Remove Icon") {
                     remove()
@@ -139,7 +139,7 @@ struct ImgView: View {
         }
     }
     func remove() {
-        if fe("\(projpath)/Resources/AppIcon.png") {
+        if FileManager.default.fileExists(atPath: "\(projpath)/Resources/AppIcon.png") {
             rmplist(key: "CFBundleIconFile", plistPath: "\(projpath)/Resources/Info.plist")
             removeFile(atPath: "\(projpath)/Resources/AppIcon.png")
             selectedImage = createEmptyImage()

@@ -81,3 +81,4 @@ struct LogViewDebug: View {
         }
     }
 }
+

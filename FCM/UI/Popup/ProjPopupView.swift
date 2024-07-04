@@ -88,7 +88,7 @@ struct ProjPopupView: View {
                     Spacer().frame(width: 10)
 
                     Button(action: {
-                        if AppName != "", BundleID != "", !fe("\(global_documents)/\(AppName)") {
+                        if AppName != "", BundleID != "", !FileManager.default.fileExists(atPath: "\(global_documents)/\(AppName)") {
                             haptfeedback(1)
                             isPresented = false
                             MakeApplicationProject(AppName, BundleID,SDK: SDK, type: type)
