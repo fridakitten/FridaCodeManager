@@ -1,27 +1,27 @@
 /* 
-	 SeansBuild.swift
+    SeansBuild.swift
 
-	 Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
-	 Copyright (C) 2024 fridakitten
+    Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
+    Copyright (C) 2024 fridakitten
 
-	 This file is part of FridaCodeManager.
+    This file is part of FridaCodeManager.
 
-	 FridaCodeManager is free software: you can redistribute it and/or modify
-	 it under the terms of the GNU General Public License as published by
-	 the Free Software Foundation, either version 3 of the License, or
-	 (at your option) any later version.
+    FridaCodeManager is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	 FridaCodeManager is distributed in the hope that it will be useful,
-	 but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 GNU General Public License for more details.
+    FridaCodeManager is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	 You should have received a copy of the GNU General Public License
-	 along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
- */ 
+    You should have received a copy of the GNU General Public License
+    along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
+*/ 
     
- //Improved SparksBuild!
- //Better and Efficient checks
+//Improved SparksBuild!
+//Better and Efficient checks
 
 
 import Foundation
@@ -50,13 +50,13 @@ func build(_ ProjectInfo: Project, _ erase: Bool,_ status: Binding<String>?,
     //API Text     info[7]
 
     //define build bash environment
-    let bashenv: [String] = ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks"]
+    let bashenv = ["SDKROOT=\(info[3])", "CPATH=\(Bundle.main.bundlePath)/include",
+                   "LIBRARY_PATH=\(info[3])/usr/lib",
+                   "FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks"]
 
     //Processing API
     var apiextension: ext = ext(build: "", bef: "", aft: "", ign: "")
-    if !info[7].isEmpty {
-        apiextension = api(info[7], ProjectInfo)
-    }
+    if !info[7].isEmpty { apiextension = api(info[7], ProjectInfo) }
 
     //finding code files
     messenger(status, progress, "finding code files", 0.1)
@@ -82,6 +82,7 @@ func build(_ ProjectInfo: Project, _ erase: Bool,_ status: Binding<String>?,
     //setting up command
     messenger(status, progress, "setting up compiler", 0.2)
     var EXEC = ""
+
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             let commands = MFiles.map { mFile in
@@ -176,7 +177,7 @@ func climessenger(_ title: String, _ text: String, _ command: String = "",
         print("\(slice) \(title) \(slice)\n\(text)\n\(delimiter)\n\n")
     } else {
         print("\(slice) \(title) \(slice)")
-        //code = shell((command ?? "echo"), uid: (uid ?? 501), env: (env ?? []))
+        code = shell((command ?? "echo"), uid: (uid ?? 501), env: (env ?? []))
         print("\(delimiter)\n")
     }
     return code

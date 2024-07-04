@@ -1,30 +1,31 @@
 /* 
-	 UIDebugLog.swift
+    UIDebugLog.swift
 
-	 Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
-	 Copyright (C) 2024 fridakitten
+    Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
+    Copyright (C) 2024 fridakitten
 
-	 This file is part of FridaCodeManager.
+    This file is part of FridaCodeManager.
 
-	 FridaCodeManager is free software: you can redistribute it and/or modify
-	 it under the terms of the GNU General Public License as published by
-	 the Free Software Foundation, either version 3 of the License, or
-	 (at your option) any later version.
+    FridaCodeManager is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	 FridaCodeManager is distributed in the hope that it will be useful,
-	 but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 GNU General Public License for more details.
+    FridaCodeManager is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	 You should have received a copy of the GNU General Public License
-	 along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
- */ 
+    You should have received a copy of the GNU General Public License
+    along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
+*/ 
     
 import SwiftUI
 
 struct Debug: View {
     @State private var position: CGSize = .zero
     @State private var startPosition: CGSize = .zero
+
     var body: some View {
         LogViewDebug()
             .shadow(color: Color.primary.opacity(1), radius: 4, x: 0, y: 0)
@@ -46,12 +47,17 @@ struct Debug: View {
 
 struct LogViewDebug: View {
     @State var LogItems: [String.SubSequence] = [""]
+
     var body: some View {
         Group {
                 VStack {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading) {
-                            Text("\(LogItems.filter { !$0.contains("perform implicit import") && !$0.contains("clang-14: warning: -framework") }.joined(separator: "\n"))")
+                            Text(
+                                LogItems.filter {
+                                    !$0.contains("perform implicit import") && !$0.contains("clang-14: warning: -framework")
+                                }.joined(separator: "\n")
+                            )
                                 .font(.system(size: 11, design: .monospaced))
                                 .foregroundColor(.primary)
                         }

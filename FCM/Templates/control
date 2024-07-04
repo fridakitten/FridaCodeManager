@@ -1,6 +1,0 @@
-Package: %(Id)
-Name: %(project)
-Description: %(des)
-Architecture: iphoneos-arm64
-Author: %(author)
-Maintainer: %(author)
