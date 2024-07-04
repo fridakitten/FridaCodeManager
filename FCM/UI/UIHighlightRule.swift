@@ -23,7 +23,6 @@
 import SwiftUI
 import UIKit
 
-public typealias SystemFontAlias = UIFont
 public typealias SystemColorAlias = UIColor
 public typealias SymbolicTraits = UIFontDescriptor.SymbolicTraits
 public typealias SystemTextView = UITextView
@@ -112,16 +111,6 @@ extension HighlightingTextEditor {
             let matches = rule.pattern.matches(in: text, options: [], range: all)
             matches.forEach { match in
                 rule.formattingRules.forEach { formattingRule in
-
-                    /*var font = SystemFontAlias()
-                    highlightedString.enumerateAttributes(in: match.range, options: []) { attributes, _, _ in
-                        let fontAttribute = attributes.first { $0.key == .font }!
-                        // swiftlint:disable:next force_cast
-                        let previousFont = fontAttribute.value as! SystemFontAlias
-                        font = previousFont.with(formattingRule.fontTraits)
-                    }*/
-                    //highlightedString.addAttribute(.font, value: font, range: match.range)
-
                     let matchRange = Range<String.Index>(match.range, in: text)!
                     let matchContent = String(text[matchRange])
                     guard let key = formattingRule.key,

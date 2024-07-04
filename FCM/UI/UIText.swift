@@ -38,14 +38,11 @@ struct CodeEditorView: View {
     init(quar: Binding<Bool>,filePath: Binding<String>) {
         _quar = quar
         _filePath = filePath
-        if #available(iOS 15.0, *) { 
-            let navigationBarAppearance = UINavigationBarAppearance()
-
-navigationBarAppearance.configureWithDefaultBackground() 
-    UINavigationBar.appearance().standardAppearance = navigationBarAppearance 
-    UINavigationBar.appearance().compactAppearance = navigationBarAppearance 
-    UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
-        }
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.configureWithDefaultBackground()
+        UINavigationBar.appearance().standardAppearance = navigationBarAppearance
+        UINavigationBar.appearance().compactAppearance = navigationBarAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
     }
     var body: some View {
         NavigationView {
@@ -57,28 +54,18 @@ navigationBarAppearance.configureWithDefaultBackground()
             }
             .navigationBarItems(leading:
                 Button("Close") {
-// Create a new instance of UINavigationBarAppearance
-let navigationBarAppearance = UINavigationBarAppearance()
-
-// Set background color
-navigationBarAppearance.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.9) // Adjust alpha as needed
-
-// Set title text attributes
-let titleAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label] // Using label color
-navigationBarAppearance.titleTextAttributes = titleAttributes
-
-// Set button styles
-let buttonAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white] // Set button color to white
-navigationBarAppearance.buttonAppearance.normal.titleTextAttributes = buttonAttributes
-
-let backItemAppearance = UIBarButtonItemAppearance()
-backItemAppearance.normal.titleTextAttributes = [.foregroundColor : UIColor.label] // fix text color
-navigationBarAppearance.backButtonAppearance = backItemAppearance
-
-// Apply the appearance to the navigation bar
-UINavigationBar.appearance().standardAppearance = navigationBarAppearance
-UINavigationBar.appearance().compactAppearance = navigationBarAppearance
-UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
+                    let navigationBarAppearance = UINavigationBarAppearance()
+                    navigationBarAppearance.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.9)
+                    let titleAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+                    navigationBarAppearance.titleTextAttributes = titleAttributes
+                    let buttonAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+                    navigationBarAppearance.buttonAppearance.normal.titleTextAttributes = buttonAttributes
+                    let backItemAppearance = UIBarButtonItemAppearance()
+                    backItemAppearance.normal.titleTextAttributes = [.foregroundColor : UIColor.label]
+                    navigationBarAppearance.backButtonAppearance = backItemAppearance
+                    UINavigationBar.appearance().standardAppearance = navigationBarAppearance
+                    UINavigationBar.appearance().compactAppearance = navigationBarAppearance
+                    UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
                     quar = false
                 }
                 .accentColor(.primary)
@@ -105,12 +92,14 @@ UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
     }
     private func loadCode() {
         do {
-            code = try! String(contentsOfFile: filePath)
+            code = load(filePath)
         }
     }
     private func saveCode() {
         do {
-            try! code.write(toFile: filePath, atomically: true, encoding: .utf8)
+            try code.write(toFile: filePath, atomically: true, encoding: .utf8)
+        } catch {
+            print("something went wrong :(")
         }
     }
     private func findFilename() -> String {
