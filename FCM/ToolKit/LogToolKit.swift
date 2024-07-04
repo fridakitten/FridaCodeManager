@@ -38,7 +38,7 @@ func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: 
 }
 
 func printlog(_ text: String) {
-    shell("echo -e \"\(text)\" &>> \(global_documents)/log.txt")
+    shell("echo -e \"\(text)\"")
 }
 
 func clearlog() {

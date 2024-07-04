@@ -21,36 +21,59 @@
  */ 
 
 import SwiftUI
-import Foundation
 
-struct LogView: View {
-    @Binding var LogItems: [String]
-    
+// Just use the same FD every time
+let LogPipe = Pipe()
+
+struct NeoLog: View {
+    @State var LogItems: [LogItem] = []
     var body: some View {
-                VStack {
-                    ScrollView(showsIndicators: false) {
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text("\(LogItems.filter { !$0.contains("perform implicit import") }.joined(separator: "\n"))")
-                                    .font(.system(size: 9, design: .monospaced))
-                                    .foregroundColor(.primary)
-                                Spacer()
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(4)
+        ScrollView {
+            ScrollViewReader { scroll in
+                VStack(alignment: .leading) {
+                    ForEach(LogItems) { Item in
+                        Text(Item.Message.lineFix())
+                        .font(.system(size: 9, weight: .regular, design: .monospaced))
+                        .foregroundColor(.primary)
+                        .id(Item.id)
                     }
-                    .padding(.horizontal)
-                    .background(Color(UIColor.systemGray6))
-                    .cornerRadius(15)
                 }
-                .frame(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 2)
-        .contextMenu {
-            Button("Copy Log") {
-                let fullstring: String = "\(LogItems.filter { !$0.contains("perform implicit import") }.joined(separator: "\n"))"
-                copyToClipboard(text: fullstring, alert: false)
+                .onChange(of: LogItems) { _ in
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            scroll.scrollTo(LogItems.last?.id, anchor: .bottom)
+                        }
+                    }
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding()
+        .frame(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 2.5)
+        .background(Color(UIColor.systemGray6))
+        .cornerRadius(20)
+.onAppear {
+    LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
+        if let logString = String(data: fileHandle.availableData, encoding: .utf8) {
+            LogItems.append(LogItem(Message: logString))
+        }
+    }
+    setvbuf(stdout, nil, _IONBF, 0)
+    setvbuf(stderr, nil, _IONBF, 0)
+    dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
+    dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
+}
+    }
+}
+
+struct LogItem: Identifiable, Equatable {
+    var id = UUID()
+    var Message: String
+}
+
+extension String {
+    func lineFix() -> String {
+        return String(self.last == "\n" ? String(self.dropLast()) : self)
     }
 }
 
