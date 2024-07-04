@@ -39,11 +39,9 @@ func cfile(atPath path: String, withContent content: String) {
     }
 }
 
-func copyf(sourcePath: String, destinationPath: String) {
-    let fileManager = FileManager.default
-        
+func copyf(sourcePath: String, destinationPath: String) {        
     do {   
-        try fileManager.copyItem(atPath: sourcePath, toPath: destinationPath)
+        try FileManager.default.copyItem(atPath: sourcePath, toPath: destinationPath)
     } catch {
         print("Error creating file: \(error.localizedDescription)")
     }
@@ -78,8 +76,7 @@ func copyc(from sp: String, to dp: String) throws {
 }
 
 func renameFile(atPath filePath: String, to newFileName: String) throws {
-    let fileManager = FileManager.default
     let directoryPath = (filePath as NSString).deletingLastPathComponent
     let newFilePath = (directoryPath as NSString).appendingPathComponent(newFileName)
-    try fileManager.moveItem(atPath: filePath, toPath: newFilePath)
+    try FileManager.default.moveItem(atPath: filePath, toPath: newFilePath)
 }

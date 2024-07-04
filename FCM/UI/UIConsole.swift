@@ -52,17 +52,17 @@ struct NeoLog: View {
         .frame(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 2.5)
         .background(Color(UIColor.systemGray6))
         .cornerRadius(20)
-.onAppear {
-    LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
-        if let logString = String(data: fileHandle.availableData, encoding: .utf8) {
-            LogItems.append(LogItem(Message: logString))
+        .onAppear {
+            LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
+                if let logString = String(data: fileHandle.availableData, encoding: .utf8) {
+                    LogItems.append(LogItem(Message: logString))
+                }
+            }
+            setvbuf(stdout, nil, _IONBF, 0)
+            setvbuf(stderr, nil, _IONBF, 0)
+            dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
+            dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
         }
-    }
-    setvbuf(stdout, nil, _IONBF, 0)
-    setvbuf(stderr, nil, _IONBF, 0)
-    dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
-    dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
-}
     }
 }
 

@@ -23,7 +23,7 @@
 import Foundation
 import UIKit
 
-extension UIFont {
+/*extension UIFont {
     var bold: UIFont {
         return with(.traitBold)
     }
@@ -47,4 +47,4 @@ extension UIFont {
         }
         return UIFont(descriptor: descriptor, size: 0)
     }
-}
+}*/

@@ -43,7 +43,7 @@ struct PubImg: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color.primary, lineWidth: 2)
-                   )
+                    )
             }
             Spacer().frame(width: 0, height:0)
             .onAppear {

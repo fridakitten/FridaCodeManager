@@ -22,7 +22,6 @@
     
 import SwiftUI
 
-
 //global environment
 let jbroot: String = {
     let preroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
@@ -33,10 +32,7 @@ let jbroot: String = {
     }
     return preroot
 }()
-let global_documents: String = {
-    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-    return paths[0].path
-}()
+let global_documents: String = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].path
 let global_sdkpath: String = "\(global_documents)/../.sdk"
 let global_version: String = "v1.4.1 (non-release)"
 
@@ -48,30 +44,26 @@ struct MyApp: App {
         navigationBarAppearance.backgroundColor = UIColor.systemBackground
         let titleAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
         navigationBarAppearance.titleTextAttributes = titleAttributes
-        let buttonAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white] // Set button color to white
+        let buttonAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         navigationBarAppearance.buttonAppearance.normal.titleTextAttributes = buttonAttributes
         let backItemAppearance = UIBarButtonItemAppearance()
-        backItemAppearance.normal.titleTextAttributes = [.foregroundColor : UIColor.label] // fix text color
+        backItemAppearance.normal.titleTextAttributes = [.foregroundColor : UIColor.label]
         navigationBarAppearance.backButtonAppearance = backItemAppearance
         UINavigationBar.appearance().standardAppearance = navigationBarAppearance
         UINavigationBar.appearance().compactAppearance = navigationBarAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
-
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor.systemBackground
-
         UITabBar.appearance().standardAppearance = appearance
-        if #available(iOS 15.0, *) {
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-        }
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
     var body: some Scene {
         WindowGroup {
             ContentView(hello: $hello)
                 .onOpenURL { url in
                         importProj(target: url.path)
-                   hello = UUID()
+                        hello = UUID()
                 }
         }
     }

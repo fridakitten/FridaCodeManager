@@ -54,9 +54,9 @@ func grule(_ isaythis: String) -> [HighlightRule] {
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0))
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "@\\w+[^()]", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0))
-                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(int|short|typedef|long|unsigned|const|float|double|BOOL|char|NSString|CGFloat|CGRect|CGPoint|void|\\w+_t)\\b", options: []), formattingRules: [
+                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(int|short|typedef|long|unsigned|const|float|double|BOOL|bool|char|NSString|CGFloat|CGRect|CGPoint|void|\\w+_t)\\b", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0))
-                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(-?\\d+(\\.\\d+)?|true|false)\\b", options: []), formattingRules: [
+                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(-?\\d+(\\.\\d+)?|true|false|YES|NO)\\b", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.7569, green: 0.2039, blue: 0.3882, alpha: 1.0))
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(//.*|\\/\\*[\\s\\S]*?\\*\\/)", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0, green: 0.4824, blue: 0.9098, alpha: 1.0))
@@ -64,12 +64,18 @@ func grule(_ isaythis: String) -> [HighlightRule] {
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0))
                 ])
             ]
-        case "html", "plist", "xml", "api":
+        case "html", "plist", "xml", "api","entitlements":
             return [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "<[^>]+>", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0))
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<!\\/\\/)(\"(.*?)\")", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0))
+                ])
+            ]
+        case "sh":
+            return [
+                HighlightRule(pattern: try! NSRegularExpression(pattern: "(#.*[\\s\\S]*?)", options: []), formattingRules: [
+                    TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0, green: 0.4824, blue: 0.9098, alpha: 1.0))
                 ])
             ]
         default:

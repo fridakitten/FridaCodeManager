@@ -46,7 +46,6 @@ struct ContentView: View {
                     Label("Settings", systemImage: "gear")
                 }
         }
-        .offset(x: 0, y: 0)
         .accentColor(.primary)
     }
 }

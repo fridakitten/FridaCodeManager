@@ -25,6 +25,8 @@ import Foundation
 import UIKit
 
 struct CodeEditorGreat: View {
+    @AppStorage("fontname") var fname: String = "Menlo"
+    @AppStorage("bsl") var bsl: Bool = true
     @Binding var text: String
     @State var font: CGFloat
     @State var rules: [HighlightRule]
@@ -33,39 +35,32 @@ struct CodeEditorGreat: View {
         _font = State(initialValue: font)
         _rules = State(initialValue: grule(suffix))
     }
-    @AppStorage("fontname") var fname: String = "Menlo"
-    @AppStorage("bsl") var bsl: Bool = true
     var body: some View {
         ZStack {
             Color(UIColor.systemGray6)
-    .ignoresSafeArea()
+                .ignoresSafeArea()
             HighlightedTextEditor(text: $text, highlightRules: rules)
                 .introspect { editor in
-
-    editor.textView.font = UIFont(name: fname, size: font)
-    editor.textView.backgroundColor = .clear
-    editor.textView.tintColor = UIColor(Color.primary)
-if bsl == true {
-    editor.textView.layer.shadowColor = 
-UIColor.black.cgColor
-    editor.textView.layer.shadowRadius = 1
-    editor.textView.layer.shadowOpacity = 0.2
-    editor.textView.layer.shadowOffset = CGSize(width: 0, height: 1)
-}
-
-    editor.textView.keyboardType = .asciiCapable
-    
-    editor.textView.autocorrectionType = .no
-    editor.textView.autocapitalizationType = .none
-    editor.textView.textContentType = .none
-    editor.textView.smartQuotesType = .no
-    editor.textView.smartDashesType = .no
-    editor.textView.smartInsertDeleteType = .no
-   editor.textView.layoutManager.allowsNonContiguousLayout = false
-
-editor.textView.layer.shouldRasterize = true
-editor.textView.layer.rasterizationScale = UIScreen.main.scale
-            }
+                     editor.textView.font = UIFont(name: fname, size: font)
+                     editor.textView.backgroundColor = .clear
+                     editor.textView.tintColor = UIColor(Color.primary)
+                     editor.textView.keyboardType = .asciiCapable
+                     editor.textView.autocorrectionType = .no
+                     editor.textView.autocapitalizationType = .none
+                     editor.textView.textContentType = .none
+                     editor.textView.smartQuotesType = .no
+                     editor.textView.smartDashesType = .no
+                     editor.textView.smartInsertDeleteType = .no
+                     editor.textView.layoutManager.allowsNonContiguousLayout = false
+                     editor.textView.layer.shouldRasterize = true
+                     editor.textView.layer.rasterizationScale = UIScreen.main.scale
+                     if bsl {
+                         editor.textView.layer.shadowColor = UIColor.black.cgColor
+                         editor.textView.layer.shadowRadius = 1
+                         editor.textView.layer.shadowOpacity = 0.2
+                         editor.textView.layer.shadowOffset = CGSize(width: 0, height: 1)
+                     }
+                }
         }
     }
 }
