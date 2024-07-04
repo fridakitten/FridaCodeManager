@@ -1,24 +1,24 @@
- /* 
- UIFileList.swift 
+/* 
+    UIFileList.swift 
 
- Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
- Copyright (C) 2024 fridakitten 
+    Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
+    Copyright (C) 2024 fridakitten 
 
- This file is part of FridaCodeManager. 
+    This file is part of FridaCodeManager. 
 
- FridaCodeManager is free software: you can redistribute it and/or modify 
- it under the terms of the GNU General Public License as published by 
- the Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version. 
+    FridaCodeManager is free software: you can redistribute it and/or modify 
+    it under the terms of the GNU General Public License as published by 
+    the Free Software Foundation, either version 3 of the License, or 
+    (at your option) any later version. 
 
- FridaCodeManager is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
+    FridaCodeManager is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of 
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+    GNU General Public License for more details. 
 
- You should have received a copy of the GNU General Public License 
- along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
+    You should have received a copy of the GNU General Public License 
+    along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
+*/ 
     
 import SwiftUI
 import Foundation
@@ -53,6 +53,7 @@ struct FileList: View {
     @State var showfile: Bool = false
     @Binding var actpath: String
     @Binding var action: Int
+
     var body: some View {
         List {
             Section {
@@ -218,25 +219,12 @@ struct FileList: View {
             ImageView(imagePath: $selpath, fbool: $fbool)
         }
     }
+
     func gsymbol(item: String) -> String {
         let suffix = gsuffix(from: item)
-        switch(suffix) {
-            case "m":
-                return ".\(suffix)"
-            case "h":
-                return ".\(suffix)"
-            case "c":
-                return ".\(suffix)"
-            case "mm":
-                return ".\(suffix)"
-            case "cpp":
-                return ".\(suffix)"
-            case "api":
-                return ".\(suffix)"
-            default:
-                return ""
-        }
+        return (CLangsExts.contains(".\(suffix)") || suffix == "api") ? ".\(suffix)" : "";
     }
+
     func gcolor(item: String) -> Color {
         let suffix = gsuffix(from: item)
         switch(suffix) {
@@ -246,7 +234,7 @@ struct FileList: View {
                 return Color.blue
             case "mm":
                 return Color.yellow
-            case "cpp":
+            case "cpp", "cc", "cxx":
                 return Color.green
             case "swift":
                 return Color.red
@@ -258,18 +246,15 @@ struct FileList: View {
                 return Color.primary
         }
     }
+
     func gsize(item: String) -> Int {
         let suffix = gsuffix(from: item)
         switch(suffix) {
-            case "m":
-                return 8
-            case "h":
-                return 8
-            case "c":
+            case "m", "h", "c":
                 return 8
             case "mm":
                 return 5
-            case "cpp":
+            case "cpp", "cc", "cxx":
                 return 4
             case "api":
                 return 4
@@ -277,42 +262,37 @@ struct FileList: View {
                 return 0
         }
     }
+
     func gtypo(item: String) -> Bool {
         let suffix = gsuffix(from: item)
-        switch(suffix) {
-            case "png":
-                return true
-            case "jpg":
-                return true
-            case "jpeg":
-                return true
-            case "PNG":
-                return true
-            case "JPG":
+        switch(suffix.lowercased()) {
+            case "png", "jpg", "jpeg":
                 return true
             default:
                 return false
         }
     }
+
     func loadFiles() {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
         do {
             let items = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
-            let fileURLs = items.filter { url in
-            !isDirectory(url) && url.lastPathComponent != "DontTouchMe.plist"}
+            let fileURLs = items.filter { url in !isDirectory(url) && url.lastPathComponent != "DontTouchMe.plist"}
             let folderURLs = items.filter { isDirectory($0) }
             files = folderURLs + fileURLs
         } catch {
+            ShowAlert(UIAlertController(title: "Error loading files", message: error.localizedDescription, preferredStyle: .alert))
             print("Error loading files: \(error.localizedDescription)")
         }
     }
+
     func deleteItems(at offsets: IndexSet) {
         for index in offsets {
-            let itemURL = (files)[index]
             do {
-                try FileManager.default.removeItem(at: itemURL)
+                try FileManager.default.removeItem(at: files[index])
             } catch {
+                ShowAlert(UIAlertController(title: "Error deleting item", message: error.localizedDescription, preferredStyle: .alert))
                 print("Error deleting item: \(error.localizedDescription)")
             }
         }
@@ -323,6 +303,7 @@ struct FileList: View {
 struct ImageView: View {
     @Binding var imagePath: String
     @Binding var fbool: Bool
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -346,6 +327,7 @@ struct ImageView: View {
             }
         }
     }
+
     private func loadImage() -> UIImage {
         guard let image = UIImage(contentsOfFile: imagePath) else {
             return UIImage(systemName: "photo")!
@@ -358,6 +340,7 @@ struct SDKList: View {
     @State private var files: [URL] = []
     @State var directoryPath: String
     @Binding var sdk: String
+
     var body: some View {
         List {
             Section() {
@@ -381,6 +364,7 @@ struct SDKList: View {
         .navigationTitle("SDKs")
         .navigationBarTitleDisplayMode(.inline)
     }
+
     func loadFiles() {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
@@ -406,6 +390,7 @@ func gfilesize(atPath filePath: String) -> String {
         return "0.00" // Error occurred while getting file attributes or file doesn't exist
     }
 }
+
 func isDirectory(_ fileURL: URL) -> Bool {
     var isDirectory: ObjCBool = false
     FileManager.default.fileExists(atPath: fileURL.path, isDirectory: &isDirectory)

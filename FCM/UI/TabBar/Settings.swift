@@ -1,24 +1,24 @@
- /* 
- Settings.swift 
+/* 
+    Settings.swift 
 
- Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
- Copyright (C) 2024 fridakitten 
+    Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
+    Copyright (C) 2024 fridakitten 
 
- This file is part of FridaCodeManager. 
+    This file is part of FridaCodeManager. 
 
- FridaCodeManager is free software: you can redistribute it and/or modify 
- it under the terms of the GNU General Public License as published by 
- the Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version. 
+    FridaCodeManager is free software: you can redistribute it and/or modify 
+    it under the terms of the GNU General Public License as published by 
+    the Free Software Foundation, either version 3 of the License, or 
+    (at your option) any later version. 
 
- FridaCodeManager is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
+    FridaCodeManager is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of 
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+    GNU General Public License for more details. 
 
- You should have received a copy of the GNU General Public License 
- along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
+    You should have received a copy of the GNU General Public License 
+    along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
+*/
     
 import SwiftUI
 
@@ -36,7 +36,7 @@ struct Settings: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("default sdk")) {
+                Section(header: Text("Default SDK")) {
                     NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
                         Text(sdk)
                     }
@@ -76,10 +76,10 @@ struct textset: View {
         List {
             Section(header: Text("Font")) {
                 FontPickerView(fname: $fname)
-                Stepper("Font Size: \(String(Int(fontstate)))", value: $fontstate, in: 0...20)
-                .onChange(of: fontstate) { _ in
-                    save()
-                }
+                // stackoverflow.com/a/58733666
+                // iOS 13+ way used.
+                TextField("Current font Size: \(String(Int(fontstate)))", value: $fontstate, formatter: NumberFormatter())
+                    .onSubmit { save() }
             }
             Section(header: Text("Appearance")) {
                 Toggle("Seperation Layer", isOn: $bsl)
@@ -89,6 +89,7 @@ struct textset: View {
         .navigationTitle("Code Editor")
         .navigationBarTitleDisplayMode(.inline)
     }
+
     func save() {
         UserDefaults.standard.set(fontstate, forKey: "savedfont")
     }
@@ -98,6 +99,7 @@ struct FontPickerView: View {
     @State private var selectedFontIndex = 0
     @Binding var fname: String
     let codeEditorFonts: [String] = guif()
+
     var body: some View {
         VStack {
             Picker(selection: $fname, label: Text("Font")) {
