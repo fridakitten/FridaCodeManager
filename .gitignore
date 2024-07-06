@@ -5,3 +5,4 @@ Blueprint/FridaCodeManager.app/sdk
 Product/*
 .package
 .sdk_exists
+Chainmaker/.tmp

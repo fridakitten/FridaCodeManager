@@ -90,8 +90,3 @@ for file in $CHAIN_LIB/*; do
         echo "signed $file"
     fi
 done
-
-# compressing toolchain
-echo -e "\e[31mcompressing toolchain\e[0m"
-TOOLCHAINFILE=toolchain-$(date +"%Y-%m-%d_%H-%M-%S").zip
-cd .tmp/toolchain && zip -rq ../../$TOOLCHAINFILE ./*
