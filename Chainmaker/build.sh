@@ -20,7 +20,7 @@ for package in "${packages[@]}"; do
 done
 
 # toolchain creation
-echo -e "\e[31mcreating toolchain\e[0m"
+echo -e "\033[32mcreating toolchain\e[0m"
 mkdir .tmp/toolchain/bin .tmp/toolchain/lib
 
 ## ENV ##
