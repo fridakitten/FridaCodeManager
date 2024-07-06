@@ -118,8 +118,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
     //shell(CLEANEXEC)
     if erase {
-        //shell("rm '\(ProjectInfo.ProjectPath)/ts.ipa'")
-        //shell("killall '\(ProjectInfo.Executable)' > /dev/null 2>&1")
+        shell("rm '\(ProjectInfo.ProjectPath)/ts.ipa'")
+        shell("killall '\(ProjectInfo.Executable)' > /dev/null 2>&1")
         OpenApp(ProjectInfo.BundleID)
     }
     return 0

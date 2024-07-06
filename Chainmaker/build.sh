@@ -63,30 +63,15 @@ cp -r $ROOT_LIB/llvm-16/lib/clang $CHAIN_LIB
 echo -e "\e[38;5;208mpatching @rpath\e[0m"
 for file in $CHAIN_BIN/*; do
     if [ ! -d $file ]; then
-        install_name_tool -delete_rpath '/var/jb/usr/lib' $file
-        install_name_tool -add_rpath '@loader_path/../lib' $file
+        install_name_tool -delete_rpath $ROOT_RPATH $file
+        install_name_tool -add_rpath $CHAIN_RPATH $file
         echo "relinked $file"
     fi
 done
 for file in $CHAIN_LIB/*; do
     if [ ! -d $file ]; then
-        install_name_tool -delete_rpath '/var/jb/usr/lib' $file
-        install_name_tool -add_rpath '@loader_path/../lib' $file
+        install_name_tool -delete_rpath $ROOT_RPATH $file
+        install_name_tool -add_rpath $CHAIN_RPATH $file
         echo "relinked $file"
-    fi
-done
-
-## CODESIGNATURE PATCH ##
-echo -e "\e[38;5;208msigning toolchain\e[0m"
-for file in $CHAIN_BIN/*; do
-    if [ ! -d $file ]; then
-        ./fps $file > /dev/null
-        echo "signed $file"
-    fi
-done
-for file in $CHAIN_LIB/*; do
-    if [ ! -d $file ]; then
-        ./fps $file > /dev/null
-        echo "signed $file"
     fi
 done
