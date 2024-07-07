@@ -65,7 +65,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         """
     }
 
-    let /*(*/CDEXEC/*,CLEANEXEC)*/ = /*(*/"cd '\(ProjectInfo.ProjectPath)'"/*, "rm -rf '\(info[4])'; rm -rf '\(info[0])'")*/
+    let (CDEXEC,CLEANEXEC) = ("cd '\(ProjectInfo.ProjectPath)'", "rm -rf '\(info[0])'")
 
     //compiling app
     printlog("FridaCodeManager \(global_version)\n ")
@@ -78,7 +78,6 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
     cfolder(atPath: info[0])
     cfolder(atPath: info[1])
-    cfolder(atPath: info[4])
     try? copyc(from: info[2], to: info[1])
     shell("rm '\(info[1])/DontTouchMe.plist'")
 
@@ -86,7 +85,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         messenger(status,progress,"running api-exec-stage (before)",0.3)
         if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.bef)",nil,bashenv) != 0 {
             _ = climessenger("error-occurred", "running api-exec-stage failed")
-            //shell(CLEANEXEC)
+            shell(CLEANEXEC)
             return 1
         }
     }
@@ -94,7 +93,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     messenger(status,progress,"compiling \(ProjectInfo.Executable)",0.4)
     if climessenger("compiler-stage","","\(CDEXEC) ; \(EXEC)", nil, bashenv) != 0 {
         _ = climessenger("error-occurred","compiling \(ProjectInfo.Executable) failed")
-        //shell(CLEANEXEC)
+        shell(CLEANEXEC)
         return 1
     }
 
@@ -102,7 +101,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if !apiextension.aft.isEmpty {
         if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.aft)",nil,bashenv) != 0 {
             _ = climessenger("error-occurred", "running api-exec-stage failed")
-            //shell(CLEANEXEC)
+            shell(CLEANEXEC)
             return 1
         }
     }
@@ -116,7 +115,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         let result: Int = shell("\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa' > /dev/null 2>&1", uid: 0)
         _ = climessenger("install--stage","TrollStore Helper returned \(String(result))")
     }
-    //shell(CLEANEXEC)
+    shell(CLEANEXEC)
     if erase {
         shell("rm '\(ProjectInfo.ProjectPath)/ts.ipa'")
         shell("killall '\(ProjectInfo.Executable)' > /dev/null 2>&1")

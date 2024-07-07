@@ -76,11 +76,12 @@ struct Home: View {
             }) {
                 listItem(label: "Create Project", systemImageName: "+", text: "Creates a FCM Project")
             }
-            Button(action: {
+            //ToDo: Making internal TrollStore app function
+            /*Button(action: {
                 fileImporter = true
             }) {
                 listItem(label: "Import Project", systemImageName: "↑", text: "Imports a Project")
-            }
+            }*/
         }
     }
     
