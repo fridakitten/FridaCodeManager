@@ -10,8 +10,12 @@ iOS 15.0 - 17.0 was offcially tested on both, roothide and rootless
 Its meant to be compiled on jailbroken iOS devices in terminal,
 compiling it using macos can cause certain anomalies with UI, etc
 
-You need `swift`,`clang`,`git` and `make`. Run `make all` to compile and package it as a .deb
+### General
+You need `swift`,`clang` and `make`. Run `make all` to compile and package it as a .deb
 To compile package for roothide use `make roothide`
+
+### Special
+To compile FCMTS(TrollStore Edition) you must have a rootless jailbroken device for the Chainmaker. You need `swift`,`clang`,`make` and `odcctools`. Use `make trollstore` in that case.
 
 Was successfully compiled on
 </br>
@@ -35,6 +39,10 @@ Was successfully compiled on
         <tr>
             <td>iPhone 11</td>
             <td>iOS 16.5</td>
+        </tr>
+        <tr>
+            <td>iPhone 14 Pro</td>
+            <td>iOS 17.0</td>
         </tr>
     </table>
 </br>
