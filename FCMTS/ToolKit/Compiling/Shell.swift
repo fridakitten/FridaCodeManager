@@ -24,7 +24,7 @@ import Foundation
 import Darwin
 
 @discardableResult func shell(_ command: String, uid: uid_t? = 501, env: [String]? = []) -> Int {
-    return runCommand("/bin/dash",["-c",command], (uid ?? 501), (env ?? []))
+    return runCommand("/bin/bash",["-c",command], (uid ?? 501), (env ?? []))
 }
 
 // Define C functions

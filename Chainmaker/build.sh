@@ -5,7 +5,7 @@ fi
 mkdir -p .tmp .tmp/procursus .tmp/toolchain .tmp/toolchain/bin .tmp/toolchain/lib
 
 # toolchain packages download #
-packages=("coreutils" "libreadline8" "libiosexec1" "libncursesw6" "libintl8" "libssl3" "libedit0" "libzstd1" "libxar1" "dash" "ld64" "libuuid16" "libtapi" "odcctools" "libllvm16" "libclang-cpp16" "clang-16" "libclang-common-16-dev" "ldid" "zip" "unzip" "libplist3" "shell-cmds" "curl" "libcurl4" "libc-ares2" "libnghttp2-14" "libidn2-0" "librtmp1" "libgmp10" "libgnutls30" "libhogweed6" "libnettle8" "libssh2-1" "libssl3" "libbrotli1" "libunistring5" "libp11-kit0" "libtasn1-6" "libffi8")
+packages=("coreutils" "libreadline8" "libiosexec1" "libncursesw6" "libintl8" "libssl3" "libedit0" "libzstd1" "libxar1" "bash" "ld64" "libuuid16" "libtapi" "odcctools" "libllvm16" "libclang-cpp16" "clang-16" "libclang-common-16-dev" "ldid" "zip" "unzip" "libplist3" "shell-cmds" "curl" "libcurl4" "libc-ares2" "libnghttp2-14" "libidn2-0" "librtmp1" "libgmp10" "libgnutls30" "libhogweed6" "libnettle8" "libssh2-1" "libssl3" "libbrotli1" "libunistring5" "libp11-kit0" "libtasn1-6" "libffi8")
 
 for package in "${packages[@]}"; do
     echo -e "\e[38;5;208mdownloading $package\e[0m"
@@ -33,7 +33,7 @@ CHAIN_RPATH=@loader_path/../lib
 
 ## COPY STAGE ##
 echo -e "\e[38;5;208mcopy stage\e[0m"
-binaries=("dash" "echo" "mkdir" "rmdir" "cp" "mv" "rm" "ls" "ld" "ln" "install_name_tool" "otool" "ldid" "zip" "unzip" "killall" "curl")
+binaries=("bash" "echo" "ld" "ln" "install_name_tool" "otool" "ldid" "zip" "unzip" "killall" "curl")
 libraries=("libedit.0.dylib" "libiosexec.1.dylib" "libreadline.8.dylib" "libhistory.8.dylib" "libncursesw.6.dylib" "libintl.8.dylib" "libzstd.1.dylib" "libxar.1.dylib" "libcrypto.3.dylib" "libuuid.16.dylib" "libtapi.dylib" "libplist-2.0.3.dylib" "libcurl.4.dylib" "libcares.2.dylib" "libnghttp2.14.dylib" "libidn2.0.dylib" "librtmp.1.dylib" "libgmp.10.dylib" "libgnutls.30.dylib" "libhogweed.6.dylib" "libnettle.8.dylib" "libssh2.1.dylib" "libssl.3.dylib" "libbrotlidec.1.dylib" "libbrotlicommon.1.dylib" "libunistring.5.dylib" "libp11-kit.0.dylib" "libtasn1.6.dylib" "libffi.8.dylib")
 
 for binary in "${binaries[@]}"; do
@@ -66,3 +66,6 @@ echo -e "\e[32;5;208mpost patching Stage\e[0m"
 echo -e "\e[38;5;208mapplying curl cacert fix\e[0m"
 mkdir -p .tmp/toolchain/share/curl
 cp cacert.pem .tmp/toolchain/share/curl
+
+bash shell/compile.sh
+cp shell/output/* $CHAIN_BIN
