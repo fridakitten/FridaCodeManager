@@ -48,7 +48,7 @@ Was successfully compiled on
 </br>
 
 ## Credits
-- SeanIsNotAConstant: [https://github.com/fridakitten](https://github.com/fridakitten)
+- FridaDEV: [https://github.com/fridakitten](https://github.com/fridakitten)
 - AppInstallerIOS: [https://github.com/AppInstalleriOSGH](https://github.com/AppInstalleriOSGH)
 - meighler: [https://github.com/meighler](https://github.com/meighler)
 - HAHALOSAH: [https://github.com/HAHALOSAH](https://github.com/HAHALOSAH)
