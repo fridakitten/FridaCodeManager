@@ -42,7 +42,7 @@ struct Settings: View {
                     }
                 }
                 Section(header: Text("Advanced")) {
-                    NavigationLink(destination: textset(bsl: $bsl, fname: $fname,fontstate: $fontstate)) {
+                    NavigationLink(destination: FontSettingsBundleMain()) {
                         Label("Code Editor", systemImage: "doc.plaintext.fill")
                     }
                     NavigationLink(destination: AuthorSettings()) {

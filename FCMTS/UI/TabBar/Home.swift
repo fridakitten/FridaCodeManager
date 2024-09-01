@@ -59,7 +59,7 @@ struct Home: View {
             VStack {
                 Spacer().frame(height: 10)
                 ScrollView {
-                    Text("1.4.1 (Fixes)\n-LogStream removed\n-now content ignore class in API will also ignore .swift files and .a files\n-fixed this awful auto scrolling\n-some optimisations\n-changed Log UI\n-updated highlighting engine\n-fixed swift error logging")
+                    Text("v1.5 \"Colorful\" Update\n-added default iOS app icon to project list\n-added Code Editor Color customisation")
                         .font(.system(size: 11))
                 }
                 Spacer()

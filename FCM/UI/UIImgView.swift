@@ -23,6 +23,7 @@
 import SwiftUI
 import Combine
 import UIKit
+import Foundation
 
 struct PubImg: View {
     @State var projpath: String
@@ -50,6 +51,8 @@ struct PubImg: View {
                 if selectedImage == nil {
                     if FileManager.default.fileExists(atPath: "\(projpath)/Resources/AppIcon.png") {
                         selectedImage = loadImage(fromPath: "\(projpath)/Resources/AppIcon.png")
+                    } else if FileManager.default.fileExists(atPath: "\(Bundle.main.bundlePath)/default.png") {
+                        selectedImage = loadImage(fromPath: "\(Bundle.main.bundlePath)/default.png")
                     }
                 }
         }
