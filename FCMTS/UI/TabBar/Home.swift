@@ -59,7 +59,7 @@ struct Home: View {
             VStack {
                 Spacer().frame(height: 10)
                 ScrollView {
-                    Text("1.4.1 (Fixes)\n-LogStream removed\n-now content ignore class in API will also ignore .swift files and .a files\n-fixed this awful auto scrolling\n-some optimisations\n-changed Log UI\n-updated highlighting engine")
+                    Text("1.4.1 (Fixes)\n-LogStream removed\n-now content ignore class in API will also ignore .swift files and .a files\n-fixed this awful auto scrolling\n-some optimisations\n-changed Log UI\n-updated highlighting engine\n-fixed swift error logging")
                         .font(.system(size: 11))
                 }
                 Spacer()
