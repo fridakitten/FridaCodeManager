@@ -51,6 +51,8 @@ struct CodeEditorPreview: View {
                      editor.textView.smartDashesType = .no
                      editor.textView.smartInsertDeleteType = .no
                      editor.textView.layoutManager.allowsNonContiguousLayout = false
+                     editor.textView.isEditable = false
+                     editor.textView.isUserInteractionEnabled = false
                      if bsl {
                          editor.textView.layer.shadowColor = UIColor.black.cgColor
                          editor.textView.layer.shadowRadius = 1
