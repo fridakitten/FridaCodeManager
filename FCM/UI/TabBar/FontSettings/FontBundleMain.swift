@@ -26,6 +26,7 @@ struct FontSettingsBundleMain: View {
     //old texset
     @AppStorage("fontname") var fname: String = "Menlo"
     @AppStorage("bsl") var bsl: Bool = true
+    @AppStorage("fbold") var bold: Bool = false
 
     //color
     @State private var color1: Color = Color.red
@@ -73,6 +74,7 @@ struct ContentView: View {
                 Section(header: Text("Properties")) {
                     FontPickerView(fname: $fname)
                     Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
+                    Toggle("Bold", isOn: $bold)
                 }
                 Section {
                     Button("Apply") {
@@ -98,12 +100,13 @@ struct ContentView: View {
                         font = 13
                         UserDefaults.standard.set(font, forKey: "savedfont")
                         bsl = true
+                        bold = false
                         fname = "Menlo"
                         identifier = UUID()
                     }
                 }
             }
-            .navigationTitle("FCM Settings Bundle")
+            .navigationTitle("Code Editor")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 (color1, color2, color3, color4, color5, color6) = (loadColor("C1"), loadColor("C2"), loadColor("C3"), loadColor("C4"), loadColor("C5"), loadColor("C6"))

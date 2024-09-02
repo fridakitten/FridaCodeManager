@@ -27,6 +27,7 @@ import UIKit
 struct CodeEditorPreview: View {
     @AppStorage("fontname") var fname: String = "Menlo"
     @AppStorage("bsl") var bsl: Bool = true
+    @AppStorage("fbold") var bold: Bool = false
     @Binding var text: String
     @State var font: CGFloat
     @State var rules: [HighlightRule]
@@ -39,7 +40,7 @@ struct CodeEditorPreview: View {
         ZStack {
             HighlightedTextEditor(text: $text, highlightRules: rules)
                 .introspect { editor in
-                     editor.textView.font = UIFont(name: fname, size: font)
+                     editor.textView.font = UIFont(name: "\(fname)\(bold ? "-Bold" : "")", size: font)
                      editor.textView.backgroundColor = .clear
                      editor.textView.tintColor = UIColor(Color.primary)
                      editor.textView.keyboardType = .asciiCapable
