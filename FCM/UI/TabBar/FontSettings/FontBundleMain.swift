@@ -63,31 +63,56 @@ struct ContentView: View {
                 Section("Color") {
                     HStack {
                         ColorPicker("", selection: $color1)
+                            .onChange(of: color1) { _ in
+                                 saveallcolor()
+                                 identifier = UUID()
+                             }
                         ColorPicker("", selection: $color2)
+                            .onChange(of: color2) { _ in
+                                 saveallcolor()
+                                 identifier = UUID()
+                             }
                         ColorPicker("", selection: $color3)
+                            .onChange(of: color3) { _ in
+                                 saveallcolor()
+                                 identifier = UUID()
+                             }
                         ColorPicker("", selection: $color4)
+                            .onChange(of: color4) { _ in
+                                 saveallcolor()
+                                 identifier = UUID()
+                             }
                         ColorPicker("", selection: $color5)
+                            .onChange(of: color5) { _ in
+                                 saveallcolor()
+                                 identifier = UUID()
+                             }
                         ColorPicker("", selection: $color6)
+                            .onChange(of: color6) { _ in
+                                 saveallcolor()
+                                 identifier = UUID()
+                             }
                     }
                     Toggle("Text Seperation Layer", isOn: $bsl)
+                        .onChange(of: bsl) { _ in
+                            identifier = UUID()
+                         }
                 }
                 Section(header: Text("Properties")) {
                     FontPickerView(fname: $fname)
+                        .onChange(of: fname) { _ in
+                            identifier = UUID()
+                         }
                     Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
+                        .onChange(of: font) { _ in
+                            identifier = UUID()
+                         }
                     Toggle("Bold", isOn: $bold)
+                        .onChange(of: bold) { _ in
+                            identifier = UUID()
+                        }
                 }
                 Section {
-                    Button("Apply") {
-                        //texset
-                        UserDefaults.standard.set(font, forKey: "savedfont")
-
-                        //new
-                        saveallcolor()
-                        identifier = UUID()
-                    }
-                    Button("Load") {
-                        (color1, color2, color3, color4, color5, color6) = (loadColor("C1"), loadColor("C2"), loadColor("C3"), loadColor("C4"), loadColor("C5"), loadColor("C6"))
-                    }
                     Button("Reset") {
                         color1 = Color(UIColor(red: 1.0, green: 0.2, blue: 0.6, alpha: 1.0))
                         color2 = Color(UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0))
