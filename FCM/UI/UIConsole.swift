@@ -32,8 +32,13 @@ struct NeoLog: View {
             ScrollViewReader { scroll in
                 VStack(alignment: .leading) {
                     ForEach(LogItems) { Item in
-                        if !Item.Message.contains("perform implicit import of") {
-                            Text("\(Item.Message.lineFix())")
+                        let cleanedMessage = Item.Message
+                            .split(separator: "\n")
+                            .filter { !$0.contains("perform implicit import of") }
+                            .joined(separator: "\n")
+
+                        if !cleanedMessage.isEmpty {
+                            Text("\(cleanedMessage.lineFix())")
                                 .font(.system(size: 9, weight: .regular, design: .monospaced))
                                 .foregroundColor(.primary)
                                 .id(Item.id)
@@ -56,12 +61,15 @@ struct NeoLog: View {
         .cornerRadius(20)
         .onAppear {
             LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
-                if let logString = String(data: fileHandle.availableData, encoding: .utf8) {
+            let logData = fileHandle.availableData
+                if !logData.isEmpty, let logString = String(data: logData, encoding: .utf8) {
                     LogItems.append(LogItem(Message: logString))
                 }
             }
-            setvbuf(stdout, nil, _IONBF, 0)
-            setvbuf(stderr, nil, _IONBF, 0)
+
+            setvbuf(stdout, nil, _IOLBF, 0)
+            setvbuf(stderr, nil, _IOLBF, 0)
+
             dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
             dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
         }
