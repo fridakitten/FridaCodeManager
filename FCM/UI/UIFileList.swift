@@ -221,17 +221,7 @@ struct FileList: View {
     func gsymbol(item: String) -> String {
         let suffix = gsuffix(from: item)
         switch(suffix) {
-            case "m":
-                return ".\(suffix)"
-            case "h":
-                return ".\(suffix)"
-            case "c":
-                return ".\(suffix)"
-            case "mm":
-                return ".\(suffix)"
-            case "cpp":
-                return ".\(suffix)"
-            case "api":
+            case "m", "h", "c", "mm", "cpp", "api":
                 return ".\(suffix)"
             default:
                 return ""
@@ -261,17 +251,11 @@ struct FileList: View {
     func gsize(item: String) -> Int {
         let suffix = gsuffix(from: item)
         switch(suffix) {
-            case "m":
-                return 8
-            case "h":
-                return 8
-            case "c":
+            case "m", "h", "c":
                 return 8
             case "mm":
                 return 5
-            case "cpp":
-                return 4
-            case "api":
+            case "api", "cpp":
                 return 4
             default:
                 return 0
@@ -280,15 +264,7 @@ struct FileList: View {
     func gtypo(item: String) -> Bool {
         let suffix = gsuffix(from: item)
         switch(suffix) {
-            case "png":
-                return true
-            case "jpg":
-                return true
-            case "jpeg":
-                return true
-            case "PNG":
-                return true
-            case "JPG":
+            case "png", "jpg", "jpeg", "PNG", "JPG":
                 return true
             default:
                 return false
