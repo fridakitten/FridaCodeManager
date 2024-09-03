@@ -108,7 +108,7 @@ struct ContentView: View {
                         }
                 }
                 Section {
-                    NavigationLink(destination: LayoutST()) {
+                    NavigationLink(destination: LayoutST(font: $font, fontname: $fname, fontbold: $bold, fontbsl: $bsl, rc1: $color1, rc2: $color2, rc3: $color3, rc4: $color4, rc5: $color5, rc6: $color6)) {
                             Text("Layouts")
                         }
                     Button("Reset") {

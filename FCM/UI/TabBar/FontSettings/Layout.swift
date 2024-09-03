@@ -9,18 +9,46 @@ import MobileCoreServices
 import UniformTypeIdentifiers
 
 struct Layout: Codable, Identifiable, Equatable {
-    var id = UUID() // Unique identifier for the layout
-    var example: Int?
+    var id = UUID()
+    // -> properties
+    var font: CGFloat?
+    var fontname: String?
+    var fontbold: Bool?
+    var fontbsl: Bool?
+    // -> color
+    var c1: String?
+    var c2: String?
+    var c3: String?
+    var c4: String?
+    var c5: String?
+    var c6: String?
 }
 
 struct LayoutST: View {
     //layout values
-    /*@Binding*/@State var example: Int = 0
+    // -> properties
+    @Binding var font: CGFloat
+    @Binding var fontname: String
+    @Binding var fontbold: Bool
+    @Binding var fontbsl: Bool
+    @State var c1: String = ""
+    @State var c2: String = ""
+    @State var c3: String = ""
+    @State var c4: String = ""
+    @State var c5: String = ""
+    @State var c6: String = ""
 
     //necessary
     @AppStorage("layoutName") var layoutName: String = ""
     @State private var savedLayouts: [String: Layout] = [:]
     @State private var selectedLayout: Layout?
+    // -> color
+    @Binding var rc1: Color
+    @Binding var rc2: Color
+    @Binding var rc3: Color
+    @Binding var rc4: Color
+    @Binding var rc5: Color
+    @Binding var rc6: Color
     var body: some View {
         ZStack {
                 VStack {
@@ -65,41 +93,20 @@ struct LayoutST: View {
                         }
                     }
                     .onAppear(perform: loadlayoutlist)
+                    .onAppear {
+                        c1 = colorToRGBString(rc1)
+                        c2 = colorToRGBString(rc2)
+                        c3 = colorToRGBString(rc3)
+                        c4 = colorToRGBString(rc4)
+                        c5 = colorToRGBString(rc5)
+                        c6 = colorToRGBString(rc6)
+                    }
                 }
             }
             .navigationTitle("Layouts")
             .navigationBarTitleDisplayMode(.inline)
     }
-    /*private func renameLayout(_ layout: Layout) {
-        let alertController = UIAlertController(title: "Rename Layout", message: nil, preferredStyle: .alert)
-        alertController.addTextField { textField in
-            textField.placeholder = "Enter new name"
-            textField.text = layout.layoutname // Pre-fill the current name
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        let renameAction = UIAlertAction(title: "Rename", style: .default) { [self, alertController] _ in
-            guard let newName = alertController.textFields?.first?.text else { return }
-            self.updateLayoutName(layout, newName: newName)
-        }
-        
-        alertController.addAction(cancelAction)
-        alertController.addAction(renameAction)
-        
-        if let viewController = UIApplication.shared.windows.first?.rootViewController {
-            viewController.present(alertController, animated: true, completion: nil)
-        }
-    }
-    private func updateLayoutName(_ layout: Layout, newName: String) {
-        if let existingLayout = savedLayouts.removeValue(forKey: layout.layoutname ?? "") {
-            var updatedLayout = layout
-            updatedLayout.layoutname = newName
-            savedLayouts[newName] = updatedLayout
-            saveSavedLayouts()
-        }
-    }*/
     private func saveSavedLayouts() {
-        // Save the updated savedLayouts dictionary
         guard let saveURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("savedLayouts.json") else {
             print("Error accessing save file.")
             return
@@ -113,61 +120,25 @@ struct LayoutST: View {
             print("Error updating saved layouts: \(error)")
         }
     }
-    /*func loadExportedLayoutFile() {
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            print("Unable to access the documents directory.")
-            return
-        }
-        
-        let fileURL = documentsDirectory.appendingPathComponent("exportedLayout.json")
-        
-        do {
-            let layoutData = try Data(contentsOf: fileURL)
-            let importedLayout = try JSONDecoder().decode(Layout.self, from: layoutData)
-            
-            // Handle the imported layout
-            handleImportedLayout(importedLayout)
-            
-        } catch {
-            print("Error importing layout: \(error)")
-        }
-    }*/
-    /*private func exportLayout(_ layout: Layout) {
-        do {
-            let layoutData = try JSONEncoder().encode(layout)
-            let temporaryURL = FileManager.default.temporaryDirectory.appendingPathComponent("exportedLayout.json")
-            try layoutData.write(to: temporaryURL)
-            
-            let activityViewController = UIActivityViewController(activityItems: [temporaryURL], applicationActivities: nil)
-            UIApplication.shared.windows.first?.rootViewController?.present(activityViewController, animated: true, completion: nil)
-        } catch {
-            print("Error exporting layout: \(error)")
-        }
-    }*/
     private func saveLayout() {
-        //convcolor()
-        let layout = Layout(example: example)
+        let layout = Layout(
+            font: font,
+            fontname: fontname,
+            fontbold: fontbold,
+            fontbsl: fontbsl,
+            c1: c1,
+            c2: c2,
+            c3: c3,
+            c4: c4,
+            c5: c5,
+            c6: c6
+        )
         if let layoutData = try? JSONEncoder().encode(layout) {
             savedLayouts[layoutName] = try? JSONDecoder().decode(Layout.self, from: layoutData)
         }
-        
-        //UserDefaults.standard.set(layout.symbols, forKey: "Symbols")
         saveLayoutsToFile()
         layoutName = ""
     }
-    
-    private func loadLayout(_ layout: Layout) {
-        example = layout.example ?? 0
-    }
-    /*func importLayout(layout: Layout) -> Data? {
-        do {
-            let jsonData = try JSONEncoder().encode(layout)
-            return jsonData
-        } catch {
-            print("Error encoding layout: \(error)")
-            return nil
-        }
-    }*/
     private func loadlayoutlist() {
         guard let documentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             return
@@ -198,7 +169,25 @@ struct LayoutST: View {
         }
     }
     func applyLayout(_ layout: Layout) {
-            example = layout.example ?? 0
+        // -> load properties strings
+        font = layout.font ?? 13
+        fontname = layout.fontname ?? "Menlo"
+        fontbold = layout.fontbold ?? false
+        fontbsl = layout.fontbsl ?? false
+        // -> load color strings
+        c1 = layout.c1 ?? ""
+        c2 = layout.c2 ?? ""
+        c3 = layout.c3 ?? ""
+        c4 = layout.c4 ?? ""
+        c5 = layout.c5 ?? ""
+        c6 = layout.c6 ?? ""
+        // -> store color strings into app storage
+        saveColor("C1", RGBStringToColor(c1))
+        saveColor("C2", RGBStringToColor(c2))
+        saveColor("C3", RGBStringToColor(c3))
+        saveColor("C4", RGBStringToColor(c4))
+        saveColor("C5", RGBStringToColor(c5))
+        saveColor("C6", RGBStringToColor(c6))
     }
     private func deleteLayouts(at offsets: IndexSet) {
         let indicesToRemove = Array(offsets)

@@ -38,7 +38,7 @@ func loadColor(_ key: String) -> Color {
     return color
 }
 
-private func colorToRGBString(_ color: Color) -> String {
+func colorToRGBString(_ color: Color) -> String {
     let uiColor = UIColor(color)
     var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
         uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
@@ -49,7 +49,7 @@ private func colorToRGBString(_ color: Color) -> String {
     
     return "\(redInt),\(greenInt),\(blueInt)"
 }
-private func RGBStringToColor(_ rgbString: String) -> Color {
+func RGBStringToColor(_ rgbString: String) -> Color {
     let components = rgbString.components(separatedBy: ",").compactMap { Int($0) }
     guard components.count == 3 else {
         return .black
