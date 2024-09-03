@@ -29,11 +29,11 @@ struct CodeEditorPreview: View {
     @AppStorage("bsl") var bsl: Bool = true
     @AppStorage("fbold") var bold: Bool = false
     @Binding var text: String
-    @State var font: CGFloat
+    @Binding var font: CGFloat
     @State var rules: [HighlightRule]
-    init(text: Binding<String>,font: CGFloat, suffix: String) {
+    init(text: Binding<String>,font: Binding<CGFloat>, suffix: String) {
         _text = text
-        _font = State(initialValue: font)
+        _font = font
         _rules = State(initialValue: grule(suffix))
     }
     var body: some View {

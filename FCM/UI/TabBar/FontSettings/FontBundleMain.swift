@@ -36,13 +36,7 @@ struct FontSettingsBundleMain: View {
     @State private var color5: Color = Color.red
     @State private var color6: Color = Color.red
 
-    @State var font: CGFloat = {
-        if let savedFont = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
-            return savedFont
-        } else {
-            return 13.0
-        }
-    }()
+    @State var font: CGFloat = 0.0
 
     @State private var code: String = """
 struct ContentView: View {
@@ -57,7 +51,7 @@ struct ContentView: View {
     @State private var identifier: UUID = UUID()
     var body: some View {
             List {
-                CodeEditorPreview(text: $code, font: font, suffix: "swift")
+                CodeEditorPreview(text: $code, font: $font, suffix: "swift")
                     .frame(height: 120)
                     .id(identifier)
                 Section("Color") {
@@ -105,6 +99,7 @@ struct ContentView: View {
                          }
                     Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
                         .onChange(of: font) { _ in
+                            UserDefaults.standard.set(font, forKey: "savedfont")
                             identifier = UUID()
                          }
                     Toggle("Bold", isOn: $bold)
@@ -135,6 +130,13 @@ struct ContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 (color1, color2, color3, color4, color5, color6) = (loadColor("C1"), loadColor("C2"), loadColor("C3"), loadColor("C4"), loadColor("C5"), loadColor("C6"))
+                font = {
+                    if let savedFont = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
+                        return savedFont
+                    } else {
+                         return 13.0
+                    }
+                }()
             }
     }
     func saveallcolor() {
