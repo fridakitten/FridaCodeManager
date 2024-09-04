@@ -22,8 +22,10 @@
 
 import SwiftUI
 import UIKit
+import Foundation
 
 public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor {
+
     public struct Internals {
         public let textView: SystemTextView
         public let scrollView: SystemScrollView?
@@ -32,6 +34,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     @Binding var text: String
 
     let highlightRules: [HighlightRule]
+    let lineNumberLabel = UILabel()
 
     private(set) var onEditingChanged: OnEditingChangedCallback?
     private(set) var onCommit: OnCommitCallback?
@@ -57,7 +60,39 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         updateTextViewModifiers(textView)
         runIntrospect(textView)
 
+        setupToolbar(textView: textView)
+
         return textView
+    }
+
+    func setupToolbar(textView: UITextView) {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        // Create the "Tab" button
+        let tabButton = ClosureBarButtonItem(title: "Tab", style: .plain) {
+            self.buttonTapped()
+        }
+        
+        // Create the line number label
+        lineNumberLabel.text = "Line n/a"
+        lineNumberLabel.sizeToFit()
+        
+        // Create flexible space to position the label correctly
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        // Add the label and button to the toolbar
+        let lineNumberItem = UIBarButtonItem(customView: lineNumberLabel)
+        toolbar.items = [tabButton, flexibleSpace, lineNumberItem]
+        
+        textView.inputAccessoryView = toolbar
+        textView.textContainer.lineBreakMode = .byWordWrapping
+        textView.textContainerInset = .zero
+    }
+
+    public func buttonTapped() {
+        setClipboardText("\t")
+        pasteFromClipboard()
     }
 
     public func updateUIView(_ uiView: UITextView, context: Context) {
@@ -105,6 +140,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         }
 
         public func textViewDidChange(_ textView: UITextView) {
+
             guard textView.markedTextRange == nil else { return }
             
             parent.text = textView.text
@@ -112,11 +148,37 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         }
 
         public func textViewDidChangeSelection(_ textView: UITextView) {
-            guard let onSelectionChange = parent.onSelectionChange,
-                  !updatingUIView
-            else { return }
-            selectedTextRange = textView.selectedTextRange
-            onSelectionChange([textView.selectedRange])
+
+    if let selectedTextRange2 = selectedTextRange {
+
+    guard let font = textView.font else {
+        print("DEBUG: Font not set")
+        return
+    }
+
+    let caretRect = textView.caretRect(for: selectedTextRange2.start)
+
+    let lineHeight = font.lineHeight
+
+    if lineHeight > 0 {
+        let lineNumber = Int(caretRect.origin.y / lineHeight) + 1
+        parent.lineNumberLabel.text = "Line \(lineNumber)"
+        print("DEBUG: Calculated Line Number: \(lineNumber)")
+    } else {
+        parent.lineNumberLabel.text = "Line n/a (Invalid line height)"
+        print("DEBUG: Invalid line height")
+    }
+}
+else
+{
+    parent.lineNumberLabel.text = "Error"
+}
+
+guard let onSelectionChange = parent.onSelectionChange,
+          !updatingUIView else { return }
+
+selectedTextRange = textView.selectedTextRange
+    onSelectionChange([textView.selectedRange])
         }
     }
 }
