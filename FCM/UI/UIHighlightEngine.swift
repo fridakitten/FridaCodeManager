@@ -74,14 +74,19 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
             self.buttonTapped()
         }
         
+        // Create flexible space
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+
         // Create the line number label
         lineNumberLabel.text = "Line n/a"
         lineNumberLabel.sizeToFit()
+        lineNumberLabel.lineBreakMode = .byWordWrapping
+        lineNumberLabel.preferredMaxLayoutWidth = UIScreen.main.bounds.width - 40
+        var newFrame = lineNumberLabel.frame
+        newFrame.size.width = 100
+        lineNumberLabel.frame = newFrame
+        lineNumberLabel.textAlignment = .right
         
-        // Create flexible space to position the label correctly
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        
-        // Add the label and button to the toolbar
         let lineNumberItem = UIBarButtonItem(customView: lineNumberLabel)
         toolbar.items = [tabButton, flexibleSpace, lineNumberItem]
         
