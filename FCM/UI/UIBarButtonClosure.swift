@@ -9,6 +9,7 @@ class ClosureBarButtonItem: UIBarButtonItem {
         self.title = title
         self.style = style
         self.target = self
+        self.tintColor = UIColor.label
         self.action = #selector(didTapButton)
     }
 

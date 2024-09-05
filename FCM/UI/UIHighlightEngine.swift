@@ -57,7 +57,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     public func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
         textView.delegate = context.coordinator
-        updateTextViewModifiers(textView)
+        //updateTextViewModifiers(textView)
         runIntrospect(textView)
 
         setupToolbar(textView: textView)
@@ -96,7 +96,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     }
 
     public func updateUIView(_ uiView: UITextView, context: Context) {
-        guard !context.coordinator.updatingUIView else { return } // Skip unnecessary updates
+        guard !context.coordinator.updatingUIView else { return }
 
         let highlightedText = HighlightedTextEditor.getHighlightedText(
             text: text,
@@ -106,13 +106,12 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         if let range = uiView.markedTextNSRange {
             uiView.setAttributedMarkedText(highlightedText, selectedRange: range)
         } else {
-            // Only set attributedText if it has changed
             if uiView.attributedText != highlightedText {
                 uiView.attributedText = highlightedText
             }
         }
 
-        updateTextViewModifiers(uiView)
+        //updateTextViewModifiers(uiView)
         runIntrospect(uiView)
         uiView.selectedTextRange = context.coordinator.selectedTextRange
     }
@@ -123,12 +122,12 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         introspect(internals)
     }
 
-    private func updateTextViewModifiers(_ textView: UITextView) {
-        DispatchQueue.global(qos: .userInteractive).async {
+    /*private func updateTextViewModifiers(_ textView: UITextView) {
+        /*DispatchQueue.global(qos: .userInteractive).async {
         let textInputTraits = textView.value(forKey: "textInputTraits") as? NSObject
         textInputTraits?.setValue(textView.tintColor, forKey: "insertionPointColor")
-        }
-    }
+        }*/
+    }*/
 
     public final class Coordinator: NSObject, UITextViewDelegate {
         var parent: HighlightedTextEditor
@@ -145,35 +144,35 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
             
             parent.text = textView.text
             selectedTextRange = textView.selectedTextRange
+
+            gimmetheline(textView)
         }
 
         public func textViewDidChangeSelection(_ textView: UITextView) {
+            guard let onSelectionChange = parent.onSelectionChange, !updatingUIView else { return }
 
-    if let selectedTextRange2 = selectedTextRange {
+            selectedTextRange = textView.selectedTextRange
+            onSelectionChange([textView.selectedRange])
+        }
 
-    guard let font = textView.font else {
-        return
-    }
+        public func gimmetheline(_ textView: UITextView) {
 
-    let caretRect = textView.caretRect(for: selectedTextRange2.start)
+            if let selectedTextRange2 = selectedTextRange {
 
-    let lineHeight = font.lineHeight
+                guard let font = textView.font else {
+                    return
+                }
 
-    if lineHeight > 0, !caretRect.isEmpty {
-        let lineNumber = Int(caretRect.origin.y / lineHeight) + 1
-        parent.lineNumberLabel.text = "Line \(lineNumber)"
-    }
-}
-else
-{
-    parent.lineNumberLabel.text = "Error"
-}
+                let caretRect = textView.caretRect(for: selectedTextRange2.start)
+                let lineHeight = font.lineHeight
 
-guard let onSelectionChange = parent.onSelectionChange,
-          !updatingUIView else { return }
-
-selectedTextRange = textView.selectedTextRange
-    onSelectionChange([textView.selectedRange])
+                if lineHeight > 0, !caretRect.isEmpty {
+                    let lineNumber = Int(caretRect.origin.y / lineHeight) + 1
+                    parent.lineNumberLabel.text = "Line \(lineNumber)"
+                }
+            } else {
+                parent.lineNumberLabel.text = "Error"
+            }
         }
     }
 }
