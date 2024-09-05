@@ -59,7 +59,7 @@ struct Home: View {
             VStack {
                 Spacer().frame(height: 10)
                 ScrollView {
-                    Text("v1.5 \"Colorful\" Update\n-added default iOS app icon to project list\n-added Code Editor Color customisation\n-refixed logging issues with swift")
+                    Text("v1.5.1 \"Features\" Update\n-added keyboard toolbar with necessary features that were missing in the past\n")
                         .font(.system(size: 11))
                 }
                 Spacer()

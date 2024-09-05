@@ -26,7 +26,7 @@ import SwiftUI
 let jbroot: String = "\(Bundle.main.bundlePath)/toolchain"
 let global_documents: String = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].path
 let global_sdkpath: String = "\(global_documents)/../.sdk"
-let global_version: String = "v1.5 (non-release)"
+let global_version: String = "v1.5.1 (non-release)"
 
 @main
 struct MyApp: App {
