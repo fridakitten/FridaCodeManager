@@ -156,23 +156,17 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         }
 
         public func gimmetheline(_ textView: UITextView) {
-
-            if let selectedTextRange2 = selectedTextRange {
-
-                guard let font = textView.font else {
-                    return
-                }
-
-                let caretRect = textView.caretRect(for: selectedTextRange2.start)
-                let lineHeight = font.lineHeight
-
-                if lineHeight > 0, !caretRect.isEmpty {
-                    let lineNumber = Int(caretRect.origin.y / lineHeight) + 1
-                    parent.lineNumberLabel.text = "Line \(lineNumber)"
-                }
-            } else {
+            guard let selectedTextRange = textView.selectedTextRange else {
                 parent.lineNumberLabel.text = "Error"
+                return
             }
+
+            let characterIndex = textView.offset(from: textView.beginningOfDocument, to: selectedTextRange.start)
+    
+            let textBeforeCaret = textView.text.prefix(characterIndex)
+    
+            let logicalLineNumber = textBeforeCaret.filter { $0.isNewline }.count + 1
+            parent.lineNumberLabel.text = "Line \(logicalLineNumber)"
         }
     }
 }
