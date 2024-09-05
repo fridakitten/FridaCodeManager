@@ -152,7 +152,6 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     if let selectedTextRange2 = selectedTextRange {
 
     guard let font = textView.font else {
-        print("DEBUG: Font not set")
         return
     }
 
@@ -160,13 +159,9 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
 
     let lineHeight = font.lineHeight
 
-    if lineHeight > 0 {
+    if lineHeight > 0, !caretRect.isEmpty {
         let lineNumber = Int(caretRect.origin.y / lineHeight) + 1
         parent.lineNumberLabel.text = "Line \(lineNumber)"
-        print("DEBUG: Calculated Line Number: \(lineNumber)")
-    } else {
-        parent.lineNumberLabel.text = "Line n/a (Invalid line height)"
-        print("DEBUG: Invalid line height")
     }
 }
 else
