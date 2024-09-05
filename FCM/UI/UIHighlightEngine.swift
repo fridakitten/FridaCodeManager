@@ -111,7 +111,6 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
             }
         }
 
-        //updateTextViewModifiers(uiView)
         runIntrospect(uiView)
         uiView.selectedTextRange = context.coordinator.selectedTextRange
     }
@@ -121,13 +120,6 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         let internals = Internals(textView: textView, scrollView: nil)
         introspect(internals)
     }
-
-    /*private func updateTextViewModifiers(_ textView: UITextView) {
-        /*DispatchQueue.global(qos: .userInteractive).async {
-        let textInputTraits = textView.value(forKey: "textInputTraits") as? NSObject
-        textInputTraits?.setValue(textView.tintColor, forKey: "insertionPointColor")
-        }*/
-    }*/
 
     public final class Coordinator: NSObject, UITextViewDelegate {
         var parent: HighlightedTextEditor
@@ -145,11 +137,10 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
             parent.text = textView.text
             selectedTextRange = textView.selectedTextRange
 
-            gimmetheline(textView)
         }
 
         public func textViewDidChangeSelection(_ textView: UITextView) {
-            guard let onSelectionChange = parent.onSelectionChange, !updatingUIView else { return }
+            guard let onSelectionChange = parent.onSelectionChange, !updatingUIView else { gimmetheline(textView) ; return }
 
             selectedTextRange = textView.selectedTextRange
             onSelectionChange([textView.selectedRange])
