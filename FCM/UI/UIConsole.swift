@@ -59,6 +59,22 @@ struct NeoLog: View {
         .frame(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 2.5)
         .background(Color(UIColor.systemGray6))
         .cornerRadius(20)
+        .contextMenu {
+            Button( action: {
+                var textToCopy: String = ""
+                for LogItem in LogItems {
+                    textToCopy += "\(LogItem.Message)"
+                }
+
+                let cleanTextToCopy = textToCopy
+                    .split(separator: "\n")
+                    .filter { !$0.contains("perform implicit import of") }
+                    .joined(separator: "\n")
+                copyToClipboard(text: cleanTextToCopy)
+            }) {
+                Label("Copy", systemImage: "clipboard")
+            }
+        }
         .onAppear {
             LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
             let logData = fileHandle.availableData

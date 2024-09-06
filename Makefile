@@ -3,7 +3,7 @@ SDK_PATH = SDK
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
 SWIFT := $(shell find ./FCM/ -name '*.swift')
 SWIFT2 := $(shell find ./FCMTS/ -name '*.swift')
-VERSION = 1.5
+VERSION = 1.5.1
 
 ifeq ($(wildcard /bin/sh),)
 ifeq ($(wildcard /var/jb/bin/sh),)

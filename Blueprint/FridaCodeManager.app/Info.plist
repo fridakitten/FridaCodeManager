@@ -19,7 +19,7 @@
 		<string>iPhoneOS</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.5</string>
+	<string>1.5.1</string>
 	<key>MinimumOSVersion</key>
 	<string>15.0</string>
 	<key>LSRequiresIPhoneOS</key>

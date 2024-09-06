@@ -59,7 +59,7 @@ struct Home: View {
             VStack {
                 Spacer().frame(height: 10)
                 ScrollView {
-                    Text("v1.5.1 \"Features\" Update\n-added keyboard toolbar with necessary features that were missing in the past\n")
+                    Text(changelog)
                         .font(.system(size: 11))
                 }
                 Spacer()
