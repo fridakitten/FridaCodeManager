@@ -27,14 +27,18 @@ struct FontSettingsBundleMain: View {
     @AppStorage("fontname") var fname: String = "Menlo"
     @AppStorage("bsl") var bsl: Bool = true
     @AppStorage("fbold") var bold: Bool = false
+    @AppStorage("defbakcolor") var dbc: Bool = true
+    @AppStorage("deftextcolor") var dtc: Bool = true
 
     //color
-    @State private var color1: Color = Color.red
-    @State private var color2: Color = Color.red
-    @State private var color3: Color = Color.red
-    @State private var color4: Color = Color.red
-    @State private var color5: Color = Color.red
-    @State private var color6: Color = Color.red
+    @State private var color1: Color = Color.black
+    @State private var color2: Color = Color.black
+    @State private var color3: Color = Color.black
+    @State private var color4: Color = Color.black
+    @State private var color5: Color = Color.black
+    @State private var color6: Color = Color.black
+    @State private var color7: Color = Color.black
+    @State private var color8: Color = Color.black
 
     @State var font: CGFloat = 0.0
 
@@ -53,6 +57,13 @@ struct ContentView: View {
             List {
                 CodeEditorPreview(text: $code, font: $font, suffix: "swift")
                     .frame(height: 120)
+                    .listRowBackground(dbc ? Color(UIColor.systemBackground) : color7
+                        //if !dbc {
+                        //    color7
+                        //} else {
+                        //    Color(UIColor.systemGray6)
+                        //}
+                    )
                     .id(identifier)
                 Section("Color") {
                     HStack {
@@ -87,6 +98,28 @@ struct ContentView: View {
                                  identifier = UUID()
                              }
                     }
+                    Toggle("Default Background Color", isOn: $dbc)
+                        .onChange(of: bsl) { _ in
+                            identifier = UUID()
+                        }
+                    Toggle("Default Text Color", isOn: $dtc)
+                        .onChange(of: bsl) { _ in
+                            identifier = UUID()
+                        }
+                    if !dbc {
+                        ColorPicker("Background", selection: $color7)
+                            .onChange(of: color7) { _ in
+                                saveallcolor()
+                                identifier = UUID()
+                            }
+                    }
+                    if !dtc {
+                        ColorPicker("Text", selection: $color8)
+                            .onChange(of: color8) { _ in
+                                saveallcolor()
+                                identifier = UUID()
+                            }
+                    }
                     Toggle("Text Seperation Layer", isOn: $bsl)
                         .onChange(of: bsl) { _ in
                             identifier = UUID()
@@ -108,7 +141,7 @@ struct ContentView: View {
                         }
                 }
                 Section {
-                    NavigationLink(destination: LayoutST(font: $font, fontname: $fname, fontbold: $bold, fontbsl: $bsl, rc1: $color1, rc2: $color2, rc3: $color3, rc4: $color4, rc5: $color5, rc6: $color6)) {
+                    NavigationLink(destination: LayoutST(font: $font, fontname: $fname, fontbold: $bold, fontbsl: $bsl, dbc: $dbc, dtc: $dtc, rc1: $color1, rc2: $color2, rc3: $color3, rc4: $color4, rc5: $color5, rc6: $color6, rc7: $color7, rc8: $color8)) {
                             Text("Layouts")
                         }
                     Button("Reset") {
@@ -119,11 +152,14 @@ struct ContentView: View {
                         color4 = Color(UIColor(red: 0.7569, green: 0.2039, blue: 0.3882, alpha: 1.0))
                         color5 = Color(UIColor(red: 0, green: 0.4824, blue: 0.9098, alpha: 1.0))
                         color6 = Color(UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0))
+                        color7 = Color.black
                         saveallcolor()
                         font = 13
                         UserDefaults.standard.set(font, forKey: "savedfont")
                         bsl = true
                         bold = false
+                        dbc = true
+                        dtc = true
                         fname = "Menlo"
                         identifier = UUID()
                     }
@@ -132,7 +168,7 @@ struct ContentView: View {
             .navigationTitle("Code Editor")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
-                (color1, color2, color3, color4, color5, color6) = (loadColor("C1"), loadColor("C2"), loadColor("C3"), loadColor("C4"), loadColor("C5"), loadColor("C6"))
+                (color1, color2, color3, color4, color5, color6, color7, color8) = (loadColor("C1"), loadColor("C2"), loadColor("C3"), loadColor("C4"), loadColor("C5"), loadColor("C6"), loadColor("C7"), loadColor("C8"))
                 font = {
                     if let savedFont = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
                         return savedFont
@@ -149,5 +185,7 @@ struct ContentView: View {
         saveColor("C4", color4)
         saveColor("C5", color5)
         saveColor("C6", color6)
+        saveColor("C7", color7)
+        saveColor("C8", color8)
     }
 }

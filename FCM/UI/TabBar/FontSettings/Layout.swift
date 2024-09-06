@@ -15,6 +15,8 @@ struct Layout: Codable, Identifiable, Equatable {
     var fontname: String?
     var fontbold: Bool?
     var fontbsl: Bool?
+    var dbc: Bool?
+    var dtc: Bool?
     // -> color
     var c1: String?
     var c2: String?
@@ -22,6 +24,8 @@ struct Layout: Codable, Identifiable, Equatable {
     var c4: String?
     var c5: String?
     var c6: String?
+    var c7: String?
+    var c8: String?
 }
 
 struct LayoutST: View {
@@ -31,12 +35,16 @@ struct LayoutST: View {
     @Binding var fontname: String
     @Binding var fontbold: Bool
     @Binding var fontbsl: Bool
+    @Binding var dbc: Bool
+    @Binding var dtc: Bool
     @State var c1: String = ""
     @State var c2: String = ""
     @State var c3: String = ""
     @State var c4: String = ""
     @State var c5: String = ""
     @State var c6: String = ""
+    @State var c7: String = ""
+    @State var c8: String = ""
 
     //necessary
     @AppStorage("layoutName") var layoutName: String = ""
@@ -49,6 +57,8 @@ struct LayoutST: View {
     @Binding var rc4: Color
     @Binding var rc5: Color
     @Binding var rc6: Color
+    @Binding var rc7: Color
+    @Binding var rc8: Color
     var body: some View {
         ZStack {
                 VStack {
@@ -100,6 +110,8 @@ struct LayoutST: View {
                         c4 = colorToRGBString(rc4)
                         c5 = colorToRGBString(rc5)
                         c6 = colorToRGBString(rc6)
+                        c7 = colorToRGBString(rc7)
+                        c8 = colorToRGBString(rc8)
                     }
                 }
             }
@@ -126,12 +138,16 @@ struct LayoutST: View {
             fontname: fontname,
             fontbold: fontbold,
             fontbsl: fontbsl,
+            dbc: dbc,
+            dtc: dtc,
             c1: c1,
             c2: c2,
             c3: c3,
             c4: c4,
             c5: c5,
-            c6: c6
+            c6: c6,
+            c7: c7,
+            c8: c8
         )
         if let layoutData = try? JSONEncoder().encode(layout) {
             savedLayouts[layoutName] = try? JSONDecoder().decode(Layout.self, from: layoutData)
@@ -174,6 +190,8 @@ struct LayoutST: View {
         fontname = layout.fontname ?? "Menlo"
         fontbold = layout.fontbold ?? false
         fontbsl = layout.fontbsl ?? false
+        dbc = layout.dbc ?? true
+        dtc = layout.dtc ?? true
         // -> load color strings
         c1 = layout.c1 ?? ""
         c2 = layout.c2 ?? ""
@@ -181,6 +199,8 @@ struct LayoutST: View {
         c4 = layout.c4 ?? ""
         c5 = layout.c5 ?? ""
         c6 = layout.c6 ?? ""
+        c7 = layout.c7 ?? ""
+        c8 = layout.c8 ?? ""
         // -> store color strings into app storage
         saveColor("C1", RGBStringToColor(c1))
         saveColor("C2", RGBStringToColor(c2))
@@ -188,6 +208,8 @@ struct LayoutST: View {
         saveColor("C4", RGBStringToColor(c4))
         saveColor("C5", RGBStringToColor(c5))
         saveColor("C6", RGBStringToColor(c6))
+        saveColor("C7", RGBStringToColor(c7))
+        saveColor("C8", RGBStringToColor(c8))
     }
     private func deleteLayouts(at offsets: IndexSet) {
         let indicesToRemove = Array(offsets)

@@ -34,9 +34,23 @@ import Foundation
 import UIKit
 
 func grule(_ isaythis: String) -> [HighlightRule] {
+    var rules: [HighlightRule] = []
+
+    @State var dtc: Bool = {
+        if let dtcstored = UserDefaults.standard.value(forKey: "deftextcolor") as? Bool {
+            return dtcstored
+        } else {
+            return true
+        }
+    }()
+
+    if !dtc {
+        rules += [HighlightRule(pattern: try! NSRegularExpression(pattern: ".*", options: []), formattingRules: [
+                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C8"))) ])]
+    }
     switch(isaythis) {
         case "swift":
-            return [
+            rules += [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(let|var|struct|some|import|private|class|nil|return|func|override)\\b", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C1")))
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\b(let|var|struct|func|class)\\s)\\w+", options: []), formattingRules: [
@@ -55,8 +69,9 @@ func grule(_ isaythis: String) -> [HighlightRule] {
                     TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C6")))
                 ])
             ]
+            break
         case "c", "m", "cpp", "mm","h":
-            return [
+            rules += [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(struct|class|enum|nil|return)\\b", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C1")))
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b\\w+(?=\\s*(\\(|\\{))", options: []), formattingRules: [
@@ -73,21 +88,25 @@ func grule(_ isaythis: String) -> [HighlightRule] {
                     TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C6")))
                 ])
             ]
+            break
         case "html", "plist", "xml", "api","entitlements":
-            return [
+            rules += [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "<[^>]+>", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0))
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<!\\/\\/)(\"(.*?)\")", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0))
                 ])
             ]
+            break
         case "sh":
-            return [
+            rules += [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "(#.*[\\s\\S]*?)", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: UIColor(red: 0, green: 0.4824, blue: 0.9098, alpha: 1.0))
                 ])
             ]
+            break
         default:
-            return []
+            rules += []
     }
+    return rules
 }

@@ -30,7 +30,7 @@ struct Frida: View {
         ("AppInstaller iOS", "Compiling Genius", "https://github.com/AppInstalleriOSGH.png"),
         ("Snoolie", "Helping Hand", "https://github.com/0xilis.png"),
         ("HAHALOSAH", "Helping Hand", "https://github.com/HAHALOSAH.png"),
-        ("MudSplasher", "Icon Designer", "https://github.com/MudSplasher.png"),
+        ("Ayame Yumemi", "Icon Designer", "https://github.com/ayayame09.png"),
         ("meighler", "Licensor", "https://github.com/meighler.png")
     ]
 

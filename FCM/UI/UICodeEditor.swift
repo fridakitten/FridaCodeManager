@@ -28,6 +28,9 @@ struct CodeEditorGreat: View {
     @AppStorage("fontname") var fname: String = "Menlo"
     @AppStorage("bsl") var bsl: Bool = true
     @AppStorage("fbold") var bold: Bool = true
+    @AppStorage("defbakcolor") var dbc: Bool = true
+    @AppStorage("deftextcolor") var dtc: Bool = true
+
     @Binding var text: String
     @State var font: CGFloat
     @State var rules: [HighlightRule]
@@ -38,8 +41,13 @@ struct CodeEditorGreat: View {
     }
     var body: some View {
         ZStack {
-            Color(UIColor.systemGray6)
-                .ignoresSafeArea()
+            if dbc {
+                Color(UIColor.systemGray6)
+                    .ignoresSafeArea()
+            } else {
+                loadColor("C7")
+                    .ignoresSafeArea()
+            }
             HighlightedTextEditor(text: $text, highlightRules: rules)
                 .introspect { editor in
                      editor.textView.font = UIFont(name: "\(fname)\(bold ? "-Bold" : "")", size: font)

@@ -1,1 +1,1 @@
-let changelog: String = "v1.5.1 \"Features\" Update\n-added keyboard toolbar with necessary features that were missing in the past\n-readded copy feature to the log"
+let changelog: String = "v1.5.1 \"Features\" Update\n-added keyboard toolbar with necessary features that were missing in the past\n-readded copy feature to the log\n-added new icon\n-added more theming settings in Code Editor Settings"

@@ -72,7 +72,7 @@ struct NeoLog: View {
                     .joined(separator: "\n")
                 copyToClipboard(text: cleanTextToCopy)
             }) {
-                Label("Copy", systemImage: "clipboard")
+                Label("Copy", systemImage: "doc.on.doc")
             }
         }
         .onAppear {
