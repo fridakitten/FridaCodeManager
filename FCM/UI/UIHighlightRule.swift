@@ -104,7 +104,14 @@ extension HighlightingTextEditor {
         let all = NSRange(location: 0, length: text.utf16.count)
 
         let editorFont = defaultEditorFont
-        let editorTextColor = defaultEditorTextColor
+        let editorTextColor = {
+            if let dtcstored = UserDefaults.standard.value(forKey: "deftextcolor") as? Bool {
+                if !dtcstored {
+                    return UIColor(loadColor("C8"))
+                }
+            }
+            return defaultEditorTextColor
+        }()
 
         highlightedString.addAttribute(.font, value: editorFont, range: all)
         highlightedString.addAttribute(.foregroundColor, value: editorTextColor, range: all)
