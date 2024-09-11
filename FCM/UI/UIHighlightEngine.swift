@@ -141,7 +141,6 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
             
             parent.text = textView.text
             selectedTextRange = textView.selectedTextRange
-
         }
 
         public func textViewDidChangeSelection(_ textView: UITextView) {
@@ -158,11 +157,16 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
             }
 
             let characterIndex = textView.offset(from: textView.beginningOfDocument, to: selectedTextRange.start)
-    
-            let textBeforeCaret = textView.text.prefix(characterIndex)
-    
-            let logicalLineNumber = textBeforeCaret.filter { $0.isNewline }.count + 1
-            parent.lineNumberLabel.text = "Line \(logicalLineNumber)"
+
+            DispatchQueue.global(qos: .userInitiated).async {
+                let textBeforeCaret = textView.text.prefix(characterIndex)
+
+                let logicalLineNumber = textBeforeCaret.filter { $0.isNewline }.count + 1
+
+                DispatchQueue.main.async {
+                    self.parent.lineNumberLabel.text = "Line \(logicalLineNumber)"
+                }
+            }
         }
     }
 }
