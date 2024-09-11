@@ -1,1 +1,2 @@
-let changelog: String = "v1.5.1 \"Features\" Update\n-added keyboard toolbar with necessary features that were missing in the past\n-readded copy feature to the log\n-added new icon\n-added more theming settings in Code Editor Settings"
+let changelog: String = "v1.5.2 \"Features & Fixes\"\n\nCode Editor\n-> lines now calculate in background queue\n-> fixed fps lag when using none-default text color"
+let global_version: String = "v1.5.2 (non-release)"
