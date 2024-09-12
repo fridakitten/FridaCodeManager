@@ -1,10 +1,12 @@
 # Makefile
 SDK_PATH = SDK
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
-SWIFT := $(shell find ./FCM/ -name '*.swift')
-SWIFT2 := $(shell find ./FCMTS/ -name '*.swift')
-VERSION = 1.5.1
+VERSION := 1.5.2
+BUILD_PATH := .package/
+JB_PATH := /
+ARCH := iphoneos-arm64
 
+# Finding SHELL
 ifeq ($(wildcard /bin/sh),)
 ifeq ($(wildcard /var/jb/bin/sh),)
 $(error "Neither /bin/sh nor /var/jb/bin/sh found.")
@@ -14,47 +16,57 @@ else
 SHELL := /bin/sh
 endif
 
-all: compile_swift sign package deb clean
-roothide: compile_swift sign package_roothide deb clean
-trollstore: compile_ts sign makechain ipa clean
+# Targets
+all: ARCH := iphoneos-arm64
+all: JB_PATH := /var/jb/
+all: greet compile_swift sign package_fs clean done
 
+roothide: ARCH := iphoneos-arm64e
+roothide: JB_PATH := /
+roothide: greet compile_swift sign  package_fs clean done
+
+trollstore: greet compile_ts sign makechain ipa clean done
+
+# Functions
+greet:
+	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n "
+	@echo "\033[32mcompiling FridaCodeManager\033[0m"
+	@if [ ! -d "Product" ]; then \
+		mkdir Product; \
+   fi
+
+compile_ts: SWIFT := $(shell find ./FCMTS/ -name '*.swift')
 compile_ts:
-	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n "
-	@echo "\033[32mcompiling FridaCodeManager\033[0m"
-	@swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT2) FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -target arm64-apple-ios15.0
+	@swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -target arm64-apple-ios15.0
 
+compile_swift: SWIFT := $(shell find ./FCM/ -name '*.swift')
 compile_swift:
-	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n "
-	@echo "\033[32mcompiling FridaCodeManager\033[0m"
-	@swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libroot/libroot.a FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -target arm64-apple-ios15.0 2>&1 | grep -v "remark:"
+	@output=$$(swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libroot/libroot.a FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -target arm64-apple-ios15.0 2>&1); \
+    if [ $$? -ne 0 ]; then \
+        echo "$$output" | grep -v "remark:"; \
+        exit 1; \
+    fi
 
 sign:
 	@echo "\033[32msigning FridaCodeManager $(Version)\033[0m"
 	@ldid -S./FCM/ent.xml $(OUTPUT_DIR)/swifty
 
-package:
-	@echo "\033[32mpackaging FridaCodeManager (rootless)\033[0m"
-	@find . -type f -name ".DS_Store" -delete
-	@-rm -rf .package
-	@mkdir .package
-	@mkdir -p .package/var/jb/Applications/FridaCodeManager.app
-	@cp -r Blueprint/FridaCodeManager.app/* .package/var/jb/Applications/FridaCodeManager.app
-	@mkdir -p .package/DEBIAN
-	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: iphoneos-arm64\nDescription: .\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
+roothide_fs:
+	@JB_PATH= 
+	@ARCH=iphoneos-arm64e
 
-package_roothide:
-	@echo "\033[32mpackaging FridaCodeManager (roothide)\033[0m"
+package_fs:
+	@echo "\033[32mpackaging FridaCodeManager\033[0m"
 	@find . -type f -name ".DS_Store" -delete
-	@-rm -rf .package
-	@mkdir .package
-	@mkdir -p .package/Applications/FridaCodeManager.app
-	@cp -r Blueprint/FridaCodeManager.app/* .package/Applications/FridaCodeManager.app
-	@mkdir -p .package/DEBIAN
-	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: iphoneos-arm64e\nDescription: .\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://dekotas.org/asset/fcm/icon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > .package/DEBIAN/control
-
-deb:
+	@-rm -rf $(BUILD_PATH)
+	@mkdir $(BUILD_PATH)
+	@mkdir -p $(BUILD_PATH)$(JB_PATH)Applications/FridaCodeManager.app
+	@find . -type f -name ".DS_Store" -delete
+	@cp -r Blueprint/FridaCodeManager.app/* $(BUILD_PATH)$(JB_PATH)Applications/FridaCodeManager.app
+	@mkdir -p $(BUILD_PATH)DEBIAN
+	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: .\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
 	@-rm -rf Product/*
-	@dpkg-deb -b .package Product/FridaCodeManager.deb
+	@dpkg-deb -b $(BUILD_PATH) Product/FridaCodeManager.deb
 
 makechain:
 	@echo "\033[32mRunning Chainmaker\033[0m"
@@ -72,3 +84,6 @@ ipa:
 
 clean:
 	@rm -rf $(OUTPUT_DIR)/swifty .package
+
+done:
+	@echo "\033[32mall done! :)\033[0m"

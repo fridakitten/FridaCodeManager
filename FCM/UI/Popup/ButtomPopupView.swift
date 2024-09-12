@@ -51,7 +51,6 @@ FluidGradient(blobs: [.orange, .primary, .red],
             }
             .edgesIgnoringSafeArea([.bottom])
         }
-        .animation(.easeOut)
         .transition(.move(edge: .bottom))
     }
 }

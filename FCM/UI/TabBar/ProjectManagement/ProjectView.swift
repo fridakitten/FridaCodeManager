@@ -125,12 +125,15 @@ struct ProjectView: View {
             }
         }
     }
-    func share(url: URL) {
-        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-        if let viewController = UIApplication.shared.windows.first?.rootViewController {
-            viewController.present(activityViewController, animated: true, completion: nil)
-        }
+func share(url: URL) {
+    let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+    
+    // Access the active scene's key window and root view controller
+    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+       let rootViewController = windowScene.keyWindow?.rootViewController {
+        rootViewController.present(activityViewController, animated: true, completion: nil)
     }
+}
 }
 
 //Codespace
