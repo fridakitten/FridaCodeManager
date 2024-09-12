@@ -91,8 +91,6 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         toolbar.items = [tabButton, flexibleSpace, lineNumberItem]
         
         textView.inputAccessoryView = toolbar
-        textView.textContainer.lineBreakMode = .byWordWrapping
-        textView.textContainerInset = .zero
     }
 
     public func buttonTapped() {
