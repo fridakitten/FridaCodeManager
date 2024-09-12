@@ -201,15 +201,24 @@ struct LayoutST: View {
         c6 = layout.c6 ?? ""
         c7 = layout.c7 ?? ""
         c8 = layout.c8 ?? ""
+        // -> store color to real color
+        rc1 = RGBStringToColor(c1)
+        rc2 = RGBStringToColor(c2)
+        rc3 = RGBStringToColor(c3)
+        rc4 = RGBStringToColor(c4)
+        rc5 = RGBStringToColor(c5)
+        rc6 = RGBStringToColor(c6)
+        rc7 = RGBStringToColor(c7)
+        rc8 = RGBStringToColor(c8)
         // -> store color strings into app storage
-        saveColor("C1", RGBStringToColor(c1))
-        saveColor("C2", RGBStringToColor(c2))
-        saveColor("C3", RGBStringToColor(c3))
-        saveColor("C4", RGBStringToColor(c4))
-        saveColor("C5", RGBStringToColor(c5))
-        saveColor("C6", RGBStringToColor(c6))
-        saveColor("C7", RGBStringToColor(c7))
-        saveColor("C8", RGBStringToColor(c8))
+        saveColor("C1", rc1)
+        saveColor("C2", rc2)
+        saveColor("C3", rc3)
+        saveColor("C4", rc4)
+        saveColor("C5", rc5)
+        saveColor("C6", rc6)
+        saveColor("C7", rc7)
+        saveColor("C8", rc8)
     }
     private func deleteLayouts(at offsets: IndexSet) {
         let indicesToRemove = Array(offsets)

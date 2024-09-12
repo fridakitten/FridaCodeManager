@@ -38,6 +38,7 @@ let global_sdkpath: String = "\(global_documents)/../.sdk"
 @main
 struct MyApp: App {
     @State var hello: UUID = UUID()
+    @AppStorage("ui_update152") var upd: Bool = false
     init() {
         let navigationBarAppearance = UINavigationBarAppearance()
         navigationBarAppearance.backgroundColor = UIColor.systemBackground
@@ -63,6 +64,12 @@ struct MyApp: App {
                 .onOpenURL { url in
                         importProj(target: url.path)
                         hello = UUID()
+                }
+                .onAppear {
+                    if !upd {
+                        resetlayout()
+                        upd = true
+                    }
                 }
         }
     }

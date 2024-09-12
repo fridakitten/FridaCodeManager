@@ -58,11 +58,6 @@ struct ContentView: View {
                 CodeEditorPreview(text: $code, font: $font, suffix: "swift")
                     .frame(height: 120)
                     .listRowBackground(dbc ? Color(UIColor.systemBackground) : color7
-                        //if !dbc {
-                        //    color7
-                        //} else {
-                        //    Color(UIColor.systemGray6)
-                        //}
                     )
                     .id(identifier)
                 Section("Color") {
@@ -145,22 +140,7 @@ struct ContentView: View {
                             Text("Layouts")
                         }
                     Button("Reset") {
-                        color1 = Color(UIColor(red: 1.0, green: 0.2, blue: 0.6, alpha: 1.0))
-                        color2 = Color(UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0))
-                        color3 = Color(UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0))
-                        color4 = Color(UIColor(red: 0.7569, green: 0.2039, blue: 0.3882, alpha: 1.0))
-                        color4 = Color(UIColor(red: 0.7569, green: 0.2039, blue: 0.3882, alpha: 1.0))
-                        color5 = Color(UIColor(red: 0, green: 0.4824, blue: 0.9098, alpha: 1.0))
-                        color6 = Color(UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0))
-                        color7 = Color.black
-                        saveallcolor()
-                        font = 13
-                        UserDefaults.standard.set(font, forKey: "savedfont")
-                        bsl = true
-                        bold = false
-                        dbc = true
-                        dtc = true
-                        fname = "Menlo"
+                        resetlayout()
                         identifier = UUID()
                     }
                 }
@@ -188,4 +168,22 @@ struct ContentView: View {
         saveColor("C7", color7)
         saveColor("C8", color8)
     }
+}
+
+func resetlayout() {
+    saveColor("C1", Color(UIColor(red: 1.0, green: 0.2, blue: 0.6, alpha: 1.0)))
+    saveColor("C2", Color(UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0)))
+    saveColor("C3", Color(UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0)))
+    saveColor("C4", Color(UIColor(red: 0.7569, green: 0.2039, blue: 0.3882, alpha: 1.0)))
+    saveColor("C5", Color(UIColor(red: 0, green: 0.4824, blue: 0.9098, alpha: 1.0)))
+    saveColor("C6", Color(UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0)))
+    saveColor("C7", Color.black)
+    saveColor("C8", Color.black)
+ 
+    UserDefaults.standard.set(13, forKey: "savedfont")
+    UserDefaults.standard.set(true, forKey: "bsl")
+    UserDefaults.standard.set(false, forKey: "fbold")
+    UserDefaults.standard.set(true, forKey: "defbakcolor")
+    UserDefaults.standard.set(true, forKey: "deftextcolor")
+    UserDefaults.standard.set("Menlo", forKey: "fname")
 }
