@@ -34,6 +34,13 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //Entitlements info[6]
     //API Text     info[7]
 
+    let fileManager = FileManager.default
+
+    if !fileManager.fileExists(atPath: info[3]) {
+       print("SDK \"\(ProjectInfo.SDK)\" doesn't exist, make sure to download the SDK in Settings > SDK Hub\n")
+       return 1;
+    }
+
     //define build bash environment
     let bashenv: [String] = ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks"]
 
