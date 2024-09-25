@@ -64,7 +64,7 @@ package_fs:
 	@find . -type f -name ".DS_Store" -delete
 	@cp -r Blueprint/FridaCodeManager.app/* $(BUILD_PATH)$(JB_PATH)Applications/FridaCodeManager.app
 	@mkdir -p $(BUILD_PATH)DEBIAN
-	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: .\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FridasCoolCodingTeam\nAuthor: FridasCoolCodingTeam\nSection: Tweaks\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
+	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: Full fledged Xcode-like IDE for iOS\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FCCT\nAuthor: FCCT\nSection: Tweaks\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
 	@-rm -rf Product/*
 	@dpkg-deb -b $(BUILD_PATH) Product/FridaCodeManager.deb
 
