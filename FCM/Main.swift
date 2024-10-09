@@ -32,16 +32,17 @@ let jbroot: String = {
     }
     return preroot
 }()
-let global_documents: String = {
+let global_container: String = {
     // It wont work without container anyways so crash when it doesnt work!
     let path = contgen()
 
     if let path = path {
-        return "\(path)/Documents";
+        return "\(path)";
     } else  {
         exit(1)
     }
 }()
+let global_documents: String = "\(global_container)/Documents"
 let global_sdkpath: String = "\(global_documents)/../.sdk"
 
 @main

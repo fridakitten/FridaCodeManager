@@ -80,3 +80,24 @@ func renameFile(atPath filePath: String, to newFileName: String) throws {
     let newFilePath = (directoryPath as NSString).appendingPathComponent(newFileName)
     try FileManager.default.moveItem(atPath: filePath, toPath: newFilePath)
 }
+
+func adv_rm(atPath path: String) throws {
+    let protectedPaths: Set<String> = ["/", "/System", "/bin", "/sbin", "/usr", "/etc", "/var"]
+    let normalizedPath = URL(fileURLWithPath: path).standardized.path
+    
+    guard !protectedPaths.contains(normalizedPath) else {
+        throw NSError(domain: "com.example.FileManagerError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Attempted to remove contents from a protected system path: \(path)"])
+    }
+
+    let fileManager = FileManager.default
+    let contents = try fileManager.contentsOfDirectory(atPath: normalizedPath)
+    
+    for item in contents {
+        let itemPath = normalizedPath + "/" + item
+        do {
+            try fileManager.removeItem(atPath: itemPath)
+        } catch {
+            throw error
+        }
+    }
+}

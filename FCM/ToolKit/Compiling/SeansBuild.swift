@@ -42,7 +42,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
 
     //define build bash environment
-    let bashenv: [String] = ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks"]
+    let bashenv: [String] = ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks","HOME=\(global_container)/.cache/.\(ProjectInfo.SDK)"]
 
     //Processing API
     var apiextension: ext = ext(build: "", bef: "", aft: "", ign: "")
@@ -95,6 +95,12 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     cfolder(atPath: info[0])
     cfolder(atPath: info[1])
     cfolder(atPath: info[4])
+    if !fileManager.fileExists(atPath: "\(global_container)/.cache") {
+        cfolder(atPath: "\(global_container)/.cache")
+    }
+    if !fileManager.fileExists(atPath: "\(global_container)/.cache/.\(ProjectInfo.SDK)") {
+        cfolder(atPath: "\(global_container)/.cache/.\(ProjectInfo.SDK)")
+    }
     try? copyc(from: info[2], to: info[1])
     shell("rm '\(info[1])/DontTouchMe.plist'")
 

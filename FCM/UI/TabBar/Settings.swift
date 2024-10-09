@@ -149,15 +149,18 @@ struct Cleaner: View {
                 let path: String = {
                     switch(arg) {
                         case 1:
-                            return "\(global_documents)/../.cache/clang/ModuleCache"
+                            return "\(global_documents)/../.cache"
                         case 2:
                             return "\(global_documents)/../tmp"
                         default:
-                            return "\(global_documents)/../.cache/clang/ModuleCache"
+                            return "\(global_documents)/../.cache"
                     }
                 }()
                 if FileManager.default.fileExists(atPath: path) {
-                    shell("rm -rf \(path)/*")
+                    do {
+                        try adv_rm( atPath: path)
+                    } catch {
+                    }
                 }
             DismissAlert()
         }
