@@ -1,7 +1,7 @@
 # Makefile
 SDK_PATH = SDK
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
-VERSION := 1.5.2
+VERSION := 1.5.3
 BUILD_PATH := .package/
 JB_PATH := /
 ARCH := iphoneos-arm64
@@ -37,11 +37,11 @@ greet:
 
 compile_ts: SWIFT := $(shell find ./FCMTS/ -name '*.swift')
 compile_ts:
-	@swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -target arm64-apple-ios15.0
+	@swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0
 
 compile_swift: SWIFT := $(shell find ./FCM/ -name '*.swift')
 compile_swift:
-	@output=$$(swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libroot/libroot.a FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -target arm64-apple-ios15.0 2>&1); \
+	@output=$$(swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libroot/libroot.a FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
     if [ $$? -ne 0 ]; then \
         echo "$$output" | grep -v "remark:"; \
         exit 1; \
@@ -64,7 +64,7 @@ package_fs:
 	@find . -type f -name ".DS_Store" -delete
 	@cp -r Blueprint/FridaCodeManager.app/* $(BUILD_PATH)$(JB_PATH)Applications/FridaCodeManager.app
 	@mkdir -p $(BUILD_PATH)DEBIAN
-	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: Full fledged Xcode-like IDE for iOS\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FCCT\nAuthor: FCCT\nSection: Tweaks\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
+	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: Full fledged Xcode-like IDE for iOS\nDepends: curl, swift, zip, ldid, unzip, clang\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FCCT\nAuthor: FCCT\nSection: Utilities\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
 	@-rm -rf Product/*
 	@dpkg-deb -b $(BUILD_PATH) Product/FridaCodeManager.deb
 

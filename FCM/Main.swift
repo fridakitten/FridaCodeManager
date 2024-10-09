@@ -32,7 +32,16 @@ let jbroot: String = {
     }
     return preroot
 }()
-let global_documents: String = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].path
+let global_documents: String = {
+    // It wont work without container anyways so crash when it doesnt work!
+    let path = contgen()
+
+    if let path = path {
+        return "\(path)/Documents";
+    } else  {
+        exit(1)
+    }
+}()
 let global_sdkpath: String = "\(global_documents)/../.sdk"
 
 @main

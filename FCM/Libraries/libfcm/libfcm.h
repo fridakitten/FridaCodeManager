@@ -11,3 +11,4 @@ NSString *gosb();
 NSString *gmodel();
 NSString *garch();
 NSString *gcpu();
+NSString *contgen();

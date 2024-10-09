@@ -32,6 +32,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     }
 
     @Binding var text: String
+    @State var line: Int = 0
 
     let highlightRules: [HighlightRule]
     let lineNumberLabel = UILabel()
@@ -163,6 +164,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
 
                 DispatchQueue.main.async {
                     self.parent.lineNumberLabel.text = "Line \(logicalLineNumber)"
+                    self.parent.line = logicalLineNumber
                 }
             }
         }
