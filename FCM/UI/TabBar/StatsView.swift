@@ -1,25 +1,3 @@
- /* 
- StatsView.swift 
-
- Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
- Copyright (C) 2024 fridakitten 
-
- This file is part of FridaCodeManager. 
-
- FridaCodeManager is free software: you can redistribute it and/or modify 
- it under the terms of the GNU General Public License as published by 
- the Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version. 
-
- FridaCodeManager is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
-
- You should have received a copy of the GNU General Public License 
- along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
-    
 import SwiftUI
 
 struct StatsView: View {
@@ -45,20 +23,23 @@ struct StatsView: View {
                         }
                     }
                 } else {
-                    Text("No Projects found")
+                    Text("Loading ...")
                 }
             }
             .listStyle(InsetGroupedListStyle())
             .onAppear {
-                updateFileSizes()
-                graph = UUID()
+                // Run updateFileSizes in a background task
+                Task {
+                    await updateFileSizes()
+                    graph = UUID()
+                }
             }
             .navigationTitle("Stats")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
 
-    func updateFileSizes() {
+    func updateFileSizes() async {
         let fileExtensions: [(String, Color, String)] = [
             ("swift", .red, "Swift"),
             ("c", .blue, "C"),
@@ -67,12 +48,25 @@ struct StatsView: View {
             ("mm", .yellow, "Objective-C++")
         ]
 
-        stats = fileExtensions.map { ext, color, lang in
-            let result = calculateFileSizeAndCount(path: global_documents, fileExtension: ext)
-            return (result.size, result.count, color, lang)
+        // Use TaskGroup for concurrent processing
+        await withTaskGroup(of: (size: Double, count: Int, color: Color, language: String).self) { group in
+            for (ext, color, lang) in fileExtensions {
+                group.addTask {
+                    let result = calculateFileSizeAndCount(path: global_documents, fileExtension: ext)
+                    return (result.size, result.count, color, lang)
+                }
+            }
+
+            // Collect results and calculate total size
+            var results: [(size: Double, count: Int, color: Color, language: String)] = []
+            totalSize = 0.0
+            
+            for await result in group {
+                results.append(result)
+                totalSize += result.size
+            }
+            stats = results
         }
-        
-        totalSize = stats.reduce(0) { $0 + $1.size }
     }
 
     func calculateFileSizeAndCount(path: String, fileExtension: String) -> (size: Double, count: Int) {

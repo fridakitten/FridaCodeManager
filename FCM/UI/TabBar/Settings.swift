@@ -132,7 +132,7 @@ struct Cleaner: View {
            Button(action: {
                clean(1)
            }) {
-               Label("Clean ModuleCache", systemImage: "trash.fill")
+               Label("Clean Module Cache", systemImage: "trash.fill")
            }
            Button(action: {
                clean(2)
