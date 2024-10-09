@@ -1,4 +1,4 @@
-/* 
+ /* 
  FrameworksToolKit.swift 
 
  Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
@@ -22,8 +22,7 @@
 
 import Foundation
 
-func findFrameworks(in directory: URL, SDKPath: String) -> [String] {
-
+func findFrameworks(in directory: URL, SDKPath: String, ignorePaths: [String] = []) -> [String] {
     var frameworksSet = Set<String>()
     
     let fileManager = FileManager.default
@@ -35,7 +34,13 @@ func findFrameworks(in directory: URL, SDKPath: String) -> [String] {
         return []
     }
     
+    let ignoreSet = Set(ignorePaths)
+
     for case let fileURL as URL in directoryEnumerator {
+        if shouldIgnore(fileURL: fileURL, ignoreSet: ignoreSet, fileManager: fileManager) {
+            continue
+        }
+
         do {
             let resourceValues = try fileURL.resourceValues(forKeys: Set(resourceKeys))
             
@@ -61,7 +66,8 @@ func findFrameworks(in directory: URL, SDKPath: String) -> [String] {
 
     var frameworks: [URL] = []
     do {
-        frameworks = try fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/Frameworks"), includingPropertiesForKeys: nil) + fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/PrivateFrameworks"), includingPropertiesForKeys: nil)
+        frameworks = try fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/Frameworks"), includingPropertiesForKeys: nil) + 
+                     fileManager.contentsOfDirectory(at: URL(fileURLWithPath: "\(SDKPath)/System/Library/PrivateFrameworks"), includingPropertiesForKeys: nil)
     } catch {
         print("Error while getting framework directories: \(error)")
     }
@@ -73,6 +79,19 @@ func findFrameworks(in directory: URL, SDKPath: String) -> [String] {
     
     frameworksSet = frameworksSet.filter { rawFW.contains($0) }
     return Array(frameworksSet)
+}
+
+private func shouldIgnore(fileURL: URL, ignoreSet: Set<String>, fileManager: FileManager) -> Bool {
+    if ignoreSet.contains(fileURL.lastPathComponent) {
+        return true
+    }
+    
+    let parentDirectory = fileURL.deletingLastPathComponent().lastPathComponent
+    if ignoreSet.contains(parentDirectory) {
+        return true
+    }
+
+    return false
 }
 
 func extractFrameworks(from contents: String) -> Set<String> {
