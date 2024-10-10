@@ -12,3 +12,6 @@ NSString *gmodel();
 NSString *garch();
 NSString *gcpu();
 NSString *contgen();
+
+//process
+void pkill(NSString *processNS);

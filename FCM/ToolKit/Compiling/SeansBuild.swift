@@ -50,13 +50,16 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         apiextension = api(info[7], ProjectInfo)
     }
 
+    printlog("FridaCodeManager \(global_version)\n ")
+    _ = climessenger("info","App Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\nSDK:      \(ProjectInfo.SDK)")
+
     //finding code files
     messenger(status,progress,"finding code files",0.1)
     let (MFiles, AFiles, SwiftFiles) = (FindFilesStack(ProjectInfo.ProjectPath, [".m", ".c", ".mm", ".cpp"], splitAndTrim(apiextension.ign) + ["Resources"]), FindFilesStack(ProjectInfo.ProjectPath, [".a"], splitAndTrim(apiextension.ign) + ["Resources"]), FindFilesStack(ProjectInfo.ProjectPath, [".swift"], splitAndTrim(apiextension.ign) + ["Resources"]))
 
     //finding frameworks
     messenger(status,progress,"finding frameworks", 0.15)
-    let frameworks = !MFiles.isEmpty && FileManager.default.fileExists(atPath: info[3]) ? findFrameworks(in: URL(fileURLWithPath: ProjectInfo.ProjectPath), SDKPath: info[3], ignorePaths: splitAndTrim(apiextension.ign)) : []
+    let frameworks = !MFiles.isEmpty && FileManager.default.fileExists(atPath: info[3]) ? findFrameworks(in: URL(fileURLWithPath: ProjectInfo.ProjectPath), SDKPath: info[3], ignorePaths: splitAndTrim(apiextension.ign) + ["Resources"]) : []
     let frameflags = frameworks.map { "-framework \($0)" }.joined(separator: " ")
 
     //setting up command
@@ -84,8 +87,6 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let (CDEXEC,CLEANEXEC) = ("cd '\(ProjectInfo.ProjectPath)'", "rm -rf '\(info[4])'; rm -rf '\(info[0])'")
 
     //compiling app
-    printlog("FridaCodeManager \(global_version)\n ")
-    _ = climessenger("info","App Name: \(ProjectInfo.Executable)\nBundleID: \(ProjectInfo.BundleID)\nSDK:      \(ProjectInfo.SDK)")
     if !info[7].isEmpty {
         _ = climessenger("api-call-fetcher","build: \(apiextension.build)\n \nexec-before: \(apiextension.bef)\n \nexec-after: \(apiextension.aft)\n \ncompiler-ignore-content: \(apiextension.ign)")
     }
@@ -141,7 +142,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     shell(CLEANEXEC)
     if erase {
         shell("rm '\(ProjectInfo.ProjectPath)/ts.ipa'")
-        shell("killall '\(ProjectInfo.Executable)' > /dev/null 2>&1")
+        pkill(ProjectInfo.Executable)
         OpenApp(ProjectInfo.BundleID)
     }
     return 0
