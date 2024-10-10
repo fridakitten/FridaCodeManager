@@ -84,7 +84,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         """
     }
 
-    let (CDEXEC,CLEANEXEC) = ("cd '\(ProjectInfo.ProjectPath)'", "rm -rf '\(info[4])'; rm -rf '\(info[0])'")
+    let (CDEXEC) = ("cd '\(ProjectInfo.ProjectPath)'")
 
     //compiling app
     if !info[7].isEmpty {
@@ -103,13 +103,14 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         cfolder(atPath: "\(global_container)/.cache/.\(ProjectInfo.SDK)")
     }
     try? copyc(from: info[2], to: info[1])
-    shell("rm '\(info[1])/DontTouchMe.plist'")
+    rm("\(info[1])/DontTouchMe.plist")
 
     if !apiextension.bef.isEmpty {
         messenger(status,progress,"running api-exec-stage (before)",0.3)
         if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.bef)",nil,bashenv) != 0 {
             _ = climessenger("error-occurred", "running api-exec-stage failed")
-            shell(CLEANEXEC)
+            rm(info[0])
+            rm(info[4])
             return 1
         }
     }
@@ -117,7 +118,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     messenger(status,progress,"compiling \(ProjectInfo.Executable)",0.4)
     if climessenger("compiler-stage","","\(CDEXEC) ; \(EXEC)", nil, bashenv) != 0 {
         _ = climessenger("error-occurred","compiling \(ProjectInfo.Executable) failed")
-        shell(CLEANEXEC)
+        rm(info[0])
+        rm(info[4])
         return 1
     }
 
@@ -125,7 +127,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if !apiextension.aft.isEmpty {
         if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.aft)",nil,bashenv) != 0 {
             _ = climessenger("error-occurred", "running api-exec-stage failed")
-            shell(CLEANEXEC)
+            rm(info[0])
+            rm(info[4])
             return 1
         }
     }
@@ -139,9 +142,10 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         let result: Int = shell("\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa' > /dev/null 2>&1", uid: 0)
         _ = climessenger("install--stage","TrollStore Helper returned \(String(result))")
     }
-    shell(CLEANEXEC)
+    rm(info[0])
+    rm(info[4])
     if erase {
-        shell("rm '\(ProjectInfo.ProjectPath)/ts.ipa'")
+        rm("\(ProjectInfo.ProjectPath)/ts.ipa")
         pkill(ProjectInfo.Executable)
         OpenApp(ProjectInfo.BundleID)
     }

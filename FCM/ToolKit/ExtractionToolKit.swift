@@ -24,7 +24,9 @@ import Foundation
 
 func exportProj(_ project: Project) {
     let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
-    shell("rm '\(global_documents)/../tmp/\(modname).sproj' ; cd '\(global_documents)' ; zip -r \(modname).sproj '\(project.Name)' ; mv \(modname).sproj '\(global_documents)/../tmp/\(modname).sproj'")
+    rm("\(global_container)/tmp/\(modname).sproj")
+    shell("cd '\(global_documents)' ; zip -r \(modname).sproj '\(project.Name)'")
+    mv("\(global_documents)/\(modname).sproj", "\(global_container)/tmp/\(modname).sproj")
 }
 
 func exportApp(_ project: Project) -> Int {
@@ -40,10 +42,13 @@ func exportApp(_ project: Project) -> Int {
 func importProj(target: String) {
     let v2uuid: String = "\(UUID())"
     if FileManager.default.fileExists(atPath: target) {
-        if shell("mkdir '\(global_documents)/../tmp/\(v2uuid)' ;unzip '\(target)' -d '\(global_documents)/../tmp/\(v2uuid)'") != 0 {
+        if shell("unzip '\(target)' -d '\(global_container)/tmp/\(v2uuid)'") != 0 {
             return
         }
+    } else {
+        return
     }
+    cfolder(atPath: "\(global_container)/tmp/\(v2uuid)")
     let content: [URL] = try! FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: "\(global_documents)/../tmp/\(v2uuid)"), includingPropertiesForKeys: nil)
     let projpath: String = content[0].path
     print("\nfound at: \(projpath)")
@@ -51,5 +56,5 @@ func importProj(target: String) {
         wplist(value: v2uuid, forKey: "ProjectName", plistPath: "\(projpath)/Resources/DontTouchMe.plist")
         shell("mv '\(projpath)' '\(global_documents)/\(v2uuid)'")
     }
-    shell("rm -rf '\(global_documents)/../tmp/\(v2uuid)'")
+    rm("\(global_container)/tmp/\(v2uuid)")
 }

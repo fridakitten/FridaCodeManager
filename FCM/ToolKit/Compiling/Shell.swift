@@ -39,7 +39,7 @@ func runCommand(_ command: String, _ args: [String], _ uid: uid_t,_ env: [String
     var pid: pid_t = 0
     let args: [String] = [String(command.split(separator: "/").last!)] + args
     let argv: [UnsafeMutablePointer<CChar>?] = args.map { $0.withCString(strdup) }
-    let env = ["PATH=/usr/local/sbin:\(jbroot)/usr/local/sbin:/usr/local/bin:\(jbroot)/usr/local/bin:/usr/sbin:\(jbroot)/usr/sbin:/usr/bin:\(jbroot)/usr/bin:/sbin:\(jbroot)/sbin:/bin:\(jbroot)/bin:/usr/bin/X11:\(jbroot)/usr/bin/X11:/usr/games:\(jbroot)/usr/games","HOME=\(global_documents)/..","TMPDIR=\(global_documents)/../tmp"] + env
+    let env = ["PATH=/usr/local/sbin:\(jbroot)/usr/local/sbin:/usr/local/bin:\(jbroot)/usr/local/bin:/usr/sbin:\(jbroot)/usr/sbin:/usr/bin:\(jbroot)/usr/bin:/sbin:\(jbroot)/sbin:/bin:\(jbroot)/bin:/usr/bin/X11:\(jbroot)/usr/bin/X11:/usr/games:\(jbroot)/usr/games","HOME=\(global_container)","TMPDIR=\(global_container)/tmp"] + env
     let proenv: [UnsafeMutablePointer<CChar>?] = env.map { $0.withCString(strdup) }
     defer { for case let pro? in proenv { free(pro) } }
     var attr: posix_spawnattr_t?
