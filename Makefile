@@ -19,13 +19,19 @@ endif
 # Targets
 all: ARCH := iphoneos-arm64
 all: JB_PATH := /var/jb/
+all: TARGET := jailbreak
 all: greet compile_swift sign package_fs clean done
 
 roothide: ARCH := iphoneos-arm64e
 roothide: JB_PATH := /
+roothide: TARGET := jailbreak
 roothide: greet compile_swift sign  package_fs clean done
 
-trollstore: greet compile_ts sign makechain ipa clean done
+trollstore: TARGET := trollstore
+trollstore: greet compile_swift sign makechain ipa clean done
+
+#trollstore: TARGET := trollstore
+#trollstore: greet compile_swift sign makechain ipa clean done
 
 # Functions
 greet:
@@ -35,13 +41,9 @@ greet:
 		mkdir Product; \
    fi
 
-compile_ts: SWIFT := $(shell find ./FCMTS/ -name '*.swift')
-compile_ts:
-	@swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libfcm/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0
-
 compile_swift: SWIFT := $(shell find ./FCM/ -name '*.swift')
 compile_swift:
-	@output=$$(swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libroot/libroot.a FCM/Libraries/libfcm/libfcm.a FCM/Libraries/libfload/libfload.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
+	@output=$$(swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libroot/libroot.a FCM/Libraries/libfcm/libfcm.a FCM/Libraries/libfload/libfload.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
     if [ $$? -ne 0 ]; then \
         echo "$$output" | grep -v "remark:"; \
         exit 1; \

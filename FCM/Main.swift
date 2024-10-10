@@ -24,6 +24,7 @@ import Foundation
 import SwiftUI
 
 //global environment
+#if jailbreak
 let jbroot: String = {
     let preroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
     if !FileManager.default.fileExists(atPath: preroot) {
@@ -45,6 +46,22 @@ let global_container: String = {
 }()
 let global_documents: String = "\(global_container)/Documents"
 let global_sdkpath: String = "\(global_container)/.sdk"
+
+#elseif trollstore
+let jbroot: String = "\(Bundle.main.bundlePath)/toolchain"
+let global_documents: String = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].path
+let global_sdkpath: String = "\(global_documents)/../.sdk"
+let global_container: String = {
+    // It wont work without container anyways so crash when it doesnt work!
+    let path = contgen()
+
+    if let path = path {
+        return path;
+    } else  {
+        exit(1)
+    }
+}()
+#endif
 
 @main
 struct MyApp: App {

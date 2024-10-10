@@ -67,6 +67,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
 
     var EXEC = ""
     if !SwiftFiles.isEmpty {
+        #if jailbreak
         if !MFiles.isEmpty {
             EXEC += MFiles.map { mFile in
                 "clang -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' ; "
@@ -76,11 +77,21 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         swiftc \(SwiftFiles.joined(separator: " ")) \(AFiles.joined(separator: " ")) \(MFiles.isEmpty ? "" : "clang/*.o") \(apiextension.build) \
         \(FileManager.default.fileExists(atPath: info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG) -o '\(info[1])/\(ProjectInfo.Executable)'
         """
+        #elseif trollstore
+        print("Swift is currently not supported on trollstore edition!\n")
+        #endif
     } else {
+        #if jailbreak
         EXEC += """
         clang \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) \(AFiles.joined(separator: " ")) \
         -o '\(info[1])/\(ProjectInfo.Executable)'
         """
+        #elseif trollstore
+        EXEC += """
+        clang-16 \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.joined(separator: " ")) \(AFiles.joined(separator: " ")) \
+        -o '\(info[1])/\(ProjectInfo.Executable)'
+        """
+        #endif
     }
 
     let (CDEXEC) = ("cd '\(ProjectInfo.ProjectPath)'")

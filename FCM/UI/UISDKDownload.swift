@@ -33,7 +33,11 @@ struct SDKDownload: View {
             fdownload("https://polcom.de/sdk/iOS\(sdk).zip", "tmp/sdk.zip")
             if shell("unzip '\(global_container)/tmp/sdk.zip' -d '\(global_sdkpath)/iPhoneOS\(sdk).sdk'") != 0 {
                 // back then we did ran download tasks unnecessarily as root
+                #if jailbreak
                 shell("chown mobile \(global_sdkpath)", uid: 0)
+                #elseif trollstore
+                shell("chown mobile:mobile \(global_sdkpath)", uid: 0)
+                #endif
                 shell("unzip '\(global_container)/tmp/sdk.zip' -d '\(global_sdkpath)/iPhoneOS\(sdk).sdk'")
             }
             rm("\(global_container)/tmp/sdk.zip")
