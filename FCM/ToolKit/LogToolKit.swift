@@ -28,19 +28,11 @@ func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: 
     let command = command ?? "echo"
     var code = 0
     if command.isEmpty {
-        printlog("\(slice) \(title) \(slice)\n\(text)\n++++++++++++++++++++++++++++++++++++++\n ")
+        print("\(slice) \(title) \(slice)\n\(text)\n++++++++++++++++++++++++++++++++++++++\n ")
     } else {
-        printlog("\(slice) \(title) \(slice)")
+        print("\(slice) \(title) \(slice)")
         code = shell("\(command)",uid: (uid ?? 501), env: (env ?? []))
-        printlog("++++++++++++++++++++++++++++++++++++++\n ")
+        print("++++++++++++++++++++++++++++++++++++++\n ")
     }
     return code
-}
-
-func printlog(_ text: String) {
-    shell("echo -e \"\(text)\"")
-}
-
-func clearlog() {
-    shell("echo -e \"\" > \(global_documents)/log.txt")
 }

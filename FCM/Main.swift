@@ -20,6 +20,7 @@
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
  */ 
     
+import Foundation
 import SwiftUI
 
 //global environment

@@ -60,7 +60,7 @@ struct ProjectView: View {
                                             if exportApp(Project) == 0 {
                                                 DismissAlert()
                                                 let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
-                                                if let stabURL = URL(string: "file://\(NSTemporaryDirectory())\(modname).ipa") {
+                                                if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).ipa") {
                                                     share(url: stabURL)
                                                 }
                                             } else { DismissAlert() }
@@ -71,7 +71,7 @@ struct ProjectView: View {
                                     Button(action: {
                                         let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
                                         exportProj(Project)
-                                        if let stabURL = URL(string: "file://\(NSTemporaryDirectory())\(modname).sproj") {
+                                        if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).sproj") {
                                             share(url: stabURL)
                                         }
                                     }){
