@@ -42,7 +42,7 @@ let global_container: String = {
         exit(1)
     }
 }()
-let global_documents: String = "\(global_container)/Documents"
+let global_documents: String = "\(global_container)/Documents/"
 let global_sdkpath: String = "\(global_documents)/../.sdk"
 
 @main

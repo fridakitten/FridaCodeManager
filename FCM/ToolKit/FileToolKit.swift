@@ -101,3 +101,29 @@ func adv_rm(atPath path: String) throws {
         }
     }
 }
+
+func rm(_ path: String) {
+    let fileManager = FileManager.default
+    if fileManager.fileExists(atPath: path) {
+        do {
+            try fileManager.removeItem(atPath: path)
+            print("File removed successfully.")
+        } catch {
+        }
+    } else {
+        print("File does not exist at path.")
+    }
+}
+
+func mv(_ fromPath: String, _ toPath: String) {
+    let fileManager = FileManager.default
+    if fileManager.fileExists(atPath: fromPath) {
+        do {
+            try fileManager.moveItem(atPath: fromPath, toPath: toPath)
+            print("File moved successfully.")
+        } catch {
+        }
+    } else {
+        print("File does not exist at source path.")
+    }
+}
