@@ -79,6 +79,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         """
         #elseif trollstore
         print("Swift is currently not supported on trollstore edition!\n")
+        return 1
         #endif
     } else {
         #if jailbreak

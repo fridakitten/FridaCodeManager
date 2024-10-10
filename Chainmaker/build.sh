@@ -60,6 +60,7 @@ for dir in $CHAIN_BIN $CHAIN_LIB; do
     done
 done
 
+mkdir shell/output
 bash shell/compile.sh
 cp shell/output/* $CHAIN_BIN
 rm -rf shell/output
