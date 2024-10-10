@@ -38,13 +38,13 @@ let global_container: String = {
     let path = contgen()
 
     if let path = path {
-        return "\(path)";
+        return path;
     } else  {
         exit(1)
     }
 }()
 let global_documents: String = "\(global_container)/Documents"
-let global_sdkpath: String = "\(global_documents)/../.sdk"
+let global_sdkpath: String = "\(global_container)/.sdk"
 
 @main
 struct MyApp: App {

@@ -29,7 +29,14 @@ struct SDKDownload: View {
     private func download(_ sdk: String) {
         DispatchQueue.global(qos: .utility).async {
             ShowAlert(UIAlertController(title: "Downloading SDK", message: "", preferredStyle: .alert))
-            shell("mkdir \(global_sdkpath); cd \(global_sdkpath) ; curl -O https://polcom.de/sdk/iOS\(sdk).zip ; unzip iOS\(sdk).zip ; rm iOS\(sdk).zip", uid: 0)
+            cfolder(atPath: "\(global_sdkpath)")
+            fdownload("https://polcom.de/sdk/iOS\(sdk).zip", "tmp/sdk.zip")
+            if shell("unzip '\(global_container)/tmp/sdk.zip' -d '\(global_sdkpath)/iPhoneOS\(sdk).sdk'") != 0 {
+                // back then we did ran download tasks unnecessarily as root
+                shell("chown mobile \(global_sdkpath)", uid: 0)
+                shell("unzip '\(global_container)/tmp/sdk.zip' -d '\(global_sdkpath)/iPhoneOS\(sdk).sdk'")
+            }
+            rm("\(global_container)/tmp/sdk.zip")
             listid = UUID()
             DismissAlert()
         }
@@ -40,7 +47,10 @@ struct SDKDownload: View {
         }
         DispatchQueue.global(qos: .utility).async {
             ShowAlert(UIAlertController(title: "Removing SDK", message: "", preferredStyle: .alert))
-            shell("rm -rf \(global_sdkpath)/iPhoneOS\(sdk).sdk", uid: 0)
+            // some people might have downloaded SDKs in the past that got unnecessarily stored as root
+            if rm("\(global_sdkpath)/iPhoneOS\(sdk).sdk") != 0 {
+                shell("rm -rf \(global_sdkpath)/iPhoneOS\(sdk).sdk", uid: 0)
+            }
             listid = UUID()
             DismissAlert()
         }
