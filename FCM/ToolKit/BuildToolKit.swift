@@ -23,10 +23,40 @@
 import Foundation
 import UIKit
 
-func OpenApp(_ BundleID: String) {
-    guard let obj = objc_getClass("LSApplicationWorkspace") as? NSObject else { return }
-    let workspace = obj.perform(Selector(("defaultWorkspace")))?.takeUnretainedValue() as? NSObject
-    workspace?.perform(Selector(("openApplicationWithBundleID:")), with: BundleID)
+func obfuscatedClass(_ className: String) -> AnyClass? {
+    return NSClassFromString(className)
+}
+
+func obfuscatedSelector(_ selectorName: String) -> Selector? {
+    return NSSelectorFromString(selectorName)
+}
+
+func OpenApp(_ bundleID: String) {
+    guard let workspaceClass = obfuscatedClass("LSApplicationWorkspace") as? NSObject.Type else {
+        print("Failed to find LSApplicationWorkspace")
+        return
+    }
+    
+    guard let defaultWorkspaceSelector = obfuscatedSelector("defaultWorkspace") else {
+        print("Failed to find defaultWorkspace selector")
+        return
+    }
+    
+    let workspace = workspaceClass.perform(defaultWorkspaceSelector)?.takeUnretainedValue() as? NSObject
+    
+    guard let openAppSelector = obfuscatedSelector("openApplicationWithBundleID:") else {
+        print("Failed to find openApplicationWithBundleID selector")
+        return
+    }
+    
+    if let workspace = workspace {
+        let result = workspace.perform(openAppSelector, with: bundleID)
+        if result == nil {
+            print("Failed to open app with bundle ID \(bundleID)")
+        }
+    } else {
+        print("Failed to initialize LSApplicationWorkspace")
+    }
 }
 
 func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore: [String]) -> [String] {

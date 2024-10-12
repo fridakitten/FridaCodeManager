@@ -170,7 +170,7 @@ struct buildView: View {
     @State var ProjectInfo: Project
     @Binding var sdk: String
     @Binding var buildv: Bool
-    @State var compiling: Bool = false
+    @State var compiling: Bool = true
     @State var console: Bool = false
     @State var status: String = ""
     @State private var progress = 0.0
@@ -191,6 +191,9 @@ struct buildView: View {
                             .cornerRadius(15)
                         Text("Close")
                             .foregroundColor(.white)
+                            .onAppear {
+                                OpenApp(ProjectInfo.BundleID)
+                            }
                     }
                 }
                 .frame(width: UIScreen.main.bounds.width / 1.2, height: 50)

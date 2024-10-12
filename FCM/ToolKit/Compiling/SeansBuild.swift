@@ -155,7 +155,6 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if erase {
         _ = rm("\(ProjectInfo.ProjectPath)/ts.ipa")
         pkill(ProjectInfo.Executable)
-        OpenApp(ProjectInfo.BundleID)
     }
     return 0
 }
