@@ -36,4 +36,7 @@ compile:
 	done
 
 bind:
-	@ar rcs tmp/lib/libsean16.o tmp/out/*.o
+	@ar rcs tmp/lib/libsean.a tmp/out/*.o
+
+clean:
+	@rm -rf tmp

@@ -5,3 +5,5 @@ Product/*
 .package
 Chainmaker/.tmp
 Essentials/libsean/tmp
+Essentials/libsean/libsean16.o
+Essentials/lib/build

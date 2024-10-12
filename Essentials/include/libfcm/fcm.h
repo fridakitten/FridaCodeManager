@@ -11,7 +11,9 @@ NSString *gosb();
 NSString *gmodel();
 NSString *garch();
 NSString *gcpu();
-NSString *contgen();
+
+//container insurance
+NSString* contgen(void);
 
 //process
 void pkill(NSString *processNS);
