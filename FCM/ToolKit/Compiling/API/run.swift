@@ -29,8 +29,20 @@ func api(_ text: String,_ Project:Project) -> ext {
     //api class
     let apiclass: String = tags(text,"api")
 
-    //subclasses
-    let (build, before, after, ignore) = (tags(apiclass,"build"),tags(apiclass,"exec-before"), tags(apiclass,"exec-after"), tags(apiclass,"compiler-ignore-content"))
+    //version Definition
+    //lets you choose what version of the api you wanna use
+    let usever = tags(apiclass,"version")
 
-    return ext(build: apicall(build,Project,false), bef: apicall(before,Project,true), aft: apicall(after,Project,true), ign: apicall(ignore,Project,false))
+    //initialise stuff
+    var (build, build_sub, before, after, ignore) = ("", "", "", "", "")
+
+    //subclasses
+    if usever == "1.1" {
+        (build, build_sub, before, after, ignore) = (tags(apiclass,"build"), tags(apiclass,"build-object"),tags(apiclass,"exec-before"), tags(apiclass,"exec-after"), tags(apiclass,"compiler-ignore-content"))
+    } else {
+        //translation to old API
+        (build, build_sub, before, after, ignore) = (tags(apiclass,"build"), tags(apiclass,"build"),tags(apiclass,"exec-before"), tags(apiclass,"exec-after"), tags(apiclass,"compiler-ignore-content"))
+    }
+
+    return ext(build: apicall(build,Project,false), build_sub: apicall(build_sub,Project,false), bef: apicall(before,Project,true), aft: apicall(after,Project,true), ign: apicall(ignore,Project,false))
 }

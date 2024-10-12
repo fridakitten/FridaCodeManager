@@ -28,7 +28,11 @@ struct ProjPopupView: View {
     @Binding var BundleID: String
     @Binding var SDK: String
     @Binding var hellnah: UUID
+    #if jailbreak
     @State private var type = 1
+    #elseif trollstore
+    @State private var type = 2
+    #endif
     var body: some View {
      ZStack {
         VStack(alignment: .leading, spacing: 16) {

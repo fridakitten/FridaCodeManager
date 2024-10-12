@@ -25,6 +25,7 @@ import UIKit
 
 struct ext {
     let build: String
+    let build_sub: String
     let bef: String
     let aft: String
     let ign: String

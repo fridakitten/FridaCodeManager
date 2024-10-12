@@ -22,11 +22,15 @@
 
 import Foundation
 
-func exportProj(_ project: Project) {
+func exportProj(_ project: Project) -> Int {
     let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
     _ = rm("\(global_container)/tmp/\(modname).sproj")
-    shell("cd '\(global_documents)' ; zip -r \(modname).sproj '\(project.Name)'")
-    _ = mv("\(global_documents)/\(modname).sproj", "\(global_container)/tmp/\(modname).sproj")
+    let result = shell("cd '\(global_documents)' ; zip -r \(modname).sproj '\(project.Name)'")
+    if result == 0 {
+        _ = mv("\(global_documents)/\(modname).sproj", "\(global_container)/tmp/\(modname).sproj")
+    }
+    sleep(2)
+    return result
 }
 
 func exportApp(_ project: Project) -> Int {
@@ -36,6 +40,7 @@ func exportApp(_ project: Project) -> Int {
         _ = rm("\(global_container)/tmp/\(modname).ipa")
         _ = mv("\(global_documents)/\(project.Name)/ts.ipa", "\(global_container)/tmp/\(modname).ipa")
     }
+    sleep(2)
     return result
 }
 

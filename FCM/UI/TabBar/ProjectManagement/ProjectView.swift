@@ -69,10 +69,17 @@ struct ProjectView: View {
                                         Label("Export App", systemImage: "app")
                                     }
                                     Button(action: {
-                                        let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
-                                        exportProj(Project)
-                                        if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).sproj") {
-                                            share(url: stabURL)
+                                        DispatchQueue.global(qos: .utility).async {
+                                            ShowAlert(UIAlertController(title: "Exporting \(Project.Executable)", message: "", preferredStyle: .alert))
+                                            if exportProj(Project) == 0 {
+                                                DismissAlert()
+                                                let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
+                                                if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).sproj") {
+                                                    share(url: stabURL)
+                                                }
+                                            } else {
+                                                DismissAlert()
+                                            }
                                         }
                                     }){
                                         Label("Export Project", systemImage: "archivebox")
@@ -127,10 +134,17 @@ struct ProjectView: View {
     }
     func share(url: URL) {
         let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-    
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-        let rootViewController = windowScene.keyWindow?.rootViewController {
-            rootViewController.present(activityViewController, animated: true, completion: nil)
+
+        DispatchQueue.main.async {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                if let rootViewController = windowScene.windows.first?.rootViewController {
+                    rootViewController.present(activityViewController, animated: true, completion: nil)
+                } else {
+                    print("No root view controller found.")
+                }
+            } else {
+                print("No window scene found.")
+            }
         }
     }
 }

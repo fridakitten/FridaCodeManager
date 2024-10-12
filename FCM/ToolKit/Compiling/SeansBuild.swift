@@ -45,7 +45,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let bashenv: [String] = ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks","HOME=\(global_container)/.cache/.\(ProjectInfo.SDK)"]
 
     //Processing API
-    var apiextension: ext = ext(build: "", bef: "", aft: "", ign: "")
+    var apiextension: ext = ext(build:"",build_sub: "",bef: "", aft:"", ign: "")
     if !info[7].isEmpty {
         apiextension = api(info[7], ProjectInfo)
     }
@@ -70,7 +70,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         #if jailbreak
         if !MFiles.isEmpty {
             EXEC += MFiles.map { mFile in
-                "clang -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' ; "
+                "clang -fmodules \(apiextension.build_sub) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' ; "
             }.joined()
         }
         EXEC += """

@@ -189,13 +189,13 @@ struct Appeareance: View {
     }
 
     func itemExistsInPlist(item: String, arrayKey: String, plistPath: String) -> Bool {
-    if let plistData = FileManager.default.contents(atPath: plistPath),
-       let plistDictionary = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any],
-       let array = plistDictionary[arrayKey] as? [String] {
-        return array.contains(item)
+        if let plistData = FileManager.default.contents(atPath: plistPath),
+            let plistDictionary = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any],
+        let array = plistDictionary[arrayKey] as? [String] {
+            return array.contains(item)
+        }
+        return false
     }
-    return false
-}
 }
 
 struct asksdk: View {

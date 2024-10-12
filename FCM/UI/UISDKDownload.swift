@@ -40,7 +40,7 @@ struct SDKDownload: View {
                 #endif
                 shell("unzip '\(global_container)/tmp/sdk.zip' -d '\(global_sdkpath)/iPhoneOS\(sdk).sdk'")
             }
-            rm("\(global_container)/tmp/sdk.zip")
+            _ = rm("\(global_container)/tmp/sdk.zip")
             listid = UUID()
             DismissAlert()
         }
