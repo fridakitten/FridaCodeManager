@@ -98,9 +98,6 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     let (CDEXEC) = ("cd '\(ProjectInfo.ProjectPath)'")
 
     //compiling app
-    if !info[7].isEmpty {
-        _ = climessenger("api-call-fetcher","build: \(apiextension.build)\n \nexec-before: \(apiextension.bef)\n \nexec-after: \(apiextension.aft)\n \ncompiler-ignore-content: \(apiextension.ign)")
-    }
     if !frameworks.isEmpty {
         _ = climessenger("framework-finder","\(frameworks.map { "\($0)" }.joined(separator: "\n"))")
     }
