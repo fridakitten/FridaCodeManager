@@ -70,9 +70,13 @@ struct ProjPopupView: View {
                 Spacer()
                 VStack {
                 Picker("" ,selection: $type) {
+                    #if jailbreak
                     Text("Swift App").tag(1)
+                    #endif
                     Text("ObjC App").tag(2)
+                    #if jailbreak
                     Text("Swift/ObjC App").tag(3)
+                    #endif
             }
             .pickerStyle(MenuPickerStyle())
                 }
