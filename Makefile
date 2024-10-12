@@ -30,32 +30,27 @@ roothide: greet compile_swift sign  package_fs clean done
 trollstore: TARGET := trollstore
 trollstore: greet compile_swift sign makechain ipa clean done
 
-#trollstore: TARGET := trollstore
-#trollstore: greet compile_swift sign makechain ipa clean done
-
 # Functions
 greet:
 	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n "
 	@echo "\033[32mcompiling FridaCodeManager\033[0m"
 	@if [ ! -d "Product" ]; then \
 		mkdir Product; \
-   fi
+	fi
 
 compile_swift: SWIFT := $(shell find ./FCM/ -name '*.swift')
 compile_swift:
-	@output=$$(swiftc -Xcc -isysroot -Xcc $(SDK_PATH) -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) FCM/Libraries/libroot/libroot.a FCM/Libraries/libfcm/libfcm.a FCM/Libraries/libfload/libfload.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/Libraries/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
-    if [ $$? -ne 0 ]; then \
-        echo "$$output" | grep -v "remark:"; \
-        exit 1; \
-    fi
+	$(MAKE) -C Essentials all
+	@output=$$(swiftc -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) Essentials/lib/prebuild/libroot.a Essentials/lib/build/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
+	if [ $$? -ne 0 ]; then \
+		echo "$$output" | grep -v "remark:"; \
+		exit 1; \
+	fi
+	$(MAKE) -C Essentials clean
 
 sign:
 	@echo "\033[32msigning FridaCodeManager $(Version)\033[0m"
 	@ldid -S./FCM/ent.xml $(OUTPUT_DIR)/swifty
-
-roothide_fs:
-	@JB_PATH= 
-	@ARCH=iphoneos-arm64e
 
 package_fs:
 	@echo "\033[32mpackaging FridaCodeManager\033[0m"
