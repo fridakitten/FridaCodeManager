@@ -3,8 +3,7 @@ SDK_PATH = SDK
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
 VERSION := 1.5.3
 BUILD_PATH := .package/
-JB_PATH := /
-ARCH := iphoneos-arm64
+SWIFT := $(shell find ./FCM/ -name '*.swift')
 
 # Finding SHELL
 ifeq ($(wildcard /bin/sh),)
@@ -33,20 +32,20 @@ trollstore: greet compile_swift sign makechain ipa clean done
 # Functions
 greet:
 	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n "
-	@echo "\033[32mcompiling FridaCodeManager\033[0m"
 	@if [ ! -d "Product" ]; then \
 		mkdir Product; \
 	fi
 
-compile_swift: SWIFT := $(shell find ./FCM/ -name '*.swift')
 compile_swift:
-	$(MAKE) -C Essentials all
+	@echo "\033[32mcompiling Essentials\033[0m"
+	@$(MAKE) -C Essentials all
+	@echo "\033[32mcompiling FridaCodeManager\033[0m"
 	@output=$$(swiftc -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) Essentials/lib/prebuild/libroot.a Essentials/lib/build/libfcm.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo "$$output" | grep -v "remark:"; \
 		exit 1; \
 	fi
-	$(MAKE) -C Essentials clean
+	@$(MAKE) -C Essentials clean
 
 sign:
 	@echo "\033[32msigning FridaCodeManager $(Version)\033[0m"
@@ -66,7 +65,7 @@ package_fs:
 	@dpkg-deb -b $(BUILD_PATH) Product/FridaCodeManager.deb
 
 makechain:
-	@echo "\033[32mRunning Chainmaker\033[0m"
+	@echo "\033[32mbuilding trollstore toolchain\033[0m"
 	@cd Chainmaker && bash build.sh
 
 ipa:

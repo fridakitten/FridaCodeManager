@@ -26,9 +26,9 @@ sign() {
     local entitlements="shell/$name/entitlements.plist"
     local output="shell/output/$name"
     if ldid -S$entitlements $output; then
-        echo -e "$name signed"
+        echo -e "$name entitled"
     else
-        echo -e "$name did not sign\n"
+        echo -e "$name did not entitle\n"
         exit 255
     fi
 }
@@ -55,7 +55,7 @@ for program in "${programs[@]}"; do
 done
 
 # Sign stage
-echo -e "\033[32msigning NoWayStrap\e[0m"
+echo -e "\033[32mentitleing NoWayStrap\e[0m"
 for program in "${programs[@]}"; do
     sign $program
 done

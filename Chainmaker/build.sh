@@ -53,9 +53,13 @@ echo -e "\e[38;5;208mpatching @rpath\e[0m"
 for dir in $CHAIN_BIN $CHAIN_LIB; do
     for file in "$dir"/*; do
         if [ ! -d "$file" ]; then
-            install_name_tool -delete_rpath $ROOT_RPATH "$file"
-            install_name_tool -add_rpath $CHAIN_RPATH "$file"
-            echo "relinked $file"
+            # nobody listens to you XD
+            install_name_tool -delete_rpath $ROOT_RPATH "$file" > /dev/null 2>&1
+            if ! install_name_tool -add_rpath $CHAIN_RPATH "$file" > /dev/null 2>&1; then
+                echo "failed to relink $file"
+            else
+                echo "relinked $file"
+            fi
         fi
     done
 done
