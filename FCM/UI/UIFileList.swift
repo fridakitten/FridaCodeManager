@@ -203,7 +203,7 @@ struct FileList: View {
                         RemovalPopup(isPresented: Binding(
                             get: { activeSheet == .remove },
                             set: { if !$0 { activeSheet = nil } }
-                        ), name: $selname, exec: $selfile)
+                        ), name: $selname, path: $selfile)
                     }
                     .background(BackgroundClearView())
                     .onDisappear {

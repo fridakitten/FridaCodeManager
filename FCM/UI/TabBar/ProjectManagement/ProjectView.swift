@@ -122,7 +122,7 @@ struct ProjectView: View {
             }
             .sheet(isPresented: $Removal) {
                 BottomPopupView {
-                   RemovalPopup(isPresented: $Removal, name: $projrname, exec: $projname)
+                   RemovalPopup(isPresented: $Removal, name: $projrname, path: $projname)
                 }
                 .background(BackgroundClearView())
                 .onDisappear {

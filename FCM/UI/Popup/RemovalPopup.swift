@@ -25,7 +25,7 @@ import SwiftUI
 struct RemovalPopup: View {
     @Binding var isPresented: Bool
     @Binding var name: String
-    @Binding var exec: String
+    @Binding var path: String
     var body: some View {
      ZStack {
         VStack(alignment: .leading, spacing: 16) {
@@ -49,7 +49,7 @@ struct RemovalPopup: View {
                 Spacer()
                 Button(action: {
                     haptfeedback(1)
-                    shell("rm -rf '\(exec)'")
+                    rm("\(path)")
                     isPresented = false
                 }, label: {
                     Text("Confirm")
