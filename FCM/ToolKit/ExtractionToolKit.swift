@@ -25,7 +25,7 @@ import Foundation
 func exportProj(_ project: Project) -> Int {
     let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
     _ = rm("\(global_container)/tmp/\(modname).sproj")
-    let result = shell("cd '\(global_documents)' ; zip -r \(modname).sproj '\(project.Name)'")
+    let result: Int = Int(libzip_zip("\(global_documents)/\(project.Name)","\(global_documents)/\(modname).sproj", true))
     if result == 0 {
         _ = mv("\(global_documents)/\(modname).sproj", "\(global_container)/tmp/\(modname).sproj")
     }
@@ -47,7 +47,7 @@ func exportApp(_ project: Project) -> Int {
 func importProj(target: String) {
     let v2uuid: String = "\(UUID())"
     if FileManager.default.fileExists(atPath: target) {
-        if shell("unzip '\(target)' -d '\(global_container)/tmp/\(v2uuid)'") != 0 {
+        if libzip_unzip(target, "\(global_container)/tmp/\(v2uuid)") != 0 {
             return
         }
     } else {

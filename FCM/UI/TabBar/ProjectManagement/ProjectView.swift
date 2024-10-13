@@ -171,15 +171,12 @@ struct buildView: View {
     @Binding var sdk: String
     @Binding var buildv: Bool
     @State var compiling: Bool = true
-    @State var console: Bool = false
     @State var status: String = ""
     @State private var progress = 0.0
     @State private var Log: [String] = []
     var body: some View {
         VStack {
-            //if console {
-                NeoLog()
-            //}
+            NeoLog()
             Spacer().frame(height: 25)
             if !compiling {
                 Button( action: {
@@ -219,6 +216,7 @@ struct buildView: View {
                 let status = build(ProjectInfo, true, $status, $progress)
                 DispatchQueue.main.async {
                     if status == 0 {
+                        pkill(ProjectInfo.Executable)
                         OpenApp(ProjectInfo.BundleID)
                     }
                     withAnimation {

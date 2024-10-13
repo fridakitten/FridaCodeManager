@@ -142,21 +142,22 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
     messenger(status,progress,"compressing \(ProjectInfo.Executable) into .ipa archive",0.5)
     shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'")
-    shell("\(CDEXEC) ; zip -r9q ./ts.ipa ./Payload")
+
+    libzip_zip("\(ProjectInfo.ProjectPath)/Payload", "\(ProjectInfo.ProjectPath)/ts.ipa", true)
 
     //installing app
     messenger(status,progress,"installing \(ProjectInfo.Executable)",0.7)
+    var result: Int = 0
     if erase {
-        let result: Int = shell("\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa' > /dev/null 2>&1", uid: 0)
+        result = shell("\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa' > /dev/null 2>&1", uid: 0)
         _ = climessenger("install--stage","TrollStore Helper returned \(String(result))")
     }
     _ = rm(info[0])
     _ = rm(info[4])
     if erase {
         _ = rm("\(ProjectInfo.ProjectPath)/ts.ipa")
-        pkill(ProjectInfo.Executable)
     }
-    return 0
+    return result
 }
 
 func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_ tstat: String,_  tproc: Double) {
