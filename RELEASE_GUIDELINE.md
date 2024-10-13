@@ -52,7 +52,7 @@ A Chariz release should not be some experimental build of FridaCodeManager. It s
         - Ensure that it shows its toolbar elements correctly
         - Ensure that the buttons do what they are supposed to do
         - Ensure that the Line counter work
-          - It should show a Number and now n/a
+          - It should show a Number and not n/a
           - It should show the exact Line number the Cursor is on
           - It should update when the cursor gets dragged
       - Ensure that the code is correctly highlighted for the filetype
@@ -67,3 +67,4 @@ A Chariz release should not be some experimental build of FridaCodeManager. It s
           - Ensure RootHelperPoC from 1.4.x is compilable
           - Ensure it works as explained on https://fridacodemanager.github.io/userguide/adv.html
       - Ensure that the build system logs its logs probably
+      - Ensure that apps are only opened when compiling succeeds(please check thr log after it opened the app after building. I recommend to do a fatal mistake in your code like forgetting a `{` in swift or a `;` in c languages)
