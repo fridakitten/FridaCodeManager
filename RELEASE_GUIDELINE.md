@@ -26,7 +26,14 @@ A Chariz release should not be some experimental build of FridaCodeManager. It s
     - Ensure that projects list appropriately
       - Ensure projects can be exported with the result of a document share view + ensure that the file can actually be exported (.sproj)
       - Ensure projects apps can be exported with the same result. (.ipa)
-    - Ensure that projects can be opened correctly
+      - Ensure projects can be removed
+      - Ensure projects preferences can be opened
+    - Project Preferences
+      - Ensure that the title is the projects name
+      - Ensure all NavigationLinks have the correct title and SFSymbol
+      - Ensure all NavigationLinks work and link to the correct destination view
+      - Ensure all Views of these NavigationLinks work correctly (please test all buttons and features!)
+    - Ensure that projects root can be opened correctly
     - File Manager
       - Ensure that folders are listed first and then files
       - Ensure that files do have the correct/comfortable colors
@@ -52,3 +59,11 @@ A Chariz release should not be some experimental build of FridaCodeManager. It s
     - SeansBuild
       - Ensure that Compiling works
         - Ensure that it can compile C, C++, Objective-C and Objective-C++
+        - Ensure that it can combine all of the above mentioned languages
+        - Ensure that the file finder and frameworks finder work
+          - Both should ignore "Resources" folder by default
+          - File finder should find all C, C++. Objective-C and Objective-C++ files
+        - Ensure that the API works
+          - Ensure RootHelperPoC from 1.4.x is compilable
+          - Ensure it works as explained on https://fridacodemanager.github.io/userguide/adv.html
+      - Ensure that the build system logs its logs probably
