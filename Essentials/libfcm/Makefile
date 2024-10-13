@@ -1,6 +1,6 @@
 # Makefile
 #
-# Sean16 SOC for iOS
+# libfcm
 # Meow :3
 # Created by SeanIsNotAConstant on October the 12th 2024
 #

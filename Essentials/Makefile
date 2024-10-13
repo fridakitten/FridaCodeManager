@@ -6,7 +6,7 @@
 
 SHELL := /var/jb/bin/bash
 
-all: prepare libfcm-compile libsean-compile
+all: prepare libfcm-compile #libsean-compile
 
 prepare:
 	@if [ -d lib/build ]; then \
