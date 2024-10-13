@@ -25,7 +25,7 @@ import Darwin
 
 #if jailbreak
 @discardableResult func shell(_ command: String, uid: uid_t? = 501, env: [String]? = []) -> Int {
-    return runCommand("/usr/bin/bash", ["-c", command], (uid ?? 501), (env ?? []))
+    return runCommand("/usr/bin/bash", ["-e", "-c", command], (uid ?? 501), (env ?? []))
 }
 
 // Define C functions

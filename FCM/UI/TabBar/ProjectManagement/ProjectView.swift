@@ -216,7 +216,6 @@ struct buildView: View {
                 let status = build(ProjectInfo, true, $status, $progress)
                 DispatchQueue.main.async {
                     if status == 0 {
-                        pkill(ProjectInfo.Executable)
                         OpenApp(ProjectInfo.BundleID)
                     }
                     withAnimation {

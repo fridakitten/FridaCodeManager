@@ -79,7 +79,7 @@ struct Home: View {
             Button(action: {
                 fileImporter = true
             }) {
-                listItem(label: "Import Project", systemImageName: "↑", text: "Imports a Project")
+                listItem(label: "Import Project", systemImageName: "↑", text: "Imports a FCM Project")
             }
         }
     }
