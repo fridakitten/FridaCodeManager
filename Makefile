@@ -1,7 +1,7 @@
 # Makefile
 SDK_PATH = SDK
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
-VERSION := 1.5.4.1
+VERSION := 1.5.4.2
 BUILD_PATH := .package/
 SWIFT := $(shell find ./FCM/ -name '*.swift')
 

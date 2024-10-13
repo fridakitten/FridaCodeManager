@@ -191,9 +191,6 @@ struct buildView: View {
                             .cornerRadius(15)
                         Text("Close")
                             .foregroundColor(.white)
-                            .onAppear {
-                                OpenApp(ProjectInfo.BundleID)
-                            }
                     }
                 }
                 .frame(width: UIScreen.main.bounds.width / 1.2, height: 50)
@@ -219,8 +216,11 @@ struct buildView: View {
         .onAppear {
             DispatchQueue.global(qos: .utility).async {
                 compiling = true
-                _ = build(ProjectInfo, true, $status, $progress)
+                let status = build(ProjectInfo, true, $status, $progress)
                 DispatchQueue.main.async {
+                    if status == 0 {
+                        OpenApp(ProjectInfo.BundleID)
+                    }
                     withAnimation {
                         compiling = false
                     }
