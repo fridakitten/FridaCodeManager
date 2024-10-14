@@ -156,10 +156,10 @@ struct FileList: View {
                         Section {
                             Button(action: {
                                 if action == 1 {
-                                    shell("cp -r '\(actpath)' '\(directoryPath)'")
+                                    cp(actpath, "\(directoryPath)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
                                     action = 0
                                 } else if action == 2 {
-                                    shell("mv '\(actpath)' '\(directoryPath)/\(URL(fileURLWithPath: actpath).lastPathComponent)'")
+                                    mv(actpath, "\(directoryPath)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
                                     action = 0
                                 }
                                 haptfeedback(1)

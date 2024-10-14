@@ -129,3 +129,22 @@ func mv(_ fromPath: String, _ toPath: String) -> Int {
     }
     return 0
 }
+func cp(_ sourcePath: String,_ destinationPath: String) -> Int {
+    let fileManager = FileManager.default
+    
+    do {
+        guard fileManager.fileExists(atPath: sourcePath) else {
+            return 1
+        }
+        
+        if fileManager.fileExists(atPath: destinationPath) {
+            try fileManager.removeItem(atPath: destinationPath)
+        }
+        
+        try fileManager.copyItem(atPath: sourcePath, toPath: destinationPath)
+        
+        return 0        
+    } catch {
+        return 1
+    }
+}

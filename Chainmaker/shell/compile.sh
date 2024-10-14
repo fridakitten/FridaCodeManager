@@ -46,7 +46,7 @@ move() {
 }
 
 # List of shell programs
-programs=("csh" "ls" "mkdir" "kill" "pkill" "rmdir" "rm" "cp" "echo" "chmod" "chown" "grep" "cat" "ping" "id" "ln" "touch" "mv" "passwd" "neofetch" "whoami" "hostname")
+programs=("ls" "mkdir" "rmdir" "rm" "cp" "echo" "chmod" "chown" "grep" "cat" "ping" "id" "ln" "touch" "mv" "whoami" "hostname")
 
 # Compile stage
 echo -e "\033[32mcompiling NoWayStrap\e[0m"

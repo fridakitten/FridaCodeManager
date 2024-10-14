@@ -46,6 +46,7 @@ done
 ## Special Stuff ##
 # copy patched llvm to toolchain
 cp $ROOT_LIB/llvm-16/bin/clang-16 $CHAIN_BIN/clang-16
+rm $ROOT_LIB/llvm-16/lib/libLLVM-16.dylib
 cp -rL $ROOT_LIB/llvm-16/lib/*.dylib $CHAIN_LIB
 rm -rf $ROOT_LIB/llvm-16/lib/clang/16.0.0/lib
 cp -r $ROOT_LIB/llvm-16/lib/clang $CHAIN_LIB
