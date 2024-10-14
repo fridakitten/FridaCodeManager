@@ -48,8 +48,14 @@ let global_container: String = {
         exit(1)
     }
 }()
+
+#if !stock
 let global_documents: String = "\(global_container)/Documents"
 let global_sdkpath: String = "\(global_container)/.sdk"
+#else
+let global_documents: String = "\(global_container)/Documents"
+let global_sdkpath: String = "\(global_documents)/.sdk"
+#endif
 
 @main
 struct MyApp: App {
