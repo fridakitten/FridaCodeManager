@@ -31,7 +31,11 @@ func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: 
         print("\(slice) \(title) \(slice)\n\(text)\n++++++++++++++++++++++++++++++++++++++\n ")
     } else {
         print("\(slice) \(title) \(slice)")
+        #if !stock
         code = shell("\(command)",uid: (uid ?? 501), env: (env ?? []))
+        #else
+        print("shell symbol is not supported on stock")
+        #endif
         print("++++++++++++++++++++++++++++++++++++++\n ")
     }
     return code

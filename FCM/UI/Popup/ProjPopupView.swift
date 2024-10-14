@@ -30,7 +30,7 @@ struct ProjPopupView: View {
     @Binding var hellnah: UUID
     #if jailbreak
     @State private var type = 1
-    #elseif trollstore
+    #elseif trollstore || stock
     @State private var type = 2
     #endif
     var body: some View {

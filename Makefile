@@ -29,6 +29,10 @@ roothide: greet compile_swift sign  package_fs clean done
 trollstore: TARGET := trollstore
 trollstore: greet compile_swift sign makechain ipa clean done
 
+# under construction!!!
+stock: TARGET := stock
+stock: greet compile_swift makechain_jailed ipa clean done
+
 # Functions
 greet:
 	@echo "\nIts meant to be compiled on jailbroken iOS devices in terminal, compiling it using macos can cause certain anomalies with UI, etc\n "
@@ -67,6 +71,10 @@ package_fs:
 makechain:
 	@echo "\033[32mbuilding trollstore toolchain\033[0m"
 	@cd Chainmaker && bash build.sh
+
+makechain_jailed:
+	@echo "\033[32mbuilding trollstore toolchain\033[0m"
+	@cd Chainmaker && bash jailed.sh
 
 ipa:
 	@echo "\033[32mcreating .ipa\033[0m"

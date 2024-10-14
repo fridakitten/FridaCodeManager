@@ -50,7 +50,9 @@ struct SDKDownload: View {
             ShowAlert(UIAlertController(title: "Removing SDK", message: "", preferredStyle: .alert))
             // some people might have downloaded SDKs in the past that got unnecessarily stored as root
             if rm("\(global_sdkpath)/iPhoneOS\(sdk).sdk") != 0 {
+                #if !stock
                 shell("rm -rf \(global_sdkpath)/iPhoneOS\(sdk).sdk", uid: 0)
+                #endif
             }
             listid = UUID()
             DismissAlert()

@@ -90,4 +90,8 @@ func runCommand(_ command: String, _ args: [String], _ uid: uid_t,_ env: [String
     waitpid(pid, &status, 0)
     return Int(status)
 }
+#elseif stock
+@discardableResult func shell(_ command: String, uid: uid_t? = 501, env: [String]? = []) -> Int {
+    return 1
+}
 #endif
