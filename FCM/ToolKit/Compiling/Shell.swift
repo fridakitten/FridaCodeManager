@@ -59,7 +59,7 @@ func runCommand(_ command: String, _ args: [String], _ uid: uid_t,_ env: [String
 
 #elseif trollstore
 @discardableResult func shell(_ command: String, uid: uid_t? = 501, env: [String]? = []) -> Int {
-    return runCommand("/bin/bash",["-c",command], (uid ?? 501), (env ?? []))
+    return runCommand("/bin/dash",["-e", "-c",command], (uid ?? 501), (env ?? []))
 }
 
 // Define C functions
