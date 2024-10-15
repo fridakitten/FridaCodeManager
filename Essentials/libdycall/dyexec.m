@@ -9,20 +9,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <setjmp.h>
 
 #include "fishhook.h"
 #include "exithooker.h"
 #include "threadripper.h"
 
-extern jmp_buf buffer;
-extern int lock;
-
 int dyexec(NSString *dylibPath, NSString *arguments) {
     printf("[dyexec] arguments: %s\n", [arguments UTF8String]);
 
-    lock = 0;
     dyargs data;
 
     printf("[dyexec] dlopen: %s\n",[dylibPath UTF8String]);

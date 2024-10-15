@@ -8,10 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
 #include <setjmp.h>
 #include <pthread.h>
-#include <unistd.h>
 
 typedef struct {
     void *handle;

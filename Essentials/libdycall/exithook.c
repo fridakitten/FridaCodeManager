@@ -11,11 +11,9 @@
 #include <pthread.h>
 
 jmp_buf buffer;
-int lock = 0;
  
 //fuckoff hook
 void dy_exit(int status) {
     printf("[fakeexit] locked up: %d\n[fakeexit] jumping back to thread state checker\n", status);
-    lock = 1;
-    longjmp(buffer, 0);
+    longjmp(buffer, 1);
 }

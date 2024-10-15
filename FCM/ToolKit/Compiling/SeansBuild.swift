@@ -67,7 +67,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //setting up command
     messenger(status,progress,"setting up compiler",0.2)
 
-    var EXEX = ""
+    var EXEC = ""
     if !SwiftFiles.isEmpty {
         #if jailbreak
         if !MFiles.isEmpty {

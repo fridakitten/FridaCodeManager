@@ -7,11 +7,9 @@
 #include "threadripper.h"
 
 extern jmp_buf buffer;
-extern int lock;
 
 void *threadripper(void *arg) {
-    setjmp(buffer);
-    if(lock != 0) {
+    if (setjmp(buffer) != 0) {
         printf("[thread] cancel thread due to exit\n");
         pthread_exit(NULL);
     }
