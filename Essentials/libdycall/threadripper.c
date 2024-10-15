@@ -13,13 +13,11 @@ void *threadripper(void *arg) {
     setjmp(buffer);
     if(lock != 0) {
         printf("[thread] cancel thread due to exit\n");
-        pthread_cancel(pthread_self());
-        return NULL;
+        pthread_exit(NULL);
     }
 
     dyargs *data = (dyargs *)arg;
     void *handle = data->handle;
-    pthread_t thread = data->thread;
 
     int (*dylib_main)(int, char**) = dlsym(handle, "main");
     char *error = dlerror();
@@ -31,7 +29,7 @@ void *threadripper(void *arg) {
 
     dylib_main(data->argc, data->argv);
 
-    pthread_cancel(thread);
+    pthread_exit(NULL);
 
     return NULL;
 }

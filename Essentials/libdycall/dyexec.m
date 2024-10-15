@@ -51,7 +51,7 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
     data.argv[data.argc] = NULL;
     
     //threadripper approach (exit loop bypass)
-    pthread_t thread = data.thread;
+    pthread_t thread;
     if (pthread_create(&thread, NULL, threadripper, (void *)&data) != 0) {
         fprintf(stderr, "Error creating thread\n");
         return 1;

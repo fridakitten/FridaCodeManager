@@ -15,7 +15,6 @@
 
 typedef struct {
     void *handle;
-    pthread_t thread;
     char **argv;
     int argc;
 } dyargs;
