@@ -6,7 +6,7 @@
 
 SHELL := /var/jb/bin/bash
 
-all: prepare libfcm-compile #libsean-compile
+all: prepare libfcm-compile libdycall-compile #libsean-compile
 
 prepare:
 	@if [ -d lib/build ]; then \
@@ -25,6 +25,11 @@ libsean-compile:
 	@$(MAKE) -C libsean all
 	@cp libsean/tmp/lib/libsean.a lib/build/libsean.a
 	@$(MAKE) -C libsean clean
+
+libdycall-compile:
+	@$(MAKE) -C libdycall all
+	@cp libdycall/tmp/lib/libdycall.a lib/build/libdycall.a
+	@$(MAKE) -C libdycall clean
 
 clean:
 	@rm -rf lib/build

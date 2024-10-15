@@ -44,7 +44,7 @@ compile_swift:
 	@echo "\033[32mcompiling Essentials\033[0m"
 	@$(MAKE) -C Essentials all
 	@echo "\033[32mcompiling FridaCodeManager\033[0m"
-	@output=$$(swiftc -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) Essentials/lib/prebuild/libroot.a Essentials/lib/build/libfcm.a  Essentials/lib/prebuild/libzip.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
+	@output=$$(swiftc -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) Essentials/lib/prebuild/libroot.a Essentials/lib/build/libfcm.a  Essentials/lib/prebuild/libzip.a Essentials/lib/build/libdycall.a -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo "$$output" | grep -v "remark:"; \
 		exit 1; \

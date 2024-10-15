@@ -41,8 +41,10 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
        return 1;
     }
 
+    #if !stock
     //define build bash environment
     let bashenv: [String] = ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks","HOME=\(global_container)/.cache/.\(ProjectInfo.SDK)"]
+    #endif
 
     //Processing API
     var apiextension: ext = ext(build:"",build_sub: "",bef: "", aft:"", ign: "")
@@ -65,7 +67,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //setting up command
     messenger(status,progress,"setting up compiler",0.2)
 
-    var EXEC = ""
+    var EXEX = ""
     if !SwiftFiles.isEmpty {
         #if jailbreak
         if !MFiles.isEmpty {
@@ -101,18 +103,25 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if !frameworks.isEmpty {
         _ = climessenger("framework-finder","\(frameworks.map { "\($0)" }.joined(separator: "\n"))")
     }
+
     cfolder(atPath: info[0])
     cfolder(atPath: info[1])
     cfolder(atPath: info[4])
+
+    //has to move somewhere else
+    #if !stock
     if !fileManager.fileExists(atPath: "\(global_container)/.cache") {
         cfolder(atPath: "\(global_container)/.cache")
     }
     if !fileManager.fileExists(atPath: "\(global_container)/.cache/.\(ProjectInfo.SDK)") {
         cfolder(atPath: "\(global_container)/.cache/.\(ProjectInfo.SDK)")
     }
+    #endif
+
     try? copyc(from: info[2], to: info[1])
     _ = rm("\(info[1])/DontTouchMe.plist")
 
+    #if !stock
     if !apiextension.bef.isEmpty {
         messenger(status,progress,"running api-exec-stage (before)",0.3)
         if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.bef)",nil,bashenv) != 0 {
@@ -122,7 +131,6 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             return 1
         }
     }
-
     messenger(status,progress,"compiling \(ProjectInfo.Executable)",0.4)
     if climessenger("compiler-stage","","\(CDEXEC) ; \(EXEC)", nil, bashenv) != 0 {
         _ = climessenger("error-occurred","compiling \(ProjectInfo.Executable) failed")
@@ -130,7 +138,18 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         _ = rm(info[4])
         return 1
     }
+    #else
+    // -->>> magic compiler <<<--
+    sethome(to: "\(global_documents)")
+    for file in MFiles {
+        dyexec("\(Bundle.main.bundlePath)/toolchain/bin/clang.dylib", "clang \(apiextension.build) -I\(Bundle.main.bundlePath)/toolchain/lib/clang/16.0.0/include -isysroot \(info[3]) -c \(ProjectInfo.ProjectPath)/\(file) -o \(info[4])/\(UUID()).o")
+    }
+    sethome(to: "\(global_container)")
+    return 0
+    // -->>> magic ending <<<--
+    #endif
 
+    #if !stock
     messenger(status,progress,"running api-exec-stage (after)",0.5)
     if !apiextension.aft.isEmpty {
         if climessenger("api-exec-stage","","\(CDEXEC) ; \(apiextension.aft)",nil,bashenv) != 0 {
@@ -140,6 +159,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             return 1
         }
     }
+    #endif
     messenger(status,progress,"compressing \(ProjectInfo.Executable) into .ipa archive",0.5)
     shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'")
 
@@ -181,3 +201,15 @@ func splitAndTrim(_ inputString: String) -> [String] {
     
     return trimmedParts
 }
+
+#if stock
+func sethome(to newHome: String) {
+    let result = setenv("HOME", newHome, 1)
+    
+    if result == 0 {
+        print("[sethome] \(newHome)\n")
+    } else {
+        print("[sethome] fault")
+    }
+}
+#endif

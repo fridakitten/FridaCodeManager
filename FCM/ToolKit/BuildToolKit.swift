@@ -68,7 +68,11 @@ func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore:
         for file in allFiles {
             if fileExtensionsSet.contains(where: { file.hasSuffix($0) }) &&
                !ignoreSet.contains(where: { file.hasPrefix($0) }) {
+                #if !stock
                 objCFiles.append("'\(file)'")
+                #else
+                objCFiles.append("\(file)")
+                #endif
             }
         }
         return objCFiles
