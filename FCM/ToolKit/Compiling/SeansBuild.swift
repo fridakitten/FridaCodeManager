@@ -142,7 +142,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     // -->>> magic compiler <<<--
     sethome(to: "\(global_documents)")
     for file in MFiles {
-        dyexec("\(Bundle.main.bundlePath)/toolchain/bin/clang.dylib", "clang \(apiextension.build) -I\(Bundle.main.bundlePath)/toolchain/lib/clang/16.0.0/include -isysroot \(info[3]) -c \(ProjectInfo.ProjectPath)/\(file) -o \(info[4])/\(UUID()).o")
+        dyexec("\(Bundle.main.bundlePath)/toolchain/bin/clang.dylib", "clang \(apiextension.build) -I\(Bundle.main.bundlePath)/toolchain/lib/clang/16.0.0/include -isysroot \(info[3]) -target arm64-apple-ios\(ProjectInfo.TG) -fmodules -c \(ProjectInfo.ProjectPath)/\(file) -o \(info[4])/\(UUID()).o")
     }
     sethome(to: "\(global_container)")
     return 0
