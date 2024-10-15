@@ -7,9 +7,9 @@
 
 # config
 SHELL := /var/jb/bin/sh
-SDKROOT := ./sdk
 CC := clang
 CF := -target arm64-apple-ios15 -arch arm64
+SDKROOT := sdk
 
 # finding all C and Objective-C files
 CFILES := $(shell find . -name "*.c")
