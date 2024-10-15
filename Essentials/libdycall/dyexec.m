@@ -61,7 +61,7 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
 
     dlclose(data.handle);
     printf("[dyexec] waiting on dlclose");
-    sleep(1);
+    free(data.argv);
 
     return 0;
 }
