@@ -20,6 +20,8 @@ extern jmp_buf buffer;
 extern int lock;
 
 int dyexec(NSString *dylibPath, NSString *arguments) {
+    printf("[dyexec] arguments: %s\n", [arguments UTF8String]);
+
     lock = 0;
     dyargs data;
 
@@ -56,6 +58,10 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
     }
     sleep(1);
     pthread_join(thread, NULL);
+
+    dlclose(data.handle);
+    printf("[dyexec] waiting on dlclose");
+    sleep(1);
 
     return 0;
 }
