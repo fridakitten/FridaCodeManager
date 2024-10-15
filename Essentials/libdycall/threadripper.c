@@ -6,14 +6,7 @@
  
 #include "threadripper.h"
 
-extern jmp_buf buffer;
-
 void *threadripper(void *arg) {
-    if (setjmp(buffer) != 0) {
-        printf("[thread] cancel thread due to exit\n");
-        pthread_exit(NULL);
-    }
-
     dyargs *data = (dyargs *)arg;
     void *handle = data->handle;
 

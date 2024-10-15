@@ -4,9 +4,7 @@
 // Created by SeanIsNotAConstant on 15.10.24
 //
  
-#include <dlfcn.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include "fishhook.h"
 
 static void (*original_exit)(int);

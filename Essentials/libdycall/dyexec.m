@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fishhook.h"
 #include "exithooker.h"
 #include "threadripper.h"
 
@@ -50,7 +49,6 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
         fprintf(stderr, "Error creating thread\n");
         return 1;
     }
-    sleep(1);
     pthread_join(thread, NULL);
 
     dlclose(data.handle);
