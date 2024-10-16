@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "exithooker.h"
+#include "hooker.h"
 #include "thread.h"
 
 int hooked = 0;
