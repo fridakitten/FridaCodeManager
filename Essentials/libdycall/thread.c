@@ -9,6 +9,7 @@
 void *threadripper(void *arg) {
     dyargs *data = (dyargs *)arg;
     void *handle = data->handle;
+    printf("[thread] received handle -> %p\n", handle);
 
     int (*dylib_main)(int, char**) = dlsym(handle, "main");
     char *error = dlerror();
@@ -18,6 +19,10 @@ void *threadripper(void *arg) {
         return NULL;
     }
 
+    printf("[thread] symbol main -> %p\n", dylib_main);
+    sleep(4);
+
+    //exactly this symbol is not found
     dylib_main(data->argc, data->argv);
 
     pthread_exit(NULL);

@@ -26,11 +26,12 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
 
     dlerror();
 
-    //exit hooking into dybinary
+    //exit hooking
     if(!hooked) {
-        hookexit();
+        hookexit(data.handle);
+        hooked = 1;
     }
-    //hook end
+    //done hooking
 
     //argv prepare
     NSArray<NSString *> *components = [arguments componentsSeparatedByString:@" "];
@@ -47,11 +48,13 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
         fprintf(stderr, "Error creating thread\n");
         return 1;
     }
+    //oops we have to wait!!
+    sleep(1);
     pthread_join(thread, NULL);
 
     dlclose(data.handle);
-    for (int i = 0; i < data.argc; i++) free(data.argv[i]);
-    free(data.argv);
+    //for (int i = 0; i < data.argc; i++) free(data.argv[i]);
+    //free(data.argv);
 
     return 0;
 }

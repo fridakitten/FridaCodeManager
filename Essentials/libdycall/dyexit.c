@@ -14,7 +14,5 @@ void dy_exit(int status) {
         __libc_atexit();
     }*/
 
-    fflush(NULL);
-
     pthread_exit(NULL);
 }
