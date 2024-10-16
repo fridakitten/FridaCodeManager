@@ -5,7 +5,7 @@ fi
 mkdir -p .tmp .tmp/procursus .tmp/toolchain .tmp/toolchain/bin .tmp/toolchain/lib
 
 # toolchain packages download #
-packages=("libiosexec1" "libncursesw6" "libintl8" "libssl3" "libedit0" "libzstd1" "libxar1" "dash" "ld64" "libuuid16" "libtapi" "libllvm16" "libclang-cpp16" "clang-16" "libclang-common-16-dev" "libplist3" "libc-ares2" "libnghttp2-14" "libidn2-0" "librtmp1" "libgmp10" "libgnutls30" "libhogweed6" "libnettle8" "libbrotli1" "libunistring5" "libp11-kit0" "libtasn1-6" "libffi8")
+packages=("libiosexec1" "libedit0" "libzstd1" "libxar1" "ld64" "libtapi" "libllvm16" "libclang-cpp16" "clang-16" "libclang-common-16-dev" "libssl3")
 
 for package in "${packages[@]}"; do
     echo -e "\e[38;5;208mdownloading $package\e[0m"
@@ -33,11 +33,8 @@ CHAIN_RPATH=@loader_path/../lib
 
 ## COPY STAGE ##
 echo -e "\e[38;5;208mcopy stage\e[0m"
-libraries=("libedit.0.dylib" "libiosexec.1.dylib" "libreadline.8.dylib" "libhistory.8.dylib" "libncursesw.6.dylib" "libintl.8.dylib" "libzstd.1.dylib" "libxar.1.dylib" "libcrypto.3.dylib" "libuuid.16.dylib" "libtapi.dylib" "libplist-2.0.3.dylib" "libcares.2.dylib" "libnghttp2.14.dylib" "libidn2.0.dylib" "librtmp.1.dylib" "libgmp.10.dylib" "libgnutls.30.dylib" "libhogweed.6.dylib" "libnettle.8.dylib" "libssh2.1.dylib" "libssl.3.dylib" "libbrotlidec.1.dylib" "libbrotlicommon.1.dylib" "libunistring.5.dylib" "libp11-kit.0.dylib" "libtasn1.6.dylib" "libffi.8.dylib")
+libraries=("libedit.0.dylib" "libiosexec.1.dylib" "libzstd.1.dylib" "libxar.1.dylib" "libtapi.dylib" "libcrypto.3.dylib")
 
-#for binary in "${binaries[@]}"; do
-#    cp $ROOT_BIN/$binary $CHAIN_BIN/$binary
-#done
 for library in "${libraries[@]}"; do
     cp -L $ROOT_LIB/$library $CHAIN_LIB/$library
 done

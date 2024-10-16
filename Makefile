@@ -31,7 +31,7 @@ trollstore: greet compile_swift sign makechain ipa clean done
 
 # under construction!!!
 stock: TARGET := stock
-stock: greet compile_swift ipa clean done
+stock: greet compile_swift makechain_jailed ipa clean done
 
 # Functions
 greet:
