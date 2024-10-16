@@ -34,6 +34,11 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //Entitlements info[6]
     //API Text     info[7]
 
+    #if stock
+    _ = rm(info[0])
+    _ = rm(info[4])
+    #endif
+
     let fileManager = FileManager.default
 
     if !fileManager.fileExists(atPath: info[3]) {
@@ -142,17 +147,11 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     // -->>> magic compiler <<<--
     sethome(to: "\(global_documents)")
     for file in MFiles {
-        //compile
         dyexec("\(Bundle.main.bundlePath)/toolchain/bin/clang.dylib", "clang \(apiextension.build) -I\(Bundle.main.bundlePath)/toolchain/lib/clang/16.0.0/include -isysroot \(info[3]) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(file) -o \(info[4])/\(UUID()).o", 0)
-        print("\n ");
     }
-    //final object files
+    //MachO!!
     let ofiles = FindFilesStack(ProjectInfo.ProjectPath, [".o"], splitAndTrim(apiextension.ign) + ["Resources"])
-    dyexec("\(Bundle.main.bundlePath)/toolchain/bin/ld.dylib", "ld -r \(ofiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) -syslibroot \(info[3]) \(frameflags) -o \(info[4])/final.o", 1)
-    print("\n ");
-    //MachO!
-    dyexec("\(Bundle.main.bundlePath)/toolchain/bin/ld.dylib", "ld \(info[4])/final.o -syslibroot \(info[3]) \(frameflags) -o \(info[1])/\(ProjectInfo.Executable)", 1)
-    print("\n ");
+    dyexec("\(Bundle.main.bundlePath)/toolchain/bin/ld.dylib", "ld \(ofiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) -syslibroot \(info[3]) \(frameflags) -o \(info[1])/\(ProjectInfo.Executable)", 1)
     sethome(to: "\(global_container)")
     // -->>> magic ending <<<--
     #endif
@@ -168,6 +167,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         }
     }
     #endif
+
     messenger(status,progress,"compressing \(ProjectInfo.Executable) into .ipa archive",0.5)
     #if !stock
     shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'")
@@ -184,8 +184,10 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         _ = climessenger("install--stage","TrollStore Helper returned \(String(result))")
     }
     #endif
+    #if !stock
     _ = rm(info[0])
     _ = rm(info[4])
+    #endif
     if erase {
         #if !stock
         pkill(ProjectInfo.Executable)
@@ -231,3 +233,4 @@ func sethome(to newHome: String) {
     }
 }
 #endif
+
