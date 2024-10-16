@@ -18,8 +18,8 @@ void *threadripper(void *arg) {
         return NULL;
     }
 
-    dylib_main(data->argc, data->argv);
+    int status = dylib_main(data->argc, data->argv);
 
-    pthread_exit(NULL);
+    pthread_exit((void*)(intptr_t)status);
     return NULL;
 }
