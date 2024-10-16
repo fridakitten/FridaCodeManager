@@ -15,7 +15,7 @@
 
 int hooked = 0;
 
-int dyexec(NSString *dylibPath, NSString *arguments) {
+int dyexec(NSString *dylibPath, NSString *arguments, int close) {
     dyargs data;
 
     data.handle = dlopen([dylibPath UTF8String], RTLD_LAZY);
@@ -52,7 +52,9 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
     sleep(1);
     pthread_join(thread, NULL);
 
-    //dlclose(data.handle);
+    if(close == 1) {
+        dlclose(data.handle);
+    }
     for (int i = 0; i < data.argc; i++) free(data.argv[i]);
     free(data.argv);
 
