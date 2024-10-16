@@ -11,27 +11,25 @@
 #include <string.h>
 
 #include "exithooker.h"
-#include "threadripper.h"
+#include "thread.h"
+
+int hooked = 0;
 
 int dyexec(NSString *dylibPath, NSString *arguments) {
-    printf("[dyexec] arguments: %s\n", [arguments UTF8String]);
-
     dyargs data;
 
-    printf("[dyexec] dlopen: %s\n",[dylibPath UTF8String]);
     data.handle = dlopen([dylibPath UTF8String], RTLD_LAZY);
     if (!data.handle) {
         fprintf(stderr, "[dyexec] error: %s\n", dlerror());
         return -1;
     }
-    printf("[dyexec] handle: %p\n",data.handle);
 
     dlerror();
 
     //exit hooking into dybinary
-    printf("[dyexec] hooking\n");
-    hookexit(data.handle);
-    printf("[dyexec] hopefully done\n");
+    if(!hooked) {
+        hookexit();
+    }
     //hook end
 
     //argv prepare
@@ -52,7 +50,7 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
     pthread_join(thread, NULL);
 
     dlclose(data.handle);
-    printf("[dyexec] waiting on dlclose");
+    for (int i = 0; i < data.argc; i++) free(data.argv[i]);
     free(data.argv);
 
     return 0;

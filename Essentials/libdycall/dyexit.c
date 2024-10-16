@@ -7,8 +7,14 @@
 #include <stdio.h>
 #include <pthread.h>
  
-//fuckoff hook
+//hooked exit function
 void dy_exit(int status) {
-    printf("[fakeexit] ending thread\n");
+    //ToDo: implement handling for atexit
+    /*if (__libc_atexit) {
+        __libc_atexit();
+    }*/
+
+    fflush(NULL);
+
     pthread_exit(NULL);
 }

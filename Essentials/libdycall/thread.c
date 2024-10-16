@@ -4,7 +4,7 @@
 // Created by SeanIsNotAConstant on 15.10.24
 //
  
-#include "threadripper.h"
+#include "thread.h"
 
 void *threadripper(void *arg) {
     dyargs *data = (dyargs *)arg;
@@ -14,13 +14,12 @@ void *threadripper(void *arg) {
     char *error = dlerror();
     if (error != NULL) {
         fprintf(stderr, "[dyexec] error: %s\n", error);
+        pthread_exit(NULL);
         return NULL;
     }
-    printf("[thread] main: %p\n", dylib_main);
 
     dylib_main(data->argc, data->argv);
 
     pthread_exit(NULL);
-
     return NULL;
 }
