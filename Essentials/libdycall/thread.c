@@ -18,7 +18,6 @@ void *threadripper(void *arg) {
         return NULL;
     }
 
-    //exactly this symbol is not found
     dylib_main(data->argc, data->argv);
 
     pthread_exit(NULL);

@@ -50,7 +50,8 @@ int dyexec(NSString *dylibPath, NSString *arguments, int close) {
     }
     //oops we have to wait!!
     sleep(1);
-    pthread_join(thread, NULL);
+    void *status;
+    pthread_join(thread, &status);
 
     if(close == 1) {
         dlclose(data.handle);
@@ -58,5 +59,5 @@ int dyexec(NSString *dylibPath, NSString *arguments, int close) {
     for (int i = 0; i < data.argc; i++) free(data.argv[i]);
     free(data.argv);
 
-    return 0;
+    return (intptr_t)status;
 }

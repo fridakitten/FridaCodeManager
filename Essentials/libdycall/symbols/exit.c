@@ -10,11 +10,11 @@ void dy_atexit(atexit_func func) {
     registered_func = func;
 }
 
-void dy_exit(const char *message) {
+void dy_exit(int status) {
 
     if (registered_func) {
         registered_func();
     }
 
-    pthread_exit(NULL);
+    pthread_exit((void*)(intptr_t)status);
 }
