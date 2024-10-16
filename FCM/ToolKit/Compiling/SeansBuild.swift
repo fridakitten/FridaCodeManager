@@ -143,13 +143,13 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     sethome(to: "\(global_documents)")
     for file in MFiles {
         //compile
-        dyexec("\(Bundle.main.bundlePath)/toolchain/bin/clang.dylib", "clang \(apiextension.build) -I\(Bundle.main.bundlePath)/toolchain/lib/clang/16.0.0/include -isysroot \(info[3]) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(file) -o \(info[4])/\(UUID()).o")
+        dyexec("\(Bundle.main.bundlePath)/toolchain/bin/clang.dylib", "clang -v \(apiextension.build) -I\(Bundle.main.bundlePath)/toolchain/lib/clang/16.0.0/include -isysroot \(info[3]) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(file) -o \(info[4])/\(UUID()).o")
     }
     //final object files
     let ofiles = FindFilesStack(ProjectInfo.ProjectPath, [".o"], splitAndTrim(apiextension.ign) + ["Resources"])
-    dyexec("\(Bundle.main.bundlePath)/toolchain/bin/ld.dylib", "ld -r \(ofiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) -syslibroot \(info[3]) \(frameflags) -o \(info[4])/final.o")
+    dyexec("\(Bundle.main.bundlePath)/toolchain/bin/ld.dylib", "ld -mno-snapshot -v -r \(ofiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) -syslibroot \(info[3]) \(frameflags) -o \(info[4])/final.o")
     //MachO!
-    dyexec("\(Bundle.main.bundlePath)/toolchain/bin/ld.dylib", "ld \(info[4])/final.o -syslibroot \(info[3]) \(frameflags) -o \(info[1])/\(ProjectInfo.Executable)")
+    dyexec("\(Bundle.main.bundlePath)/toolchain/bin/ld.dylib", "ld -mno-snapshot -v \(info[4])/final.o -syslibroot \(info[3]) \(frameflags) -o \(info[1])/\(ProjectInfo.Executable)")
     sethome(to: "\(global_container)")
     // -->>> magic ending <<<--
     #endif

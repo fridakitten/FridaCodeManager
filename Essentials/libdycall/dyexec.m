@@ -52,7 +52,7 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
     sleep(1);
     pthread_join(thread, NULL);
 
-    dlclose(data.handle);
+    //dlclose(data.handle);
     for (int i = 0; i < data.argc; i++) free(data.argv[i]);
     free(data.argv);
 
