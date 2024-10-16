@@ -197,14 +197,14 @@ struct buildView: View {
                             .foregroundColor(Color(UIColor.systemGray6))
                             .cornerRadius(15)
                 VStack {
-                ProgressView(value: progress, total: 1.0)
-                    .progressViewStyle(LinearProgressViewStyle())
-                    .frame(width: UIScreen.main.bounds.width / 1.4)
-                    .accentColor(.primary)
-                Spacer().frame(height: 10)
-                Text("\(status)")
-                    .font(.system(size: 11, weight: .semibold))
-                }
+                    ProgressView(value: progress, total: 1.0)
+                        .progressViewStyle(LinearProgressViewStyle())
+                        .frame(width: UIScreen.main.bounds.width / 1.4)
+                        .accentColor(.primary)
+                    Spacer().frame(height: 10)
+                    Text("\(status)")
+                        .font(.system(size: 11, weight: .semibold))
+                    }
                 }
                 .frame(width: UIScreen.main.bounds.width / 1.2, height: 65)
             }
@@ -213,10 +213,18 @@ struct buildView: View {
         .onAppear {
             DispatchQueue.global(qos: .utility).async {
                 compiling = true
+                #if !stock
                 let status = build(ProjectInfo, true, $status, $progress)
+                #else
+                let status = build(ProjectInfo, false, $status, $progress)
+                #endif
                 DispatchQueue.main.async {
                     if status == 0 {
+                        #if !stock
                         OpenApp(ProjectInfo.BundleID)
+                        #else
+                        print("[*] you have to export the app!\n")
+                        #endif
                     }
                     withAnimation {
                         compiling = false

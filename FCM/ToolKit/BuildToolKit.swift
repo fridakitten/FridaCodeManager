@@ -23,6 +23,8 @@
 import Foundation
 import UIKit
 
+#if !stock
+// private api function group to open arbitary apps
 func obfuscatedClass(_ className: String) -> AnyClass? {
     return NSClassFromString(className)
 }
@@ -58,6 +60,7 @@ func OpenApp(_ bundleID: String) {
         print("Failed to initialize LSApplicationWorkspace")
     }
 }
+#endif
 
 func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore: [String]) -> [String] {
     do {
