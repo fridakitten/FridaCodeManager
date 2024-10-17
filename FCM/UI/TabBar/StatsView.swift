@@ -3,17 +3,18 @@ import SwiftUI
 struct StatsView: View {
     @State private var stats: [(size: Double, count: Int, color: Color, language: String)] = []
     @State private var totalSize: Double = 0.0
-    @State private var graph: UUID = UUID()
+    @State private var isLoading: Bool = true
 
     var body: some View {
         NavigationView {
             List {
-                if totalSize != 0.0 {
+                if isLoading {
+                    Text("Loading ...")
+                } else if totalSize != 0.0 {
                     Section(header: Text("Chart")) {
                         HStack {
                             Spacer()
                             NestedCircleProgressView(stats: stats, totalSize: totalSize)
-                                .id(graph)
                             Spacer()
                         }
                     }
@@ -23,23 +24,19 @@ struct StatsView: View {
                         }
                     }
                 } else {
-                    Text("Loading ...")
+                    Text("No files found.")
                 }
             }
             .listStyle(InsetGroupedListStyle())
             .onAppear {
-                // Run updateFileSizes in a background task
-                Task {
-                    await updateFileSizes()
-                    graph = UUID()
-                }
+                updateFileSizes()
             }
             .navigationTitle("Stats")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
 
-    func updateFileSizes() async {
+    func updateFileSizes() {
         let fileExtensions: [(String, Color, String)] = [
             ("swift", .red, "Swift"),
             ("c", .blue, "C"),
@@ -47,25 +44,31 @@ struct StatsView: View {
             ("m", .orange, "Objective-C"),
             ("mm", .yellow, "Objective-C++")
         ]
-
-        // Use TaskGroup for concurrent processing
-        await withTaskGroup(of: (size: Double, count: Int, color: Color, language: String).self) { group in
+        DispatchQueue.global(qos: .userInitiated).async {
+            var results: [(size: Double, count: Int, color: Color, language: String)] = []
+            var totalSizeKB: Double = 0.0
+            
+            let group = DispatchGroup()
+            
             for (ext, color, lang) in fileExtensions {
-                group.addTask {
+                group.enter()
+                DispatchQueue.global(qos: .utility).async {
                     let result = calculateFileSizeAndCount(path: global_documents, fileExtension: ext)
-                    return (result.size, result.count, color, lang)
+                    DispatchQueue.main.async {
+                        results.append((result.size, result.count, color, lang))
+                        totalSizeKB += result.size
+                        group.leave()
+                    }
                 }
             }
 
-            // Collect results and calculate total size
-            var results: [(size: Double, count: Int, color: Color, language: String)] = []
-            totalSize = 0.0
-            
-            for await result in group {
-                results.append(result)
-                totalSize += result.size
+            group.wait()
+
+            DispatchQueue.main.async {
+                self.stats = results
+                self.totalSize = totalSizeKB
+                self.isLoading = false
             }
-            stats = results
         }
     }
 
@@ -81,7 +84,7 @@ struct StatsView: View {
                 do {
                     let attributes = try fileManager.attributesOfItem(atPath: filePath)
                     if let fileSize = attributes[FileAttributeKey.size] as? Double {
-                        totalSizeKB += fileSize / 1024  // Convert bytes to kilobytes
+                        totalSizeKB += fileSize / 1024
                         fileCount += 1
                     }
                 } catch {
@@ -99,7 +102,7 @@ struct NestedCircleProgressView: View {
 
     var body: some View {
         ZStack {
-            ForEach(0..<stats.count) { index in
+            ForEach(0..<stats.count, id: \.self) { index in
                 Circle()
                     .trim(
                         from: index == 0 ? 0.0 : CGFloat(stats[0..<index].map { $0.size }.reduce(0, +) / totalSize),
@@ -128,7 +131,7 @@ struct StatsBox: View {
             VStack(alignment: .trailing) {
                 Text("\(String(format: "%.2f", stat.size / totalSize * 100))% • \(String(format: "%.2f", stat.size)) KB")
                     .font(.system(size: 12, weight: .semibold))
-                Text("Files: \(stat.count) • Avg size: \(String(format: "%.2f", stat.size / Double(stat.count))) KB")
+                Text("Files: \(stat.count) • Avg size: \(stat.count > 0 ? String(format: "%.2f", stat.size / Double(stat.count)) : "0.00") KB")
                     .font(.system(size: 12, weight: .regular))
             }
         }
