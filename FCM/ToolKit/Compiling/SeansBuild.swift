@@ -161,6 +161,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         return -1
     }
     sethome(to: "\(global_container)")
+    listdylibs()
     // -->>> magic ending <<<--
     #endif
 
