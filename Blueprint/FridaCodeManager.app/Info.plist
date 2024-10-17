@@ -2,24 +2,23 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>FCM Project</string>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>public.data</string>
-				<string>com.frida.sproj</string>
+				<string>com.sparklechan.swifty.sproj</string>
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
 	<key>CFBundleExecutable</key>
 	<string>swifty</string>
 	<key>CFBundleIconFile</key>
@@ -129,6 +128,52 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>FCM Project</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.sparklechan.swifty.sproj</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>sproj</string>
+				</array>
+				<key>public.mime-type</key>
+				<string>application/octet-stream</string>
+			</dict>
+		</dict>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>FCM Project</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.sparklechan.swifty.sproj</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>sproj</string>
+				</array>
+				<key>public.mime-type</key>
+				<string>application/octet-stream</string>
+			</dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
 	</array>
 </dict>
 </plist>
