@@ -3,5 +3,6 @@
 //
 // Created by SeanIsNotAConstant on 15.10.24
 //
- 
-int hookexit(void *handel);
+
+void hooker(void);
+void unhooker(void);

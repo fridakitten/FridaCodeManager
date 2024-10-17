@@ -26,12 +26,7 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
 
     dlerror();
 
-    //exit hooking
-    if(!hooked) {
-        hookexit(data.handle);
-        hooked = 1;
-    }
-    //done hooking
+    hooker();
 
     //argv prepare
     NSArray<NSString *> *components = [arguments componentsSeparatedByString:@" "];
@@ -55,6 +50,7 @@ int dyexec(NSString *dylibPath, NSString *arguments) {
 
     //if reference count wont hit 0 it wont free
     dlclose(data.handle);
+    unhooker();
 
     for (int i = 0; i < data.argc; i++) free(data.argv[i]);
     free(data.argv);
