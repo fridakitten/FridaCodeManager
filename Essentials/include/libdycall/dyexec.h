@@ -1,3 +1,8 @@
 #include <Foundation/Foundation.h>
 
-int dyexec(NSString *dylibPath, NSString *arguments, int close);
+//posix_spawn for dybinaries
+int dyexec(NSString *dylibPath, NSString *arguments);
+
+//locking/unlocking dybinary
+void dylock(NSString *dylibPath);
+void dyunlock();

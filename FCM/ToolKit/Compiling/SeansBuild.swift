@@ -146,15 +146,17 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     #else
     // -->>> magic compiler <<<--
     sethome(to: "\(global_documents)")
+    dylock("\(Bundle.main.bundlePath)/toolchain/bin/clang.dylib");
     for file in MFiles {
-        if dyexec("\(Bundle.main.bundlePath)/toolchain/bin/clang.dylib", "clang \(apiextension.build) -I\(Bundle.main.bundlePath)/toolchain/lib/clang/16.0.0/include -isysroot \(info[3]) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(file) -o \(info[4])/\(UUID()).o", 0) != 0 {
+        if dyexec("\(Bundle.main.bundlePath)/toolchain/bin/clang.dylib", "clang -I\(Bundle.main.bundlePath)/toolchain/lib/clang/16.0.0/include -isysroot \(info[3]) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(file) -o \(info[4])/\(UUID()).o") != 0 {
             print("[!] clang mostlikely broke, please restart the app if clang didn't told you what exactly went wrong!\n")
             return -1
         }
     }
+    dyunlock();
     //MachO!!
     let ofiles = FindFilesStack(ProjectInfo.ProjectPath, [".o"], splitAndTrim(apiextension.ign) + ["Resources"])
-    if dyexec("\(Bundle.main.bundlePath)/toolchain/bin/ld.dylib", "ld \(ofiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) -syslibroot \(info[3]) \(frameflags) -o \(info[1])/\(ProjectInfo.Executable)", 1) != 0 {
+    if dyexec("\(Bundle.main.bundlePath)/toolchain/bin/ld.dylib", "ld -ObjC -lc -lc++ \(ofiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) -syslibroot \(info[3]) \(frameflags) -o \(info[1])/\(ProjectInfo.Executable)") != 0 {
         print("[!] linking failed!\n")
         return -1
     }
