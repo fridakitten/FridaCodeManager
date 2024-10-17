@@ -17,3 +17,4 @@ NSString* contgen(void);
 
 //process
 void pkill(NSString *processNS);
+void killTaskWithBundleID(NSString *bundleID);

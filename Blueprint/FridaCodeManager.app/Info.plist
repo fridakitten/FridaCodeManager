@@ -25,7 +25,7 @@
 	<key>CFBundleIconFile</key>
 	<string>AppIcon.png</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.sparklechan.swifty.debug</string>
+	<string>com.sparklechan.swifty</string>
 	<key>CFBundleName</key>
 	<string>FCM</string>
 	<key>CFBundlePackageType</key>

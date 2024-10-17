@@ -8,6 +8,10 @@
 #include <stdbool.h>
 #import "libfcm.h"
 
+#define PROC_PIDPATHINFO_MAXSIZE 1024
+
+extern int proc_pidpath(int pid, void * buffer, uint32_t  buffersize);
+
 @interface MCMContainer : NSObject
 - (NSURL *)url;
 + (instancetype)containerWithIdentifier:(NSString *)identifier
@@ -169,4 +173,41 @@ void pkill(NSString *processNS) {
     }
 
     free(procs);
+}
+
+void killTaskWithBundleID(NSString *bundleID) {
+    int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0};
+    size_t miblen = 4;
+
+    size_t size;
+    sysctl(mib, miblen, NULL, &size, NULL, 0);
+    struct kinfo_proc *process = malloc(size);
+
+    if (sysctl(mib, miblen, process, &size, NULL, 0) == -1) {
+        perror("sysctl");
+        free(process);
+        return;
+    }
+
+    size_t numProcesses = size / sizeof(struct kinfo_proc);
+
+    for (size_t i = 0; i < numProcesses; i++) {
+        pid_t pid = process[i].kp_proc.p_pid;
+        char pathBuffer[PROC_PIDPATHINFO_MAXSIZE];
+
+        if (proc_pidpath(pid, pathBuffer, sizeof(pathBuffer)) > 0) {
+            NSString *executablePath = [NSString stringWithUTF8String:pathBuffer];
+
+            if ([executablePath containsString:bundleID]) {
+                NSLog(@"Found process with PID: %d for bundle ID: %@", pid, bundleID);
+
+                if (kill(pid, SIGKILL) == 0) {
+                    NSLog(@"Successfully killed process with PID: %d", pid);
+                } else {
+                    perror("kill");
+                }
+            }
+        }
+    }
+    free(process);
 }

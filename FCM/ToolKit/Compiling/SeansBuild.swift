@@ -199,7 +199,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     #endif
     if erase {
         #if !stock
-        pkill(ProjectInfo.Executable)
+        killTaskWithBundleID(ProjectInfo.BundleID)
         #endif
         _ = rm("\(ProjectInfo.ProjectPath)/ts.ipa")
     }
