@@ -15,8 +15,10 @@ else
 SHELL := /bin/sh
 endif
 
+PLF := -LEssentials/lib/prebuild -LEssentials/lib/build
+
 # Targets
-all: LF := Essentials/lib/prebuild/libroot.a Essentials/lib/build/libfcm.a  Essentials/lib/prebuild/libzip.a
+all: LF := -lroot -lfcm  -lzip
 all: ARCH := iphoneos-arm64
 all: JB_PATH := /var/jb/
 all: TARGET := jailbreak
@@ -48,7 +50,7 @@ compile_swift:
 	@echo "\033[32mcompiling Essentials\033[0m"
 	@$(MAKE) -C Essentials all
 	@echo "\033[32mcompiling FridaCodeManager\033[0m"
-	@output=$$(swiftc -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) $(LF) -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
+	@output=$$(swiftc -wmo -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) $(PLF) $(LF) -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo "$$output" | grep -v "remark:"; \
 		exit 1; \
