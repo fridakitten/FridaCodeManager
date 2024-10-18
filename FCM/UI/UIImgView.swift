@@ -99,9 +99,12 @@ class ImageLoader: ObservableObject {
     @Published var image: UIImage?
 
     private var cancellable: AnyCancellable?
+    private let maxRetries = 3
+    private let retryDelay = 2.0
 
     func loadImage(from url: URL) {
         cancellable?.cancel()
+
         cancellable = URLSession.shared.dataTaskPublisher(for: url)
             .tryMap { (data, response) in
                 guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -111,8 +114,12 @@ class ImageLoader: ObservableObject {
             }
             .compactMap { UIImage(data: $0) }
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { _ in
-            }, receiveValue: { [weak self] loadedImage in
+            .retry(maxRetries)
+            .catch { [weak self] error -> AnyPublisher<UIImage?, Never> in
+                print("Failed to load image: \(error.localizedDescription)")
+                return Just(nil).delay(for: .seconds(self?.retryDelay ?? 2.0), scheduler: RunLoop.main).eraseToAnyPublisher()
+            }
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] loadedImage in
                 self?.image = loadedImage
             })
     }
