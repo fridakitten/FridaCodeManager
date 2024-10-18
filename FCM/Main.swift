@@ -23,45 +23,61 @@
 import Foundation
 import SwiftUI
 
-// JBRoot Environment
+// fatal error handling
+func exitWithError(_ message: String) -> Never {
+    fatalError(message)
+}
+
+// jbroot environment
 #if jailbreak
 let jbroot: String = {
-    let preroot: String = String(cString: libroot_dyn_get_jbroot_prefix())
-    if !FileManager.default.fileExists(atPath: preroot) {
-        if let altroot = altroot(inPath: "/var/containers/Bundle/Application")?.path {
-            return altroot
-        }
+    let preroot = String(cString: libroot_dyn_get_jbroot_prefix())
+    if FileManager.default.fileExists(atPath: preroot) {
+        return preroot
+    } else if let altroot = altroot(inPath: "/var/containers/Bundle/Application")?.path {
+        return altroot
+    } else {
+        exitWithError("failed to determine jbroot")
     }
-    return preroot
 }()
 #elseif trollstore
 let jbroot: String = "\(Bundle.main.bundlePath)/toolchain"
 #endif
 
-// Global Environment
+// global environment
 let global_container: String = {
-    let path = contgen()
-
-    if let path = path {
-        return path;
-    } else  {
-        exit(1)
+    guard let path = contgen() else {
+        exitWithError("failed to generate global container")
     }
+    return path
 }()
 
+let global_documents = "\(global_container)/Documents"
+
 #if !stock
-let global_documents: String = "\(global_container)/Documents"
-let global_sdkpath: String = "\(global_container)/.sdk"
+let global_sdkpath = "\(global_container)/.sdk"
 #else
-let global_documents: String = "\(global_container)/Documents"
-let global_sdkpath: String = "\(global_documents)/.sdk"
+let global_sdkpath = "\(global_documents)/.sdk"
 #endif
 
 @main
 struct MyApp: App {
     @State var hello: UUID = UUID()
-    @AppStorage("ui_update152") var upd: Bool = false
     init() {
+        InitialiseUI()
+        UpdateFixer()
+    }
+    var body: some Scene {
+        WindowGroup {
+            ContentView(hello: $hello)
+                .onOpenURL { url in
+                        importProj(target: url.path)
+                        hello = UUID()
+                }
+        }
+    }
+
+    private func InitialiseUI() {
         let navigationBarAppearance = UINavigationBarAppearance()
         navigationBarAppearance.backgroundColor = UIColor.systemBackground
         let titleAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
@@ -80,19 +96,12 @@ struct MyApp: App {
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
     }
-    var body: some Scene {
-        WindowGroup {
-            ContentView(hello: $hello)
-                .onOpenURL { url in
-                        importProj(target: url.path)
-                        hello = UUID()
-                }
-                .onAppear {
-                    if !upd {
-                        resetlayout()
-                        upd = true
-                    }
-                }
+
+    private func UpdateFixer() {
+        var upd = UserDefaults.standard.bool(forKey: "ui_update152")
+        if !upd {
+            resetlayout()
+            upd = true
         }
     }
 }
