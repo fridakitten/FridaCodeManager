@@ -23,7 +23,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Binding var hello: UUID
+    @State var hello: UUID = UUID()
     @AppStorage("sdk") var sdk: String = "iPhoneOS15.6.sdk"
     @AppStorage("bsl") var bsl: Bool = true
     @AppStorage("fontname") var fname: String = "Menlo"
@@ -47,5 +47,9 @@ struct ContentView: View {
                 }
         }
         .accentColor(.primary)
+        .onOpenURL { url in
+            importProj(target: url.path)
+            hello = UUID()
+        }
     }
 }
