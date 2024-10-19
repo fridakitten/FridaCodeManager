@@ -23,7 +23,6 @@
 import SwiftUI
 
 struct ProjectView: View {
-    @Binding var sdk: String
     @Binding var hello: UUID
     @State var Prefs: Bool = false
     @State var Removal: Bool = false
@@ -40,7 +39,7 @@ struct ProjectView: View {
             List {
                 Section {
                     ForEach(GetProjects()) { Project in
-                        NavigationLink(destination: CodeSpace(ProjectInfo: Project, sdk: $sdk, pathstate: $pathstate, action: $action)) {
+                        NavigationLink(destination: CodeSpace(ProjectInfo: Project, pathstate: $pathstate, action: $action)) {
                             HStack {
                                 PubImg(projpath: "\(global_documents)/\(Project.Name)")
                                 Spacer().frame(width: 15)
@@ -149,10 +148,9 @@ struct ProjectView: View {
     }
 }
 
-//Codespace
+//Codespace - Is the View with the Project Files and the Build abilities
 struct CodeSpace: View {
     @State var ProjectInfo: Project
-    @Binding var sdk: String
     @State var buildv: Bool = false
     @State var fcreate: Bool = false
     @State var builda: Bool = true
@@ -161,14 +159,13 @@ struct CodeSpace: View {
     var body: some View {
         FileList(directoryPath: ProjectInfo.ProjectPath, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
-                buildView(ProjectInfo: ProjectInfo, sdk: $sdk, buildv: $buildv)
+                buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
             }
     }
 }
 
 struct buildView: View {
     @State var ProjectInfo: Project
-    @Binding var sdk: String
     @Binding var buildv: Bool
     @State var compiling: Bool = true
     @State var status: String = ""

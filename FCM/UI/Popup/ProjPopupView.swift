@@ -26,7 +26,6 @@ struct ProjPopupView: View {
     @Binding var isPresented: Bool
     @Binding var AppName: String
     @Binding var BundleID: String
-    @Binding var SDK: String
     @Binding var hellnah: UUID
     #if jailbreak
     @State private var type = 1
@@ -34,57 +33,57 @@ struct ProjPopupView: View {
     @State private var type = 2
     #endif
     var body: some View {
-     ZStack {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("Create Project")
-                    .font(.system(size: 25, weight: .bold, design: .default))
-                    .foregroundColor(.primary)
-                Spacer()
-                Button(action: {
-                    isPresented = false
-                }, label: {
-                    Image(systemName: "xmark")
-                        .imageScale(.small)
-                        .frame(width: 32, height: 32)
-                        .background(Color.black.opacity(0.06))
-                        .cornerRadius(16)
-                        .foregroundColor(.primary)
-                })
-            }
-            TextField("Application Name", text: $AppName)
-                .frame(height: 36)
-                .padding([.leading, .trailing], 10)
-                .background(Color(.systemBackground).opacity(0.5))
-                .cornerRadius(10)
-                .disableAutocorrection(true)
-                .autocapitalization(.none)
-            TextField("Bundle Identifier", text: $BundleID)
-                .frame(height: 36)
-                .padding([.leading, .trailing], 10)
-                .background(Color(.systemBackground).opacity(0.5))
-                .cornerRadius(10)
-                .disableAutocorrection(true)
-                .autocapitalization(.none)
-            HStack {
+        ZStack {
+            VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                Spacer().frame(width: 10)
-                Text("Scheme")
-                    .foregroundColor(.primary)
-                Spacer()
-                VStack {
-                Picker("" ,selection: $type) {
-                    #if jailbreak
-                    Text("Swift App").tag(1)
-                    #endif
-                    Text("ObjC App").tag(2)
-                    #if jailbreak
-                    Text("Swift/ObjC App").tag(3)
-                    #endif
-            }
-            .pickerStyle(MenuPickerStyle())
+                    Text("Create Project")
+                        .font(.system(size: 25, weight: .bold, design: .default))
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Button(action: {
+                        isPresented = false
+                    }, label: {
+                        Image(systemName: "xmark")
+                            .imageScale(.small)
+                            .frame(width: 32, height: 32)
+                            .background(Color.black.opacity(0.06))
+                            .cornerRadius(16)
+                            .foregroundColor(.primary)
+                    })
                 }
-                Spacer()
+                TextField("Application Name", text: $AppName)
+                    .frame(height: 36)
+                    .padding([.leading, .trailing], 10)
+                    .background(Color(.systemBackground).opacity(0.5))
+                    .cornerRadius(10)
+                    .disableAutocorrection(true)
+                    .autocapitalization(.none)
+                TextField("Bundle Identifier", text: $BundleID)
+                    .frame(height: 36)
+                    .padding([.leading, .trailing], 10)
+                    .background(Color(.systemBackground).opacity(0.5))
+                    .cornerRadius(10)
+                    .disableAutocorrection(true)
+                    .autocapitalization(.none)
+                HStack {
+                    HStack {
+                        Spacer().frame(width: 10)
+                        Text("Scheme")
+                            .foregroundColor(.primary)
+                        Spacer()
+                        VStack {
+                            Picker("" ,selection: $type) {
+                            #if jailbreak
+                            Text("Swift App").tag(1)
+                            #endif
+                            Text("ObjC App").tag(2)
+                            #if jailbreak
+                            Text("Swift/ObjC App").tag(3)
+                            #endif
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                    }
+                    Spacer()
                 }
                 .frame(height: 36)
                 .background(Color(.systemBackground).opacity(0.5))
@@ -93,26 +92,28 @@ struct ProjPopupView: View {
                 .cornerRadius(10)
                 Spacer().frame(width: 10)
                 Button(action: {
-                    if AppName != "", BundleID != "", !FileManager.default.fileExists(atPath: "\(global_documents)/\(AppName)") {
-                        haptfeedback(1)
-                        isPresented = false
-                        MakeApplicationProject(AppName, BundleID,SDK: SDK, type: type)
-                        AppName = ""
-                        BundleID = ""
-                        hellnah = UUID()
-                        return
-                    }
-                    haptfeedback(2)
+                    createProject_trigger()
                 }, label: {
                     Text("Submit")
+                        .frame(width: 80, height: 36)
+                        .background(Color(.systemBackground).opacity(0.5))
+                        .foregroundColor(.primary)
+                        .cornerRadius(10)
                 })
-                .frame(width: 80, height: 36)
-                .background(Color(.systemBackground).opacity(0.5))
-                .foregroundColor(.primary)
-                .cornerRadius(10)
+                }
             }
+            .padding()
         }
-        .padding()
     }
-  }
+
+    private func createProject_trigger() -> Void {
+        if AppName != "", BundleID != "", !FileManager.default.fileExists(atPath: "\(global_documents)/\(AppName)") {
+            haptfeedback(1)
+            isPresented = false
+            MakeApplicationProject(AppName, BundleID, type: type)
+            (AppName, BundleID, hellnah) = ("", "", UUID())
+        } else {
+            haptfeedback(2)
+        }
+    }
 }

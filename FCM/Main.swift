@@ -36,7 +36,7 @@ struct MyApp: App {
         }
     }
 
-    private func InitialiseUI() {
+    private func InitialiseUI() -> Void {
         let navigationBarAppearance = UINavigationBarAppearance()
         navigationBarAppearance.backgroundColor = UIColor.systemBackground
         let titleAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
@@ -56,7 +56,7 @@ struct MyApp: App {
         UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 
-    private func UpdateFixer() {
+    private func UpdateFixer() -> Void {
         if !UserDefaults.standard.bool(forKey: "ui_update152") {
             resetlayout()
             UserDefaults.standard.set(true, forKey: "ui_update152")

@@ -24,16 +24,13 @@ import SwiftUI
 
 struct ContentView: View {
     @State var hello: UUID = UUID()
-    @AppStorage("sdk") var sdk: String = "iPhoneOS15.6.sdk"
-    @AppStorage("bsl") var bsl: Bool = true
-    @AppStorage("fontname") var fname: String = "Menlo"
     var body: some View {
         TabView {
-            Home(SDK: $sdk, hellnah: $hello)
+            Home(hellnah: $hello)
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
-            ProjectView(sdk: $sdk, hello: $hello)
+            ProjectView(hello: $hello)
                 .tabItem {
                     Label("Projects", systemImage: "folder")
                 }
@@ -41,7 +38,7 @@ struct ContentView: View {
                 .tabItem {
                     Label("Stats", systemImage: "chart.line.uptrend.xyaxis")
                 }
-            Settings(sdk: $sdk, bsl: $bsl, fname: $fname)
+            Settings()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }

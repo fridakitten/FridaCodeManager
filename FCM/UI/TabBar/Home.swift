@@ -26,14 +26,13 @@ import UniformTypeIdentifiers
 struct Home: View {
     @State private var fileImporter = false
     @State private var showProj = false
-    @Binding var SDK: String
     @State private var app = ""
     @State private var bundleid = ""
     @State private var about = false
     @State private var hello = UUID()
     @Binding var hellnah: UUID
     @Environment(\.presentationMode) private var presentationMode
-    
+
     var body: some View {
         NavigationView {
             List {
@@ -47,13 +46,13 @@ struct Home: View {
             .fileImporter(isPresented: $fileImporter, allowedContentTypes: [.project], onCompletion: handleFileImport)
             .sheet(isPresented: $showProj) {
                 BottomPopupView {
-                    ProjPopupView(isPresented: $showProj, AppName: $app, BundleID: $bundleid, SDK: $SDK, hellnah: $hellnah)
+                    ProjPopupView(isPresented: $showProj, AppName: $app, BundleID: $bundleid, hellnah: $hellnah)
                 }
                 .background(BackgroundClearView())
             }
         }
     }
-    
+
     private var changelogSection: some View {
         Section(header: Text("Changelog")) {
             VStack {
@@ -67,7 +66,7 @@ struct Home: View {
             .frame(height: 200)
         }
     }
-    
+
     private var projectButtonsSection: some View {
         Section {
             Button(action: {
@@ -83,7 +82,7 @@ struct Home: View {
             }
         }
     }
-    
+
     private var aboutButton: some View {
         Button(action: {
             hello = UUID()
@@ -95,7 +94,7 @@ struct Home: View {
             Frida(hello: $hello)
         }
     }
-    
+
     private func listItem(label: String, systemImageName: String, text: String) -> some View {
         HStack {
             VStack(alignment: .leading) {
@@ -116,7 +115,7 @@ struct Home: View {
             }
         }
     }
-    
+
     private func handleFileImport(result: Result<URL, Error>) {
         switch result {
         case .success(let fileURL):

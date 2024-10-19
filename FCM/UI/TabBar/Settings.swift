@@ -23,9 +23,7 @@
 import SwiftUI
 
 struct Settings: View {
-    @Binding var sdk: String
-    @Binding var bsl: Bool
-    @Binding var fname: String
+    @AppStorage("sdk") var sdk: String = "iPhoneOS15.6.sdk"
     @State var fontstate: CGFloat = {
         if let savedFont = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
             return savedFont
