@@ -57,10 +57,9 @@ struct MyApp: App {
     }
 
     private func UpdateFixer() {
-        var upd = UserDefaults.standard.bool(forKey: "ui_update152")
-        if !upd {
+        if !UserDefaults.standard.bool(forKey: "ui_update152") {
             resetlayout()
-            upd = true
+            UserDefaults.standard.set(true, forKey: "ui_update152")
         }
     }
 }
