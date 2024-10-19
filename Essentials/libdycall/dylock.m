@@ -6,12 +6,14 @@
 //avoid dylocking twice!
 void *handle;
 
-void dyunlock() {
+void dyunlock()
+{
     dlclose(handle);
     handle = NULL;
 }
 
-void dylock(NSString *dylibPath) {
+void dylock(NSString *dylibPath)
+{
     if(handle == NULL) {
         handle = dlopen([dylibPath UTF8String], RTLD_LAZY);
     } else {

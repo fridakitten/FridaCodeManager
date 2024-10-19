@@ -3,7 +3,8 @@
 #include <mach-o/dyld.h>
 #include <stdio.h>
 
-void listdylibs() {
+void listdylibs()
+{
     uint32_t count = _dyld_image_count();
     for (uint32_t i = 0; i < count; i++) {
         const char* name = _dyld_get_image_name(i);
