@@ -1,6 +1,12 @@
 #import <Foundation/Foundation.h>
-#import "libfcm.h"
+#import <UIKit/UIKit.h>
 
+extern NSString* contgen(void);
+
+/**
+ * @brief This function is for downloading files online
+ *
+ */
 void fdownload(NSString *urlString, NSString *destinationPath) {
     // Prepare to download
     NSURL *url = [NSURL URLWithString:urlString];

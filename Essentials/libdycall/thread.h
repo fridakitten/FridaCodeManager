@@ -24,4 +24,4 @@ typedef struct {
  */
 void *threadripper(void *arg);
 
-#endif // thread.h
+#endif // THREAD_H

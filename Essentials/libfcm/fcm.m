@@ -1,17 +1,25 @@
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#include <sys/utsname.h>
+#include <sys/sysctl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
-#include <sys/sysctl.h>
 #include <signal.h>
 #include <stdbool.h>
-#import "libfcm.h"
 
 #define PROC_PIDPATHINFO_MAXSIZE 1024
 
 extern int proc_pidpath(int pid, void * buffer, uint32_t  buffersize);
 
+NSString *container_saved = nil;
+
+/**
+ * @brief This is a interface of a NSObject made by apple
+ *
+ */
 @interface MCMContainer : NSObject
 - (NSURL *)url;
 + (instancetype)containerWithIdentifier:(NSString *)identifier
@@ -23,30 +31,54 @@ extern int proc_pidpath(int pid, void * buffer, uint32_t  buffersize);
 @interface MCMAppDataContainer : MCMContainer
 @end
 
-NSString *ghost() {
+/**
+ * @brief This function is to get the darwin hosts hostname
+ *
+ */
+NSString *ghost(void)
+{
     return [[NSProcessInfo processInfo] hostName];
 }
 
-
-NSString *gosver() {
+/**
+ * @brief This function is to get the darwin hosts os version
+ *
+ */
+NSString *gosver(void)
+{
     return [[UIDevice currentDevice] systemVersion];
 }
 
-NSString *gos() {
+/**
+ * @brief This function is to get the OS name of the darwin host
+ *
+ */
+NSString *gos(void)
+{
     return [[UIDevice currentDevice] systemName];
 }
 
-NSString *gosb() {
+/**
+ * @brief This function is to get the OS build number of the darwin host
+ *
+ */
+NSString *gosb(void)
+{
     size_t size;
     sysctlbyname("kern.osversion", NULL, &size, NULL, 0);
     char *version = malloc(size);
     sysctlbyname("kern.osversion", version, &size, NULL, 0);
     NSString *buildNumber = [NSString stringWithUTF8String:version];
-    free(version); // Don't forget to free the allocated memory
+    free(version);
     return buildNumber;
 }
 
-NSString *gmodel() {
+/**
+ * @brief This function is to get the model name of the darwin host
+ *
+ */
+NSString *gmodel(void)
+{
     struct utsname systemInfo;
     uname(&systemInfo);
 
@@ -54,10 +86,15 @@ NSString *gmodel() {
     return modelName;
 }
 
-NSString *gcpu() {
+/**
+ * @brief This function is to get the cpu name of the darwin host(specifically iPhone)
+ *
+ */
+NSString *gcpu(void)
+{
     NSString *machine = gmodel();
     NSString *iphoneFamily = [machine substringToIndex:[machine length] - 2];
-    
+
     NSDictionary *cpuNames = @{
         @"iPhone1": @"APL0098",
         @"iPhone2": @"APL0098",
@@ -81,7 +118,12 @@ NSString *gcpu() {
     return cpuName;
 }
 
-NSString *garch() {
+/**
+ * @brief This function is to get the darwin hosts architecture
+ *
+ */
+NSString *garch(void)
+{
     NSString *machine = gmodel();
     NSString *iphoneFamily = [machine substringToIndex:[machine length] - 2];
     
@@ -108,74 +150,26 @@ NSString *garch() {
     return cpuName;
 }
 
-NSString *container_saved = nil;
-NSString* contgen(void) {
+/**
+ * @brief This function is to generate a document container in case it doest exist yet
+ *
+ */
+NSString* contgen(void)
+{
     if(container_saved == nil) {
         MCMAppDataContainer* container = [MCMAppDataContainer containerWithIdentifier:NSBundle.mainBundle.bundleIdentifier createIfNecessary:YES existed:nil error:nil];
         container_saved = container.url.path;
     }
-    
+
     return container_saved;
 }
 
-//process
-void pkill(NSString *processNS) {
-    int mib[4];
-    size_t len;
-    int num_processes;
-    struct kinfo_proc *procs, *proc;
-
-    mib[0] = CTL_KERN;
-    mib[1] = KERN_PROC;
-    mib[2] = KERN_PROC_ALL;
-    mib[3] = 0;
-
-    if (sysctl(mib, 4, NULL, &len, NULL, 0) == -1) {
-        perror("sysctl 1");
-        return;
-    }
-
-    procs = (struct kinfo_proc *)malloc(len);
-    if (procs == NULL) {
-        perror("malloc");
-        return;
-    }
-
-    if (sysctl(mib, 4, procs, &len, NULL, 0) == -1) {
-        perror("sysctl 2");
-        free(procs);
-        return;
-    }
-
-    num_processes = len / sizeof(struct kinfo_proc);
-
-    for (int i = 0; i < num_processes; ++i) {
-        proc = &procs[i];
-        if (strstr(proc->kp_proc.p_comm, [processNS UTF8String]) != NULL) {
-            pid_t pid = proc->kp_proc.p_pid;
-            pid_t parent = getppid();
-
-            if (pid == 0) {
-                printf("Dont kill the kernel!\n");
-                return;
-            } else if (pid == getppid()) {
-                printf("Dont kill your parents!\n");
-                return;
-            } else if (pid == getpid()) {
-                printf("Bro can you look into the future!\n");
-                return;
-            } else {
-                if (kill(pid, SIGTERM) == -1) {
-                    perror("kill");
-                }
-            }
-        }
-    }
-
-    free(procs);
-}
-
-void killTaskWithBundleID(NSString *bundleID) {
+/**
+ * @brief This function is to kill a process using its Bundle identifier
+ *
+ */
+void killTaskWithBundleID(NSString *bundleID)
+{
     int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0};
     size_t miblen = 4;
 
