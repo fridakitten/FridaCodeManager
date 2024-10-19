@@ -24,18 +24,18 @@ all: JB_PATH := /var/jb/
 all: TARGET := jailbreak
 all: greet compile_swift sign package_fs clean done
 
-roothide: LF := Essentials/lib/prebuild/libroot.a Essentials/lib/build/libfcm.a  Essentials/lib/prebuild/libzip.a Essentials/lib/build/libdycall.a
+roothide: LF := -lroot -lfcm  -lzip
 roothide: ARCH := iphoneos-arm64e
 roothide: JB_PATH := /
 roothide: TARGET := jailbreak
 roothide: greet compile_swift sign  package_fs clean done
 
-trollstore: LF := Essentials/lib/build/libfcm.a  Essentials/lib/prebuild/libzip.a
+trollstore: LF := -lfcm -lzip
 trollstore: TARGET := trollstore
 trollstore: greet compile_swift sign makechain ipa clean done
 
 # under construction!!!
-stock: LF := Essentials/lib/build/libfcm.a  Essentials/lib/prebuild/libzip.a Essentials/lib/build/libdycall.a
+stock: LF := -lfcm -lzip -ldycall
 stock: TARGET := stock
 stock: greet compile_swift makechain_jailed ipa clean done
 
