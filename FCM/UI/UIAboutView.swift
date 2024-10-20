@@ -27,9 +27,10 @@ struct Frida: View {
     
     private let credits = [
         ("SeanIsNotAConstant", "Main Developer", "https://github.com/fridakitten.png"),
-        ("AppInstaller iOS", "Compiling Genius", "https://github.com/AppInstalleriOSGH.png"),
-        ("Snoolie", "Helping Hand", "https://github.com/0xilis.png"),
-        ("HAHALOSAH", "Helping Hand", "https://github.com/HAHALOSAH.png"),
+        ("AppInstaller iOS", "Developer", "https://github.com/AppInstalleriOSGH.png"),
+        ("RoothideDev", "Contributor", "https://github.com/roothide.png"),
+        ("Snoolie", "Contributor", "https://github.com/0xilis.png"),
+        ("HAHALOSAH", "Contributor", "https://github.com/HAHALOSAH.png"),
         ("Ayame Yumemi", "Icon Designer", "https://github.com/ayayame09.png"),
         ("meighler", "Licensor", "https://github.com/meighler.png")
     ]
@@ -39,10 +40,8 @@ struct Frida: View {
         ("Theos", "SDK", "https://github.com/theos.png")
     ]
 
-    private let supporters = [
-        ("RoothideDev", "Giving me Power", "https://github.com/roothide.png"),
-        ("Speedyfriend67", "Making Projects using FCM", "https://github.com/speedyfriend433.png"),
-        ("Burhan Rana", "Making videos about my tools", "https://github.com/burhangee.png")
+    private let others = [
+        ("Chariz", "Repo Host", "https://github.com/chariz.png")
     ]
     
     var body: some View {
@@ -55,7 +54,7 @@ struct Frida: View {
                 ForEach([
                     ("Credits", credits),
                     ("Side Credits", sideCredits),
-                    ("Supporters", supporters)
+                    ("Others", others)
                 ], id: \.0) { sectionTitle, sectionCredits in
                     Section(header: Text(sectionTitle)) {
                         ForEach(sectionCredits.indices, id: \.self) { index in
