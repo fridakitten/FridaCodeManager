@@ -58,7 +58,7 @@ struct Home: View {
                     POHeader(title: "Create Project")
                     POTextField(title: "Application Name", content: $AppName)
                     POTextField(title: "Bundle Identifier", content: $BundleID)
-                    POSchemePicker(function: createProject_trigger, type: $type)
+                    POPicker(function: createProject_trigger, title: "Scheme", items: [PickerItems(id: 1, name: "Swift App"), PickerItems(id: 2, name: "ObjC App"), PickerItems(id: 3, name: "Swift/ObjC App")], type: $type)
                 }
                 .background(BackgroundClearView())
                 .edgesIgnoringSafeArea([.bottom])

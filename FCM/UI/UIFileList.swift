@@ -1,30 +1,29 @@
- /* 
- UIFileList.swift 
+ /*
+ UIFileList.swift
 
- Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
- Copyright (C) 2024 fridakitten 
+ Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
+ Copyright (C) 2024 fridakitten
 
- This file is part of FridaCodeManager. 
+ This file is part of FridaCodeManager.
 
- FridaCodeManager is free software: you can redistribute it and/or modify 
- it under the terms of the GNU General Public License as published by 
- the Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version. 
+ FridaCodeManager is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
  FridaCodeManager is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License 
- along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
+ You should have received a copy of the GNU General Public License
+ along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import SwiftUI
 import Foundation
 
-let screenHeight = UIScreen.main.bounds.height
-let screenWidth = UIScreen.main.bounds.width
+private let invalidFS: Set<Character> = ["/", "\\", ":", "*", "?", "\"", "<", ">", "|"]
 
 private enum ActiveSheet: Identifiable {
     case create, rename, remove
@@ -53,6 +52,9 @@ struct FileList: View {
     @State var showfile: Bool = false
     @Binding var actpath: String
     @Binding var action: Int
+
+    @State private var potextfield: String = ""
+    @State private var type: Int = 0
     var body: some View {
         List {
             Section {
@@ -99,6 +101,7 @@ struct FileList: View {
                     .contextMenu {
                         Button(action: {
                             selfile = item.lastPathComponent
+                            potextfield = selfile
                             activeSheet = .rename
                         }) {
                             Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
@@ -120,7 +123,6 @@ struct FileList: View {
                         Section {
                             Button(role: .destructive, action: {
                                 selfile = item.path
-                                selname = item.lastPathComponent
                                 activeSheet = .remove
                             }) {
                                 Label("Remove", systemImage: "trash")
@@ -178,34 +180,34 @@ struct FileList: View {
             switch sheet {
                 case .create:
                     BottomPopupView {
-                        CreatePopupView(isPresented: Binding(
-                            get: { activeSheet == .create },
-                            set: { if !$0 { activeSheet = nil } }
-                        ), filepath: $directoryPath)
+                        POHeader(title: "Create")
+                        POTextField(title: "Filename", content: $potextfield)
+                        POPicker(function: create_selected, title: "Type", items: [PickerItems(id: 0, name: "File"), PickerItems(id: 1, name: "Folder")], type: $type)
                     }
                     .background(BackgroundClearView())
+                    .edgesIgnoringSafeArea([.bottom])
                     .onDisappear {
                         loadFiles()
                     }
                 case .rename:
                     BottomPopupView {
-                        RenamePopupView(isPresented: Binding(
-                            get: { activeSheet == .rename },
-                            set: { if !$0 { activeSheet = nil } }
-                        ), old: $selfile, directoryPath: $directoryPath)
+                        POHeader(title: "Rename")
+                        POTextField(title: "Filename", content: $potextfield)
+                        POButtonBar(cancel: dissmiss_sheet, confirm: rename_selected)
                     }
                     .background(BackgroundClearView())
+                    .edgesIgnoringSafeArea([.bottom])
                     .onDisappear {
                         loadFiles()
                     }
                 case .remove:
                     BottomPopupView {
-                        RemovalPopup(isPresented: Binding(
-                            get: { activeSheet == .remove },
-                            set: { if !$0 { activeSheet = nil } }
-                        ), name: $selname, path: $selfile)
+                        POHeader(title: "Remove")
+                        Spacer().frame(height: 10)
+                        POButtonBar(cancel: dissmiss_sheet, confirm: remove_selected)
                     }
                     .background(BackgroundClearView())
+                    .edgesIgnoringSafeArea([.bottom])
                     .onDisappear {
                         loadFiles()
                     }
@@ -217,6 +219,48 @@ struct FileList: View {
         .fullScreenCover(isPresented: $fbool) {
             ImageView(imagePath: $selpath, fbool: $fbool)
         }
+    }
+
+    private func create_selected() -> Void {
+        if !potextfield.isEmpty && potextfield.rangeOfCharacter(from: CharacterSet(charactersIn: String(invalidFS))) == nil {
+            if(type == 0) {
+                var content = ""
+                switch gsuffix(from: potextfield) {
+                    case "swift", "c", "m", "mm", "cpp", "h":
+                        content = authorgen(file: potextfield)
+                        break
+                    default:
+                        break
+                }
+                cfile(atPath: "\(directoryPath)/potextfield", withContent: content)
+            } else {
+                cfolder(atPath: "\(directoryPath)/potextfield")
+            }
+            haptfeedback(1)
+            activeSheet = nil
+        } else {
+            haptfeedback(2)
+        }
+    }
+
+    private func rename_selected() -> Void {
+        if !potextfield.isEmpty && potextfield.rangeOfCharacter(from: CharacterSet(charactersIn: String(invalidFS))) == nil {
+            _ = mv("\(directoryPath)/\(selfile)", "\(directoryPath)/\(potextfield)")
+            haptfeedback(1)
+            activeSheet = nil
+        } else {
+            haptfeedback(2)
+        }
+    }
+
+    private func remove_selected() -> Void {
+        _ = rm(selfile)
+        haptfeedback(1)
+        activeSheet = nil
+    }
+
+    private func dissmiss_sheet() -> Void {
+        activeSheet = nil
     }
 
     private func gsymbol(item: String) -> String {
@@ -275,7 +319,7 @@ struct FileList: View {
         }
     }
 
-    private func loadFiles() {
+    private func loadFiles() -> Void {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
         do {
@@ -289,7 +333,7 @@ struct FileList: View {
         }
     }
 
-    private func deleteItems(at offsets: IndexSet) {
+    private func deleteItems(at offsets: IndexSet) -> Void {
         for index in offsets {
             let itemURL = (files)[index]
             do {
@@ -315,7 +359,7 @@ struct ImageView: View {
                         .resizable()
                         .scaledToFit()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: screenWidth)
+                        .frame(width: UIScreen.main.bounds.width)
                 }
                 .navigationBarTitle("Image Viewer", displayMode: .inline)
                 .navigationBarItems(leading:

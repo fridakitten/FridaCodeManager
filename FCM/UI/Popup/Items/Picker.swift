@@ -1,7 +1,15 @@
 import SwiftUI
 
-public struct POSchemePicker: View {
+public struct PickerItems: Identifiable {
+    public let id: Int
+    public let name: String
+}
+
+public struct POPicker: View {
     let function: () -> Void
+
+    var title: String
+    var items: [PickerItems]
     @Binding var type: Int
     
     public var body: some View  {
@@ -9,17 +17,13 @@ public struct POSchemePicker: View {
             VStack {
                 HStack {
                     Spacer().frame(width: 10)
-                    Text("Scheme")
+                    Text(title)
                         .foregroundColor(.primary)
                     Spacer()
                     Picker("", selection: $type) {
-                        #if jailbreak
-                        Text("Swift App").tag(1)
-                        #endif
-                        Text("ObjC App").tag(2)
-                        #if jailbreak
-                        Text("Swift/ObjC App").tag(3)
-                        #endif
+                        ForEach(items) { item in
+                            Text(item.name).tag(item.id)
+                        }
                     }
                     .pickerStyle(MenuPickerStyle())
                     Spacer()
