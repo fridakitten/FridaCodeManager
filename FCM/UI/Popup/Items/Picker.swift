@@ -30,7 +30,7 @@ public struct POPicker: View {
                 }
             }
             .frame(height: 36)
-            .background(Color(UIColor.systemGray5))
+            .background(Color(.systemBackground).opacity(0.7))
             .foregroundColor(.primary)
             .accentColor(.secondary)
             .cornerRadius(10)
@@ -42,7 +42,7 @@ public struct POPicker: View {
             }, label: {
                 Text("Submit")
                     .frame(width: 80, height: 36)
-                    .background(Color(UIColor.systemGray5))
+                    .background(Color(.systemBackground).opacity(0.7))
                     .foregroundColor(.primary)
                     .cornerRadius(10)
             })

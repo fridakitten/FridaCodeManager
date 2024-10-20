@@ -57,7 +57,7 @@ struct FileObject: View {
                 }
                 Text(item.lastPathComponent)
                 Spacer()
-                    Text("\(gfilesize(atPath: item.path)) KB")
+                    Text("\(gfilesize(atPath: item.path))")
                         .font(.system(size: 10, weight: .semibold))
             }
         }
@@ -75,6 +75,7 @@ struct FileList: View {
     @Binding var actpath: String
     @Binding var action: Int
 
+    @State private var poheader: String = ""
     @State private var potextfield: String = ""
     @State private var type: Int = 0
     var body: some View {
@@ -131,6 +132,7 @@ struct FileList: View {
                             Button(role: .destructive, action: {
                                 selpath = item.path
                                 activeSheet = .remove
+                                poheader = "Remove \"\(item.lastPathComponent)\"?"
                             }) {
                                 Label("Remove", systemImage: "trash")
                             }
@@ -210,7 +212,7 @@ struct FileList: View {
                     }
                 case .remove:
                     BottomPopupView {
-                        POHeader(title: "Remove")
+                        POBHeader(title: $poheader)
                         Spacer().frame(height: 10)
                         POButtonBar(cancel: dissmiss_sheet, confirm: remove_selected)
                     }
@@ -219,7 +221,7 @@ struct FileList: View {
                     .onDisappear {
                         loadFiles()
                     }
-                }
+            }
         }
         .fullScreenCover(isPresented: $quar) {
             CodeEditorView(quar: $quar, filePath: $selpath)
@@ -230,8 +232,8 @@ struct FileList: View {
     }
 
     private func create_selected() -> Void {
-        if !potextfield.isEmpty && potextfield.rangeOfCharacter(from: CharacterSet(charactersIn: String(invalidFS))) == nil {
-            if(type == 0) {
+        if !potextfield.isEmpty && potextfield != "DontTouchMe.plist" && potextfield.rangeOfCharacter(from: CharacterSet(charactersIn: String(invalidFS))) == nil {
+            if type == 0 {
                 var content = ""
                 switch gsuffix(from: potextfield) {
                     case "swift", "c", "m", "mm", "cpp", "h":
@@ -262,9 +264,13 @@ struct FileList: View {
     }
 
     private func remove_selected() -> Void {
-        _ = rm(selpath)
-        haptfeedback(1)
-        activeSheet = nil
+        if !selpath.contains("DontTouchMe.plist") {
+            _ = rm(selpath)
+            haptfeedback(1)
+            activeSheet = nil
+        } else {
+            haptfeedback(2)
+        }
     }
 
     private func dissmiss_sheet() -> Void {
@@ -289,8 +295,10 @@ struct FileList: View {
                 let items = try fileManager.contentsOfDirectory(at: self.directoryPath, includingPropertiesForKeys: nil)
 
                 DispatchQueue.main.async {
-                    self.files.removeAll { file in
-                        !fileManager.fileExists(atPath: file.path)
+                    withAnimation {
+                        self.files.removeAll { file in
+                            !fileManager.fileExists(atPath: file.path)
+                        }
                     }
                 }
 
@@ -406,18 +414,30 @@ struct SDKList: View {
 
 private func gfilesize(atPath filePath: String) -> String {
     let fileURL = URL(fileURLWithPath: filePath)
+
     do {
         let attributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
+
         if let fileSize = attributes[FileAttributeKey.size] as? Int64 {
-            let fileSizeInKB = Double(fileSize) / 1024.0
-            return String(format: "%.2f", fileSizeInKB)
+            let fileSizeInBytes = Double(fileSize)
+            let units = ["B", "KB", "MB", "GB", "TB"]
+            var unitIndex = 0
+            var adjustedSize = fileSizeInBytes
+
+            while adjustedSize >= 1024 && unitIndex < units.count - 1 {
+                adjustedSize /= 1024
+                unitIndex += 1
+            }
+
+            return String(format: "%.2f %@", adjustedSize, units[unitIndex])
         } else {
-            return "0.00"
+            return "0.00 B"
         }
     } catch {
-        return "0.00"
+        return "0.00 B"
     }
 }
+
 
 private func isDirectory(_ url: URL) -> Bool {
     var isDir: ObjCBool = false

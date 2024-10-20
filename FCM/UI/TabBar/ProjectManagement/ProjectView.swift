@@ -129,7 +129,6 @@ struct ProjectView: View {
                 }
                 .background(BackgroundClearView())
                 .edgesIgnoringSafeArea([.bottom])
-
             }
         }
     }

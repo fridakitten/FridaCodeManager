@@ -7,7 +7,7 @@ public struct POTextField: View {
         TextField(title, text: $content)
             .frame(height: 36)
             .padding([.leading, .trailing], 10)
-            .background(Color(UIColor.systemGray5))
+            .background(Color(.systemBackground).opacity(0.7))
             .cornerRadius(10)
             .disableAutocorrection(true)
             .autocapitalization(.none)

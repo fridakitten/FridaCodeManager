@@ -22,11 +22,20 @@
 
 import SwiftUI
 
+private var hasTopNotch: Bool {
+    if #available(iOS 11.0, tvOS 11.0, *) {
+        return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
+    }
+    return false
+}
+
 struct BottomPopupView<Content: View>: View {
     let content: Content
 
     @State private var keyboardHeight: CGFloat = 0
     @State private var isKeyboardVisible: Bool = false
+    @State private var addition: CGFloat = 25
+    @State private var corner_addition: CGFloat = 0
 
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
@@ -38,38 +47,45 @@ struct BottomPopupView<Content: View>: View {
                 Spacer()
                 VStack(alignment: .leading, spacing: 16) {
                     content
-                    Spacer().frame(height: 15)
                 }
                 .padding(20)
-                    .padding(.bottom, geometry.safeAreaInsets.bottom)
+                    .padding(.bottom, geometry.safeAreaInsets.bottom + addition)
                     .background {
-                        Color(.systemBackground)
+                        FluidGradient(blobs: [.green, .primary, .gray],
+                                 highlights: [.green, .primary, .gray],
+                                                            speed: 0.25,
+                                                            blur: 0.75)
+                            .ignoresSafeArea()
+                            .background(.quaternary)
                     }
+                    .background(Color(.systemBackground))
                     .cornerRadius(radius: 16, corners: [.topLeft, .topRight])
-                    .cornerRadius(radius: 10, corners: [.bottomLeft, .bottomRight])
-                    .offset(y: isKeyboardVisible ? -keyboardHeight : 0) // Adjust the offset based on keyboard height
-                    .animation(.easeInOut, value: keyboardHeight) // Animate offset change
+                    .cornerRadius(radius: corner_addition, corners: [.bottomLeft, .bottomRight])
+                    .offset(y: isKeyboardVisible ? -keyboardHeight : 0)
+                    .animation(.easeInOut, value: keyboardHeight)
             }
             .edgesIgnoringSafeArea([.bottom])
             .onAppear {
-                // Subscribe to keyboard notifications
                 NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
                     if let keyboardSize = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-                        withAnimation(.easeInOut(duration: 0.01)) {
-                            self.keyboardHeight = keyboardSize.height
+                        withAnimation(.easeOut(duration: 0.5)) {
+                            addition = 0
+                            corner_addition = 16
+                            self.keyboardHeight = keyboardSize.height + 25
                             self.isKeyboardVisible = true
                         }
                     }
                 }
                 NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-                    withAnimation(.easeInOut(duration: 0.01)) {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        addition = 25
+                        corner_addition = 0
                         self.keyboardHeight = 0
                         self.isKeyboardVisible = false
                     }
                 }
             }
             .onDisappear {
-                // Clean up the observers
                 NotificationCenter.default.removeObserver(self)
             }
         }

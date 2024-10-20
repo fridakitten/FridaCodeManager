@@ -11,7 +11,7 @@ public struct POButtonBar: View {
                 Text("Cancel")
             })
             .frame(width: 80, height: 36)
-            .background(Color(UIColor.systemGray5))
+            .background(Color(.systemBackground).opacity(0.7))
             .foregroundColor(.primary)
             .cornerRadius(10)
             Spacer()
@@ -21,7 +21,7 @@ public struct POButtonBar: View {
                 Text("Confirm")
             })
             .frame(width: 80, height: 36)
-            .background(Color(UIColor.systemGray5))
+            .background(Color(.systemBackground).opacity(0.7))
             .foregroundColor(.primary)
             .cornerRadius(10)
         }
