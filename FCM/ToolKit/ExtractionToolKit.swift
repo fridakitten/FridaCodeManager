@@ -62,7 +62,7 @@ func importProj(target: String) -> Void {
     let projpath: String = content[0].path
     print("\nfound at: \(projpath)")
     if FileManager.default.fileExists(atPath: "\(projpath)/Resources/DontTouchMe.plist") {
-        wplist(value: v2uuid, forKey: "ProjectName", plistPath: "\(projpath)/Resources/DontTouchMe.plist")
+       _ =  wplist(value: v2uuid, forKey: "ProjectName", plistPath: "\(projpath)/Resources/DontTouchMe.plist")
        _ =  mv("\(projpath)", "\(global_documents)/\(v2uuid)")
     }
     _ = rm("\(global_container)/tmp/\(v2uuid)")

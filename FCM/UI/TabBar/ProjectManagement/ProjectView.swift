@@ -136,7 +136,7 @@ struct ProjectView: View {
 
     private func Removal_trigger() -> Void {
         haptfeedback(1)
-        rm("\(projname)")
+        _ = rm("\(projname)")
         hello = UUID()
         Removal = false
     }
@@ -171,7 +171,7 @@ struct CodeSpace: View {
     @Binding var pathstate: String
     @Binding var action: Int
     var body: some View {
-        FileList(directoryPath: ProjectInfo.ProjectPath, nv: ProjectInfo.Executable, buildv: $buildv, builda: builda, actpath: $pathstate, action: $action)
+        FileList(directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, builda: builda, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
                 buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
             }

@@ -70,7 +70,7 @@ struct Home: View {
         if AppName != "", BundleID != "" {
             haptfeedback(1)
             showProj = false
-            MakeApplicationProject(AppName, BundleID, type: type)
+            _ = MakeApplicationProject(AppName, BundleID, type: type)
             (AppName, BundleID, hellnah) = ("", "", UUID())
         } else {
             haptfeedback(2)

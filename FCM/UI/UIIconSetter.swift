@@ -123,7 +123,8 @@ struct ImgView: View {
             }
         }
     }
-    func saveImage(_ image: UIImage) {
+
+    private func saveImage(_ image: UIImage) -> Void {
         guard let imageData = image.pngData() else {
             return
         }
@@ -132,20 +133,21 @@ struct ImgView: View {
 
         do {
             try imageData.write(to: fileURL)
-            wplist(value: "AppIcon.png", forKey: "CFBundleIconFile", plistPath: "\(projpath)/Resources/Info.plist")
+            _ = wplist(value: "AppIcon.png", forKey: "CFBundleIconFile", plistPath: "\(projpath)/Resources/Info.plist")
             print("Image saved successfully at: \(fileURL)")
         } catch {
             print("Error saving image: \(error.localizedDescription)")
         }
     }
-    func remove() {
+
+    private func remove() -> Void {
         if FileManager.default.fileExists(atPath: "\(projpath)/Resources/AppIcon.png") {
-            rmplist(key: "CFBundleIconFile", plistPath: "\(projpath)/Resources/Info.plist")
+            _ = rmplist(key: "CFBundleIconFile", plistPath: "\(projpath)/Resources/Info.plist")
             removeFile(atPath: "\(projpath)/Resources/AppIcon.png")
             selectedImage = createEmptyImage()
         }
     }
-    func removeFile(atPath filePath: String) {
+    private func removeFile(atPath filePath: String) -> Void {
         do {
             try FileManager.default.removeItem(atPath: filePath)
             print("File at \(filePath) removed successfully.")
@@ -155,7 +157,7 @@ struct ImgView: View {
     }
 }
 
-func loadImage(fromPath imagePath: String) -> UIImage? {
+public func loadImage(fromPath imagePath: String) -> UIImage? {
     if let image = UIImage(contentsOfFile: imagePath) {
         return image
     } else {
@@ -164,7 +166,7 @@ func loadImage(fromPath imagePath: String) -> UIImage? {
     }
 }
 
-func createEmptyImage() -> UIImage? {
+public func createEmptyImage() -> UIImage? {
     let size = CGSize(width: 0, height: 0)
     UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
     defer { UIGraphicsEndImageContext() }

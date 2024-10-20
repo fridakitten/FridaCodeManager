@@ -35,21 +35,15 @@ private enum ActiveSheet: Identifiable {
 
 struct FileList: View {
     @State private var activeSheet: ActiveSheet?
-    @State var directoryPath: String
+    var directoryPath: URL
     @State private var files: [URL] = []
     @State private var quar: Bool = false
-    @State private var fileName: String = ""
     @State private var selpath: String = ""
-    @State private var newName: String = ""
-    @State private var isRenaming: Bool = false
-    @State private var oldName: String = ""
     @State private var selfile: String = ""
     @State private var selname: String = ""
     @State private var fbool: Bool = false
-    @State var nv: String
-    @Binding var buildv: Bool
-    @State var builda: Bool
-    @State var showfile: Bool = false
+    var buildv: Binding<Bool>?
+    var builda: Bool
     @Binding var actpath: String
     @Binding var action: Int
 
@@ -61,7 +55,7 @@ struct FileList: View {
                 ForEach(files, id: \.self) { item in
                     HStack {
                         if isDirectory(item) {
-                            NavigationLink(destination: FileList(directoryPath: item.path, nv: item.lastPathComponent, buildv: $buildv, builda: false, actpath: $actpath, action: $action)) {
+                            NavigationLink(destination: FileList(directoryPath: item, buildv: nil, builda: false, actpath: $actpath, action: $action)) {
                                 HStack {
                                     Image(systemName: "folder.fill")
                                         .foregroundColor(.primary)
@@ -135,16 +129,19 @@ struct FileList: View {
         .onAppear {
             loadFiles()
         }
-        .disabled(isRenaming)
         .listStyle(InsetGroupedListStyle())
-        .navigationTitle(nv)
+        .navigationTitle(directoryPath.lastPathComponent)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
                     if builda == true {
                         Section {
-                            Button(action: { buildv = true }) {
+                            Button(action: {
+                                if let buildv = buildv {
+                                    buildv.wrappedValue = true
+                                }
+                            }) {
                                 Label("Build", systemImage: "play.fill")
                             }
                         }
@@ -158,10 +155,10 @@ struct FileList: View {
                         Section {
                             Button(action: {
                                 if action == 1 {
-                                    cp(actpath, "\(directoryPath)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
+                                    cp(actpath, "\(directoryPath.path)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
                                     action = 0
                                 } else if action == 2 {
-                                    mv(actpath, "\(directoryPath)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
+                                    mv(actpath, "\(directoryPath.path)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
                                     action = 0
                                 }
                                 haptfeedback(1)
@@ -232,9 +229,9 @@ struct FileList: View {
                     default:
                         break
                 }
-                cfile(atPath: "\(directoryPath)/potextfield", withContent: content)
+                cfile(atPath: "\(directoryPath.path)/potextfield", withContent: content)
             } else {
-                cfolder(atPath: "\(directoryPath)/potextfield")
+                cfolder(atPath: "\(directoryPath.path)/potextfield")
             }
             haptfeedback(1)
             activeSheet = nil
@@ -245,7 +242,7 @@ struct FileList: View {
 
     private func rename_selected() -> Void {
         if !potextfield.isEmpty && potextfield.rangeOfCharacter(from: CharacterSet(charactersIn: String(invalidFS))) == nil {
-            _ = mv("\(directoryPath)/\(selfile)", "\(directoryPath)/\(potextfield)")
+            _ = mv("\(directoryPath.path)/\(selfile)", "\(directoryPath.path)/\(potextfield)")
             haptfeedback(1)
             activeSheet = nil
         } else {
@@ -321,9 +318,8 @@ struct FileList: View {
 
     private func loadFiles() -> Void {
         let fileManager = FileManager.default
-        let directoryURL = URL(fileURLWithPath: directoryPath)
         do {
-            let items = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
+            let items = try fileManager.contentsOfDirectory(at: directoryPath, includingPropertiesForKeys: nil)
             let fileURLs = items.filter { url in
             !isDirectory(url) && url.lastPathComponent != "DontTouchMe.plist"}
             let folderURLs = items.filter { isDirectory($0) }
