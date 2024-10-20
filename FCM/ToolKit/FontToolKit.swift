@@ -22,7 +22,7 @@ Font.swift
 
 import UIKit
 
-func guif() -> [String] {
+public func guif() -> [String] {
     var fontFamilies = UIFont.familyNames
     fontFamilies.sort { (family1, family2) in
         if family1.lowercased() == "menlo" {
@@ -34,7 +34,8 @@ func guif() -> [String] {
     }
     return fontFamilies
 }
-func gsuffix(from fileName: String) -> String {
+
+public func gsuffix(from fileName: String) -> String {
     let trimmedFileName = fileName.replacingOccurrences(of: " ", with: "")
     let suffix = URL(string: trimmedFileName)?.pathExtension
     return suffix ?? ""

@@ -20,8 +20,6 @@ LogToolKit.swift
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
  */ 
 
-
-
 func climessenger(_ title: String,_ text: String,_ command: String? = "",_ uid: uid_t? = 501,_ env: [String]? = []) -> Int {
     let marks: Int = (36 - title.count) / 2
     let slice = String(repeating: "+", count: marks)

@@ -22,7 +22,7 @@
 
 import Foundation
 
-func cfolder(atPath path: String) {
+public func cfolder(atPath path: String) {
     do {
         try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
     } catch {
@@ -30,7 +30,7 @@ func cfolder(atPath path: String) {
     }
 }
 
-func cfile(atPath path: String, withContent content: String) {
+public func cfile(atPath path: String, withContent content: String) {
     do {
         try content.write(toFile: path, atomically: true, encoding: .utf8)
         print("File created successfully at path: \(path)")
@@ -39,7 +39,7 @@ func cfile(atPath path: String, withContent content: String) {
     }
 }
 
-func copyf(sourcePath: String, destinationPath: String) {        
+public func copyf(sourcePath: String, destinationPath: String) {        
     do {   
         try FileManager.default.copyItem(atPath: sourcePath, toPath: destinationPath)
     } catch {
@@ -47,7 +47,7 @@ func copyf(sourcePath: String, destinationPath: String) {
     }
 }
 
-func copyc(from sp: String, to dp: String) throws {
+public func copyc(from sp: String, to dp: String) throws {
     let sourcePath = sp
     let destinationPath = dp
 
@@ -75,13 +75,13 @@ func copyc(from sp: String, to dp: String) throws {
     }
 }
 
-func renameFile(atPath filePath: String, to newFileName: String) throws {
+public func renameFile(atPath filePath: String, to newFileName: String) throws {
     let directoryPath = (filePath as NSString).deletingLastPathComponent
     let newFilePath = (directoryPath as NSString).appendingPathComponent(newFileName)
     try FileManager.default.moveItem(atPath: filePath, toPath: newFilePath)
 }
 
-func adv_rm(atPath path: String) throws {
+public func adv_rm(atPath path: String) throws {
     let protectedPaths: Set<String> = ["/", "/System", "/bin", "/sbin", "/usr", "/etc", "/var"]
     let normalizedPath = URL(fileURLWithPath: path).standardized.path
     
@@ -102,7 +102,7 @@ func adv_rm(atPath path: String) throws {
     }
 }
 
-func rm(_ path: String) -> Int {
+public func rm(_ path: String) -> Int {
     let fileManager = FileManager.default
     if fileManager.fileExists(atPath: path) {
         do {
@@ -116,7 +116,7 @@ func rm(_ path: String) -> Int {
     return 0
 }
 
-func mv(_ fromPath: String, _ toPath: String) -> Int {
+public func mv(_ fromPath: String, _ toPath: String) -> Int {
     let fileManager = FileManager.default
     if fileManager.fileExists(atPath: fromPath) {
         do {
@@ -129,7 +129,8 @@ func mv(_ fromPath: String, _ toPath: String) -> Int {
     }
     return 0
 }
-func cp(_ sourcePath: String,_ destinationPath: String) -> Int {
+
+public func cp(_ sourcePath: String,_ destinationPath: String) -> Int {
     let fileManager = FileManager.default
     
     do {

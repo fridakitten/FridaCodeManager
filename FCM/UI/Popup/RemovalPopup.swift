@@ -48,9 +48,7 @@ struct RemovalPopup: View {
                 .cornerRadius(10)
                 Spacer()
                 Button(action: {
-                    haptfeedback(1)
-                    rm("\(path)")
-                    isPresented = false
+                    removeFile_trigger()
                 }, label: {
                     Text("Confirm")
                 })
@@ -61,6 +59,12 @@ struct RemovalPopup: View {
             }
         }
         .padding()
+        }
     }
-  }
+
+    private func removeFile_trigger() -> Void {
+        haptfeedback(1)
+        _ = rm("\(path)")
+        isPresented = false
+    }
 }

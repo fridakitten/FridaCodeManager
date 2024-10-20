@@ -25,15 +25,15 @@ import UIKit
 
 #if !stock
 // private api function group to open arbitary apps
-func obfuscatedClass(_ className: String) -> AnyClass? {
+private func obfuscatedClass(_ className: String) -> AnyClass? {
     return NSClassFromString(className)
 }
 
-func obfuscatedSelector(_ selectorName: String) -> Selector? {
+private func obfuscatedSelector(_ selectorName: String) -> Selector? {
     return NSSelectorFromString(selectorName)
 }
 
-func OpenApp(_ bundleID: String) {
+public func OpenApp(_ bundleID: String) -> Void {
     guard let workspaceClass = obfuscatedClass("LSApplicationWorkspace") as? NSObject.Type else {
         print("Failed to find LSApplicationWorkspace")
         return
@@ -62,7 +62,7 @@ func OpenApp(_ bundleID: String) {
 }
 #endif
 
-func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore: [String]) -> [String] {
+public func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore: [String]) -> [String] {
     do {
         let (fileExtensionsSet, ignoreSet, allFiles) = (Set(fileExtensions), Set(ignore), try FileManager.default.subpathsOfDirectory(atPath: projectPath))
 

@@ -19,7 +19,7 @@
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
  */ 
-    
+
 import SwiftUI
 
 struct ProjPreferences: View {
@@ -103,9 +103,9 @@ struct PrefsInfo: View {
     private func save() {
         let keys = ["CFBundleName", "CFBundleExecutable", "CFBundleIdentifier", "CFBundleVersion", "CFBundleShortVersionString", "MinimumOSVersion"]
         let values = [AppName, AppliName, BundleID, Version, Version, MIOS]
-        
+
         for i in 0..<keys.count {
-            wplist(value: values[i], forKey: keys[i], plistPath: PlistPath)
+            _ = wplist(value: values[i], forKey: keys[i], plistPath: PlistPath)
         }
 
         hello = UUID()
@@ -124,31 +124,32 @@ struct Appeareance: View {
             ImgView(projpath: projpath,iconid: $iconid)
                 .id(iconid)
             Section(header: Text("Orientation")) {
-            Toggle("Restrict Orientation", isOn: $restrict)
-            .tint(.orange)
-            if restrict == true {
-                Toggle("Portrait Mode", isOn: $potrait)
-                Toggle("Landscape Mode", isOn: $landscape)
-            }
-          }
-        }
-        .listStyle(InsetGroupedListStyle())
-        .onAppear {
-            config()
-        }
-        .onChange(of: restrict) { _ in
-            update()
+                Toggle("Restrict Orientation", isOn: $restrict)
+                    .tint(.orange)
+                if restrict == true {
+                    Toggle("Portrait Mode", isOn: $potrait)
+                    Toggle("Landscape Mode", isOn: $landscape)
+                }
+             }
          }
-        .onChange(of: potrait) { _ in
-            update()
+         .listStyle(InsetGroupedListStyle())
+         .onAppear {
+             config()
+         }
+         .onChange(of: restrict) { _ in
+             update()
+         }
+         .onChange(of: potrait) { _ in
+             update()
          }
          .onChange(of: landscape) { _ in
              update()
          }
-        .navigationTitle("Appeareance")
-        .navigationBarTitleDisplayMode(.inline)
+         .navigationTitle("Appeareance")
+         .navigationBarTitleDisplayMode(.inline)
     }
-    func update() {
+
+    private func update() {
         let proj = "\(global_documents)/\(projname)"
         let plist = "\(proj)/Resources/Info.plist"
         let array = "UISupportedInterfaceOrientations"
@@ -161,17 +162,17 @@ struct Appeareance: View {
                 items.append("UIInterfaceOrientationLandscapeRight")
             }
             if paeplist(aname: array, path: plist) {
-                 rmaplist(aname: array, path: plist)
+                _ = rmaplist(aname: array, path: plist)
             }
-            caplist(aname: array, path: plist, arrayData: items)
+            _ = caplist(aname: array, path: plist, arrayData: items)
         } else {
             if paeplist(aname: array, path: plist) {
-                 rmaplist(aname: array, path: plist)
+                 _ = rmaplist(aname: array, path: plist)
             }
         }
     }
 
-    func config() {
+    private func config() {
         let proj = "\(global_documents)/\(projname)"
         let plist = "\(proj)/Resources/Info.plist"
         let array = "UISupportedInterfaceOrientations"
@@ -188,7 +189,7 @@ struct Appeareance: View {
         }
     }
 
-    func itemExistsInPlist(item: String, arrayKey: String, plistPath: String) -> Bool {
+    private func itemExistsInPlist(item: String, arrayKey: String, plistPath: String) -> Bool {
         if let plistData = FileManager.default.contents(atPath: plistPath),
             let plistDictionary = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any],
         let array = plistDictionary[arrayKey] as? [String] {
@@ -202,19 +203,19 @@ struct asksdk: View {
     @State var projpath: String
     @State var sdk: String = ""
     var body: some View {
-      List {
-        Text("\(sdk)")
-        NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
-    Text("Change")
-}
+        List {
+            Text("\(sdk)")
+            NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
+                Text("Change")
+            }
         }
         .onChange(of: sdk) { _ in
-            wplist(value: sdk, forKey: "SDK", plistPath: "\(projpath)/Resources/DontTouchMe.plist")
+            _ = wplist(value: sdk, forKey: "SDK", plistPath: "\(projpath)/Resources/DontTouchMe.plist")
         }
         .onAppear {
-          if sdk == "" {
-            sdk = (rplist(forKey: "SDK", plistPath: "\(projpath)/Resources/DontTouchMe.plist") ?? "")
-          }
+            if sdk == "" {
+                sdk = (rplist(forKey: "SDK", plistPath: "\(projpath)/Resources/DontTouchMe.plist") ?? "")
+            }
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("SDK")

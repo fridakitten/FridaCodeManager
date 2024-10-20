@@ -48,7 +48,7 @@ func exportApp(_ project: Project) -> Int {
     return result
 }
 
-func importProj(target: String) {
+func importProj(target: String) -> Void {
     let v2uuid: String = "\(UUID())"
     if FileManager.default.fileExists(atPath: target) {
         if libzip_unzip(target, "\(global_container)/tmp/\(v2uuid)") != 0 {

@@ -18,38 +18,60 @@
 
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
-    
+ */
+
 import SwiftUI
 
 struct BottomPopupView<Content: View>: View {
-
     let content: Content
+
+    @State private var keyboardHeight: CGFloat = 0
+    @State private var isKeyboardVisible: Bool = false
 
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-    
+
     var body: some View {
         GeometryReader { geometry in
             VStack {
                 Spacer()
-                content
+                VStack(alignment: .leading, spacing: 16) {
+                    content
+                    Spacer().frame(height: 15)
+                }
+                .padding(20)
                     .padding(.bottom, geometry.safeAreaInsets.bottom)
                     .background {
-VStack {
-FluidGradient(blobs: [.orange, .primary, .red],
-                      highlights: [.orange, .primary, .red],
-                      speed: 1.0,
-                      blur: 0.75)
-          .ignoresSafeArea()
-          .background(.quaternary)
-}
-.background(Color(.systemBackground))
+                        Color(.systemBackground)
                     }
                     .cornerRadius(radius: 16, corners: [.topLeft, .topRight])
+                    .cornerRadius(radius: 10, corners: [.bottomLeft, .bottomRight])
+                    .offset(y: isKeyboardVisible ? -keyboardHeight : 0) // Adjust the offset based on keyboard height
+                    .animation(.easeInOut, value: keyboardHeight) // Animate offset change
             }
             .edgesIgnoringSafeArea([.bottom])
+            .onAppear {
+                // Subscribe to keyboard notifications
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
+                    if let keyboardSize = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                        withAnimation(.easeInOut(duration: 0.01)) {
+                            self.keyboardHeight = keyboardSize.height
+                            self.isKeyboardVisible = true
+                        }
+                    }
+                }
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+                    withAnimation(.easeInOut(duration: 0.01)) {
+                        self.keyboardHeight = 0
+                        self.isKeyboardVisible = false
+                    }
+                }
+            }
+            .onDisappear {
+                // Clean up the observers
+                NotificationCenter.default.removeObserver(self)
+            }
         }
         .transition(.move(edge: .bottom))
     }

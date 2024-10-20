@@ -19,14 +19,14 @@
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
  */ 
-    
+
 import SwiftUI
 import Foundation
 
 let screenHeight = UIScreen.main.bounds.height
 let screenWidth = UIScreen.main.bounds.width
 
-enum ActiveSheet: Identifiable {
+private enum ActiveSheet: Identifiable {
     case create, rename, remove
 
     var id: Int {
@@ -218,7 +218,8 @@ struct FileList: View {
             ImageView(imagePath: $selpath, fbool: $fbool)
         }
     }
-    func gsymbol(item: String) -> String {
+
+    private func gsymbol(item: String) -> String {
         let suffix = gsuffix(from: item)
         switch(suffix) {
             case "m", "h", "c", "mm", "cpp", "api":
@@ -227,7 +228,8 @@ struct FileList: View {
                 return ""
         }
     }
-    func gcolor(item: String) -> Color {
+
+    private func gcolor(item: String) -> Color {
         let suffix = gsuffix(from: item)
         switch(suffix) {
             case "m":
@@ -248,7 +250,8 @@ struct FileList: View {
                 return Color.primary
         }
     }
-    func gsize(item: String) -> Int {
+
+    private func gsize(item: String) -> Int {
         let suffix = gsuffix(from: item)
         switch(suffix) {
             case "m", "h", "c":
@@ -261,7 +264,8 @@ struct FileList: View {
                 return 0
         }
     }
-    func gtypo(item: String) -> Bool {
+
+    private func gtypo(item: String) -> Bool {
         let suffix = gsuffix(from: item)
         switch(suffix) {
             case "png", "jpg", "jpeg", "PNG", "JPG":
@@ -270,7 +274,8 @@ struct FileList: View {
                 return false
         }
     }
-    func loadFiles() {
+
+    private func loadFiles() {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
         do {
@@ -283,7 +288,8 @@ struct FileList: View {
             print("Error loading files: \(error.localizedDescription)")
         }
     }
-    func deleteItems(at offsets: IndexSet) {
+
+    private func deleteItems(at offsets: IndexSet) {
         for index in offsets {
             let itemURL = (files)[index]
             do {
@@ -357,7 +363,8 @@ struct SDKList: View {
         .navigationTitle("SDKs")
         .navigationBarTitleDisplayMode(.inline)
     }
-    func loadFiles() {
+
+    private func loadFiles() {
         let fileManager = FileManager.default
         let directoryURL = URL(fileURLWithPath: directoryPath)
         do {
@@ -368,7 +375,7 @@ struct SDKList: View {
     }
 }
 
-func gfilesize(atPath filePath: String) -> String {
+private func gfilesize(atPath filePath: String) -> String {
     let fileURL = URL(fileURLWithPath: filePath)
     do {
         let attributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
@@ -376,13 +383,14 @@ func gfilesize(atPath filePath: String) -> String {
             let fileSizeInKB = Double(fileSize) / 1024.0
             return String(format: "%.2f", fileSizeInKB)
         } else {
-            return "0.00" // Unable to retrieve file size
+            return "0.00"
         }
     } catch {
-        return "0.00" // Error occurred while getting file attributes or file doesn't exist
+        return "0.00"
     }
 }
-func isDirectory(_ fileURL: URL) -> Bool {
+
+private func isDirectory(_ fileURL: URL) -> Bool {
     var isDirectory: ObjCBool = false
     FileManager.default.fileExists(atPath: fileURL.path, isDirectory: &isDirectory)
     return isDirectory.boolValue

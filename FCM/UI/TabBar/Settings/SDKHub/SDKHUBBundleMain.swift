@@ -26,7 +26,8 @@ struct SDKDownload: View {
         .navigationBarTitleDisplayMode(.inline)
         .id(listid)
     }
-    private func download(_ sdk: String) {
+
+    private func download(_ sdk: String) -> Void {
         DispatchQueue.global(qos: .utility).async {
             ShowAlert(UIAlertController(title: "Downloading SDK", message: "", preferredStyle: .alert))
             cfolder(atPath: "\(global_sdkpath)")
@@ -45,7 +46,8 @@ struct SDKDownload: View {
             DismissAlert()
         }
     }
-    private func remove(_ sdk: String) {
+
+    private func remove(_ sdk: String) -> Void {
         DispatchQueue.global(qos: .utility).async {
             ShowAlert(UIAlertController(title: "Removing SDK", message: "", preferredStyle: .alert))
             // some people might have downloaded SDKs in the past that got unnecessarily stored as root

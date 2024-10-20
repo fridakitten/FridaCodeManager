@@ -23,7 +23,7 @@
 import SwiftUI
 
 extension Binding where Value: Equatable {
-    func trampolineIfNeeded(to: Value, via: Value) {
+    private func trampolineIfNeeded(to: Value, via: Value) {
         if wrappedValue == to {
             wrappedValue = via
             DispatchQueue.main.asyncAfter(deadline: .now()+0.2, execute: {
@@ -36,7 +36,7 @@ extension Binding where Value: Equatable {
 }
 
 extension Binding where Value == Bool {
-    func trampolineIfNeeded(to: Value) {
+    private func trampolineIfNeeded(to: Value) {
         trampolineIfNeeded(to: to, via: !to)
     }
 }

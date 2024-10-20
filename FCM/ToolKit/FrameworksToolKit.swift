@@ -22,7 +22,7 @@
 
 import Foundation
 
-func findFrameworks(in directory: URL, SDKPath: String, ignorePaths: [String] = []) -> [String] {
+public func findFrameworks(in directory: URL, SDKPath: String, ignorePaths: [String] = []) -> [String] {
     var frameworksSet = Set<String>()
     
     let fileManager = FileManager.default
@@ -94,7 +94,7 @@ private func shouldIgnore(fileURL: URL, ignoreSet: Set<String>, fileManager: Fil
     return false
 }
 
-func extractFrameworks(from contents: String) -> Set<String> {
+private func extractFrameworks(from contents: String) -> Set<String> {
     let pattern = "#(?:import|include)\\s+<([^/]+)/[^>]+>"
     do {
         let regex = try NSRegularExpression(pattern: pattern, options: [])

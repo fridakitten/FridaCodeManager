@@ -24,13 +24,14 @@ import SwiftUI
 
 struct Settings: View {
     @AppStorage("sdk") var sdk: String = "iPhoneOS15.6.sdk"
-    @State var fontstate: CGFloat = {
+    @State private var fontstate: CGFloat = {
         if let savedFont = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
             return savedFont
         } else {
             return 13.0
         }
     }()
+
     var body: some View {
         NavigationView {
             List {
@@ -66,32 +67,6 @@ struct Settings: View {
     }
 }
 
-struct textset: View {
-    @Binding var bsl: Bool
-    @Binding var fname: String
-    @Binding var fontstate: CGFloat
-    var body: some View {
-        List {
-            Section(header: Text("Font")) {
-                FontPickerView(fname: $fname)
-                Stepper("Font Size: \(String(Int(fontstate)))", value: $fontstate, in: 0...20)
-                .onChange(of: fontstate) { _ in
-                    save()
-                }
-            }
-            Section(header: Text("Appearance")) {
-                Toggle("Seperation Layer", isOn: $bsl)
-            }
-        }
-        .listStyle(InsetGroupedListStyle())
-        .navigationTitle("Code Editor")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-    func save() {
-        UserDefaults.standard.set(fontstate, forKey: "savedfont")
-    }
-}
-
 struct FontPickerView: View {
     @State private var selectedFontIndex = 0
     @Binding var fname: String
@@ -121,46 +96,5 @@ struct AuthorSettings: View {
         }
         .navigationTitle("Author")
         .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct Cleaner: View {
-    var body: some View {
-       List {
-           Button(action: {
-               clean(1)
-           }) {
-               Label("Clean Module Cache", systemImage: "trash.fill")
-           }
-           Button(action: {
-               clean(2)
-           }) {
-               Label("Clean Temporary Data", systemImage: "trash.fill")
-           }
-       }
-       .navigationTitle("Cleaner")
-       .navigationBarTitleDisplayMode(.inline)
-    }
-    private func clean(_ arg: Int) {
-        DispatchQueue.global(qos: .utility).async {
-            ShowAlert(UIAlertController(title: "Cleaning", message: "", preferredStyle: .alert))
-                let path: String = {
-                    switch(arg) {
-                        case 1:
-                            return "\(global_documents)/../.cache"
-                        case 2:
-                            return "\(global_documents)/../tmp"
-                        default:
-                            return "\(global_documents)/../.cache"
-                    }
-                }()
-                if FileManager.default.fileExists(atPath: path) {
-                    do {
-                        try adv_rm( atPath: path)
-                    } catch {
-                    }
-                }
-            DismissAlert()
-        }
     }
 }

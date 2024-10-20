@@ -94,8 +94,10 @@ struct ProjectView: View {
                                 Section {
                                     Button(role: .destructive, action: {
                                         projname = "\(global_documents)/\(Project.Name)"
-                                        projrname = Project.Executable
-                                        Removal = true
+                                        projrname = "Remove \"\(Project.Executable)\"?"
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        Removal = true
+    }
                                     }){
                                         Label("Remove", systemImage: "trash")
                                     }
@@ -121,17 +123,29 @@ struct ProjectView: View {
             }
             .sheet(isPresented: $Removal) {
                 BottomPopupView {
-                   RemovalPopup(isPresented: $Removal, name: $projrname, path: $projname)
+                    POBHeader(title: $projrname)
+                    Spacer().frame(height: 10)
+                    POButtonBar(cancel: Cancel_trigger, confirm: Removal_trigger)
                 }
                 .background(BackgroundClearView())
-                .onDisappear {
-                    hello = UUID()
-                }
+                .edgesIgnoringSafeArea([.bottom])
 
             }
         }
     }
-    func share(url: URL) {
+
+    private func Removal_trigger() -> Void {
+        haptfeedback(1)
+        rm("\(projname)")
+        hello = UUID()
+        Removal = false
+    }
+
+    private func Cancel_trigger() -> Void {
+        Removal = false
+    }
+
+    private func share(url: URL) -> Void {
         let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
 
         DispatchQueue.main.async {

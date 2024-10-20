@@ -39,20 +39,10 @@ struct FontSettingsBundleMain: View {
     @State private var color6: Color = Color.black
     @State private var color7: Color = Color.black
     @State private var color8: Color = Color.black
-
-    @State var font: CGFloat = 0.0
-
-    @State private var code: String = """
-struct ContentView: View {
-    var body: some View {
-        Text("Hewwo :3")
-    }
-}
-
-// nya mrrrp
-"""
-
+    @State private var font: CGFloat = 0.0
+    @State private var code: String = "struct ContentView: View {\n    var body: some View {\n        Text(\"Hello World\")\n    }\n}\n\n// some comment"
     @State private var identifier: UUID = UUID()
+
     var body: some View {
             List {
                 CodeEditorPreview(text: $code, font: $font, suffix: "swift")
@@ -158,7 +148,8 @@ struct ContentView: View {
                 }()
             }
     }
-    func saveallcolor() {
+
+    private func saveallcolor() -> Void {
         saveColor("C1", color1)
         saveColor("C2", color2)
         saveColor("C3", color3)
@@ -170,7 +161,8 @@ struct ContentView: View {
     }
 }
 
-func resetlayout() {
+public func resetlayout() -> Void {
+    // resetting code editor color properties back to normal
     saveColor("C1", Color(UIColor(red: 1.0, green: 0.2, blue: 0.6, alpha: 1.0)))
     saveColor("C2", Color(UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0)))
     saveColor("C3", Color(UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0)))
@@ -179,7 +171,8 @@ func resetlayout() {
     saveColor("C6", Color(UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0)))
     saveColor("C7", Color.black)
     saveColor("C8", Color.black)
- 
+
+    // resseting code editors text special properties back to normal!
     UserDefaults.standard.set(13, forKey: "savedfont")
     UserDefaults.standard.set(true, forKey: "bsl")
     UserDefaults.standard.set(false, forKey: "fbold")

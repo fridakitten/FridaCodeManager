@@ -33,6 +33,15 @@ struct Home: View {
     @Binding var hellnah: UUID
     @Environment(\.presentationMode) private var presentationMode
 
+    @State var AppName: String = ""
+    @State var BundleID: String = ""
+
+    #if jailbreak
+    @State private var type = 1
+    #elseif trollstore || stock
+    @State private var type = 2
+    #endif
+
     var body: some View {
         NavigationView {
             List {
@@ -46,10 +55,25 @@ struct Home: View {
             .fileImporter(isPresented: $fileImporter, allowedContentTypes: [.project], onCompletion: handleFileImport)
             .sheet(isPresented: $showProj) {
                 BottomPopupView {
-                    ProjPopupView(isPresented: $showProj, AppName: $app, BundleID: $bundleid, hellnah: $hellnah)
+                    POHeader(title: "Create Project")
+                    POTextField(title: "Application Name", content: $AppName)
+                    POTextField(title: "Bundle Identifier", content: $BundleID)
+                    POSchemePicker(function: createProject_trigger, type: $type)
                 }
                 .background(BackgroundClearView())
+                .edgesIgnoringSafeArea([.bottom])
             }
+        }
+    }
+
+    private func createProject_trigger() -> Void {
+        if AppName != "", BundleID != "" {
+            haptfeedback(1)
+            showProj = false
+            MakeApplicationProject(AppName, BundleID, type: type)
+            (AppName, BundleID, hellnah) = ("", "", UUID())
+        } else {
+            haptfeedback(2)
         }
     }
 
@@ -116,7 +140,7 @@ struct Home: View {
         }
     }
 
-    private func handleFileImport(result: Result<URL, Error>) {
+    private func handleFileImport(result: Result<URL, Error>) -> Void {
         switch result {
         case .success(let fileURL):
             importProj(target: fileURL.path)
