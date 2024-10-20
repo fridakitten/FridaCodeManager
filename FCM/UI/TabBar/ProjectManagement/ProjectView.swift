@@ -166,12 +166,10 @@ struct ProjectView: View {
 struct CodeSpace: View {
     @State var ProjectInfo: Project
     @State var buildv: Bool = false
-    @State var fcreate: Bool = false
-    @State var builda: Bool = true
     @Binding var pathstate: String
     @Binding var action: Int
     var body: some View {
-        FileList(directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, builda: builda, actpath: $pathstate, action: $action)
+        FileList(directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
                 buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
             }

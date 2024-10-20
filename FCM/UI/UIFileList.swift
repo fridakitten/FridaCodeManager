@@ -34,7 +34,6 @@ private enum ActiveSheet: Identifiable {
 }
 
 struct FileProperty {
-    // properties of a FileObject
     var symbol: String
     var color: Color
     var size: Int
@@ -71,11 +70,8 @@ struct FileList: View {
     @State private var files: [URL] = []
     @State private var quar: Bool = false
     @State private var selpath: String = ""
-    @State private var selfile: String = ""
-    @State private var selname: String = ""
     @State private var fbool: Bool = false
     var buildv: Binding<Bool>?
-    var builda: Bool
     @Binding var actpath: String
     @Binding var action: Int
 
@@ -87,7 +83,7 @@ struct FileList: View {
                 ForEach(files, id: \.self) { item in
                     HStack {
                         if isDirectory(item) {
-                            NavigationLink(destination: FileList(directoryPath: item, buildv: nil, builda: false, actpath: $actpath, action: $action)) {
+                            NavigationLink(destination: FileList(directoryPath: item, buildv: nil, actpath: $actpath, action: $action)) {
                                 HStack {
                                     Image(systemName: "folder.fill")
                                         .foregroundColor(.primary)
@@ -108,12 +104,14 @@ struct FileList: View {
                         }
                     }
                     .contextMenu {
-                        Button(action: {
-                            selfile = item.lastPathComponent
-                            potextfield = selfile
-                            activeSheet = .rename
-                        }) {
-                            Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
+                        Section {
+                            Button(action: {
+                                selpath = item.lastPathComponent
+                                potextfield = selpath
+                                activeSheet = .rename
+                            }) {
+                                Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
+                            }
                         }
                         Section {
                             Button(action: {
@@ -131,7 +129,7 @@ struct FileList: View {
                         }
                         Section {
                             Button(role: .destructive, action: {
-                                selfile = item.path
+                                selpath = item.path
                                 activeSheet = .remove
                             }) {
                                 Label("Remove", systemImage: "trash")
@@ -150,12 +148,10 @@ struct FileList: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
-                    if builda == true {
+                    if let buildv = buildv {
                         Section {
                             Button(action: {
-                                if let buildv = buildv {
-                                    buildv.wrappedValue = true
-                                }
+                                buildv.wrappedValue = true
                             }) {
                                 Label("Build", systemImage: "play.fill")
                             }
@@ -244,9 +240,9 @@ struct FileList: View {
                     default:
                         break
                 }
-                cfile(atPath: "\(directoryPath.path)/potextfield", withContent: content)
+                cfile(atPath: "\(directoryPath.path)/\(potextfield)", withContent: content)
             } else {
-                cfolder(atPath: "\(directoryPath.path)/potextfield")
+                cfolder(atPath: "\(directoryPath.path)/\(potextfield)")
             }
             haptfeedback(1)
             activeSheet = nil
@@ -257,7 +253,7 @@ struct FileList: View {
 
     private func rename_selected() -> Void {
         if !potextfield.isEmpty && potextfield.rangeOfCharacter(from: CharacterSet(charactersIn: String(invalidFS))) == nil {
-            _ = mv("\(directoryPath.path)/\(selfile)", "\(directoryPath.path)/\(potextfield)")
+            _ = mv("\(directoryPath.path)/\(selpath)", "\(directoryPath.path)/\(potextfield)")
             haptfeedback(1)
             activeSheet = nil
         } else {
@@ -266,7 +262,7 @@ struct FileList: View {
     }
 
     private func remove_selected() -> Void {
-        _ = rm(selfile)
+        _ = rm(selpath)
         haptfeedback(1)
         activeSheet = nil
     }
@@ -287,27 +283,51 @@ struct FileList: View {
 
     private func loadFiles() -> Void {
         let fileManager = FileManager.default
-        do {
-            let items = try fileManager.contentsOfDirectory(at: directoryPath, includingPropertiesForKeys: nil)
-            let fileURLs = items.filter { url in
-            !isDirectory(url) && url.lastPathComponent != "DontTouchMe.plist"}
-            let folderURLs = items.filter { isDirectory($0) }
-            files = folderURLs + fileURLs
-        } catch {
-            print("Error loading files: \(error.localizedDescription)")
-        }
-    }
 
-    private func deleteItems(at offsets: IndexSet) -> Void {
-        for index in offsets {
-            let itemURL = (files)[index]
+        DispatchQueue.global(qos: .background).async {
             do {
-                try FileManager.default.removeItem(at: itemURL)
+                let items = try fileManager.contentsOfDirectory(at: self.directoryPath, includingPropertiesForKeys: nil)
+
+                DispatchQueue.main.async {
+                    self.files.removeAll { file in
+                        !fileManager.fileExists(atPath: file.path)
+                    }
+                }
+
+                for item in items {
+                    if isDirectory(item) {
+                        DispatchQueue.main.async {
+                            if !self.files.contains(item) {
+                                withAnimation {
+                                    self.files.append(item)
+                                }
+                            }
+                        }
+                        usleep(500)
+                    }
+                }
+
+                usleep(500)
+
+                for item in items {
+                    if !isDirectory(item) && item.lastPathComponent != "DontTouchMe.plist" {
+                        DispatchQueue.main.async {
+                            if !self.files.contains(item) {
+                                withAnimation {
+                                    self.files.append(item)
+                                }
+                            }
+                        }
+                        usleep(500)
+                    }
+                }
+
             } catch {
-                print("Error deleting item: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                   print("Error loading files: \(error.localizedDescription)")
+                }
             }
         }
-        loadFiles()
     }
 }
 
@@ -399,10 +419,9 @@ private func gfilesize(atPath filePath: String) -> String {
     }
 }
 
-private func isDirectory(_ fileURL: URL) -> Bool {
-    var isDirectory: ObjCBool = false
-    FileManager.default.fileExists(atPath: fileURL.path, isDirectory: &isDirectory)
-    return isDirectory.boolValue
+private func isDirectory(_ url: URL) -> Bool {
+    var isDir: ObjCBool = false
+    return FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir) && isDir.boolValue
 }
 
 private func gProperty(_ fileURL: URL) -> FileProperty {
