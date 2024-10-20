@@ -37,5 +37,5 @@ let global_sdkpath = "\(global_container)/.sdk"
 let global_sdkpath = "\(global_documents)/.sdk"
 #endif
 
-let changelog: String = "v1.5.6 \"Fixes\"\n\nApp\n-> Fixed Entitlements\n-> improved Info.plist of FCM\n-> fixed the pfp loader of the credits\n\nSeansBuild\n-> Using libproc to kill apps"
-let global_version: String = "v1.5.6"
+let changelog: String = "v1.6 \"Improvements & Features\"\n\nApp\n-> fixed some Images in Credits not loading\n-> fixed Popups sizing\n-> improved the entire codebase\n\nFileManager\n-> removed useless implementations\n-> threaded and animated file loading\n\nStats\n-> fixed breaking to load the stats"
+let global_version: String = "v1.6"
