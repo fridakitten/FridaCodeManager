@@ -33,6 +33,38 @@ private enum ActiveSheet: Identifiable {
     }
 }
 
+struct FileProperty {
+    // properties of a FileObject
+    var symbol: String
+    var color: Color
+    var size: Int
+}
+
+struct FileObject: View {
+    var properties: FileProperty
+    var item: URL
+    var body: some View {
+        HStack {
+            HStack {
+                ZStack {
+                    Image(systemName: "doc.fill")
+                        .foregroundColor(properties.color)
+                    VStack {
+                        Spacer().frame(height: 8)
+                        Text(properties.symbol)
+                            .font(.system(size: CGFloat(properties.size), weight: .bold))
+                            .foregroundColor(Color(.systemBackground))
+                    }
+                }
+                Text(item.lastPathComponent)
+                Spacer()
+                    Text("\(gfilesize(atPath: item.path)) KB")
+                        .font(.system(size: 10, weight: .semibold))
+            }
+        }
+    }
+}
+
 struct FileList: View {
     @State private var activeSheet: ActiveSheet?
     var directoryPath: URL
@@ -71,24 +103,7 @@ struct FileList: View {
                                     fbool = true
                                 }
                             }) {
-                                HStack {
-                                    HStack {
-                                        ZStack {
-                                            Image(systemName: "doc.fill")
-                                                .foregroundColor(gcolor(item: item.lastPathComponent))
-                                            VStack {
-                                                Spacer().frame(height: 8)
-                                                Text(gsymbol(item: item.lastPathComponent))
-                                                    .font(.system(size: CGFloat(gsize(item: item.lastPathComponent)), weight: .bold))
-                                                    .foregroundColor(Color(.systemBackground))
-                                            }
-                                        }
-                                        Text(item.lastPathComponent)
-                                        Spacer()
-                                        Text("\(gfilesize(atPath: item.path)) KB")
-                                            .font(.system(size: 10, weight: .semibold))
-                                    }
-                                }
+                                FileObject(properties: gProperty(item), item: item)
                             }
                         }
                     }
@@ -260,52 +275,6 @@ struct FileList: View {
         activeSheet = nil
     }
 
-    private func gsymbol(item: String) -> String {
-        let suffix = gsuffix(from: item)
-        switch(suffix) {
-            case "m", "h", "c", "mm", "cpp", "api":
-                return ".\(suffix)"
-            default:
-                return ""
-        }
-    }
-
-    private func gcolor(item: String) -> Color {
-        let suffix = gsuffix(from: item)
-        switch(suffix) {
-            case "m":
-                return Color.orange
-            case "c":
-                return Color.blue
-            case "mm":
-                return Color.yellow
-            case "cpp":
-                return Color.green
-            case "swift":
-                return Color.red
-            case "h":
-                return Color.secondary
-            case "api":
-                return Color.purple
-            default:
-                return Color.primary
-        }
-    }
-
-    private func gsize(item: String) -> Int {
-        let suffix = gsuffix(from: item)
-        switch(suffix) {
-            case "m", "h", "c":
-                return 8
-            case "mm":
-                return 5
-            case "api", "cpp":
-                return 4
-            default:
-                return 0
-        }
-    }
-
     private func gtypo(item: String) -> Bool {
         let suffix = gsuffix(from: item)
         switch(suffix) {
@@ -434,4 +403,42 @@ private func isDirectory(_ fileURL: URL) -> Bool {
     var isDirectory: ObjCBool = false
     FileManager.default.fileExists(atPath: fileURL.path, isDirectory: &isDirectory)
     return isDirectory.boolValue
+}
+
+private func gProperty(_ fileURL: URL) -> FileProperty {
+    var property: FileProperty = FileProperty(symbol: "", color: Color.black, size: 0)
+
+    let suffix = gsuffix(from: fileURL.path)
+    switch(suffix) {
+        case "m":
+            property.symbol = "m"
+            property.color = Color.orange
+            property.size = 8
+        case "c":
+            property.symbol = "c"
+            property.color = Color.blue
+            property.size = 8
+        case "mm":
+            property.symbol = "mm"
+            property.color = Color.yellow
+            property.size = 5
+        case "cpp":
+            property.symbol = "cpp"
+            property.color = Color.green
+            property.size = 4
+        case "swift":
+            property.color = Color.red
+        case "h":
+            property.symbol = "h"
+            property.color = Color.secondary
+            property.size = 8
+        case "api":
+            property.symbol = "api"
+            property.color = Color.purple
+            property.size = 4
+        default:
+            property.color = Color.primary
+    }
+
+    return property
 }
