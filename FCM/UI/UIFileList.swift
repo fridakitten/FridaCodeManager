@@ -425,6 +425,18 @@ private func bindLoadFiles(directoryPath: URL, files: Binding<[URL]>) -> Void {
         do {
             let items = try fileManager.contentsOfDirectory(at: directoryPath, includingPropertiesForKeys: nil)
 
+            var fileGroups: [String: [URL]] = [:]
+
+            for item in items {
+                let fileExtension = item.pathExtension.lowercased()
+                if !isDirectory(item) && item.lastPathComponent != "DontTouchMe.plist" {
+                    if fileGroups[fileExtension] == nil {
+                        fileGroups[fileExtension] = []
+                    }
+                    fileGroups[fileExtension]?.append(item)
+                }
+            }
+
             DispatchQueue.main.async {
                 withAnimation {
                     files.wrappedValue.removeAll { file in
@@ -446,20 +458,19 @@ private func bindLoadFiles(directoryPath: URL, files: Binding<[URL]>) -> Void {
                 }
             }
 
-            usleep(500)
-
-            for item in items {
-                if !isDirectory(item) && item.lastPathComponent != "DontTouchMe.plist" {
+            for (fileExtension, groupedFiles) in fileGroups.sorted(by: { $0.key < $1.key }) {
+                for file in groupedFiles {
                     DispatchQueue.main.async {
-                        if !files.wrappedValue.contains(item) {
+                        if !files.wrappedValue.contains(file) {
                             withAnimation {
-                                files.wrappedValue.append(item)
+                                files.wrappedValue.append(file)
                             }
                         }
                     }
                     usleep(500)
                 }
             }
+
         } catch {
             DispatchQueue.main.async {
                 print("Error loading files: \(error.localizedDescription)")
