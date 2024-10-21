@@ -202,11 +202,12 @@ struct Appeareance: View {
 
 struct asksdk: View {
     @State var projpath: String
-    @State var sdk: String = ""
+    @State private var sdk: String = ""
+    @State private var isActive: Bool = false
     var body: some View {
         List {
             Text("\(sdk)")
-            NavigationLink(destination: SDKList(directoryPath: URL(fileURLWithPath: global_sdkpath) ,sdk: $sdk)) {
+            NavigationLink(destination: SDKList(directoryPath: URL(fileURLWithPath: global_sdkpath) ,sdk: $sdk, isActive: $isActive), isActive: $isActive) {
                 Text("Change")
             }
         }

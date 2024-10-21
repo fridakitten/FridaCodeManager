@@ -1,5 +1,4 @@
- /* 
- Settings.swift 
+ /* Settings.swift
 
  Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
  Copyright (C) 2024 fridakitten 
@@ -31,12 +30,13 @@ struct Settings: View {
             return 13.0
         }
     }()
+    @State private var isActive: Bool = false
 
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("default sdk")) {
-                    NavigationLink(destination: SDKList(directoryPath: URL(fileURLWithPath: global_sdkpath) ,sdk: $sdk)) {
+                    NavigationLink(destination: SDKList(directoryPath: URL(fileURLWithPath: global_sdkpath) ,sdk: $sdk, isActive: $isActive), isActive: $isActive) {
                         Text(sdk)
                     }
                 }

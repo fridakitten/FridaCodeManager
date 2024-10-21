@@ -321,12 +321,14 @@ struct SDKList: View {
     @State private var files: [URL] = []
     @State var directoryPath: URL
     @Binding var sdk: String
+    @Binding var isActive: Bool
     var body: some View {
         List {
             Section {
                 ForEach(files, id: \.self) { folder in
                     Button( action: {
                         sdk = folder.lastPathComponent
+                        isActive = false
                     }){
                         HStack {
                             Image(systemName: "sdcard.fill")
