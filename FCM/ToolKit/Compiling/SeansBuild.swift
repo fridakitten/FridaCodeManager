@@ -22,6 +22,7 @@
 
 import Foundation
 import SwiftUI
+import Darwin
 
 func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ progress: Binding<Double>?) -> Int {
     let info: [String] = ["\(ProjectInfo.ProjectPath)/Payload","\(ProjectInfo.ProjectPath)/Payload/\(ProjectInfo.Executable).app","\(ProjectInfo.ProjectPath)/Resources","\(global_sdkpath)/\(ProjectInfo.SDK)","\(ProjectInfo.ProjectPath)/clang","\(ProjectInfo.ProjectPath)/bridge.h","\(ProjectInfo.ProjectPath)/entitlements.plist","\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
@@ -198,9 +199,6 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     _ = rm(info[4])
     #endif
     if erase {
-        #if !stock
-        killTaskWithBundleID(ProjectInfo.BundleID)
-        #endif
         _ = rm("\(ProjectInfo.ProjectPath)/ts.ipa")
     }
     #if !stock

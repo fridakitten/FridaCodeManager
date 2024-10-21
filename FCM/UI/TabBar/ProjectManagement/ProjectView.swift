@@ -245,9 +245,9 @@ struct buildView: View {
                 #endif
                 DispatchQueue.main.async {
                     if status == 0 {
-                        #if !stock
+                        #if jailbreak
                         OpenApp(ProjectInfo.BundleID)
-                        #else
+                        #elseif stock
                         print("[*] you have to export the app!\n")
                         #endif
                     }

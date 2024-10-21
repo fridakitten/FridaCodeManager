@@ -1,10 +1,12 @@
 #ifndef FCM_H
 #define FCM_H
+
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <sys/utsname.h>
 #import <sys/sysctl.h>
 #import <mach/mach.h>
+#include <unistd.h>
 
 /**
  * @brief Functions to get Information about the darwin host machine
@@ -23,11 +25,5 @@ NSString *gcpu();
  *
  */
 NSString* contgen(void);
-
-/**
- * @brief This function is to kill processes with their bundle identifier
- *
- */
-void killTaskWithBundleID(NSString *bundleID);
 
 #endif // FCM_H
