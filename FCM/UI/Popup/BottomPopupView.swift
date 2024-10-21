@@ -52,9 +52,9 @@ struct BottomPopupView<Content: View>: View {
                             .background(.quaternary)
                     }
                     .background(Color(.systemBackground))
-                    .cornerRadius(radius: 16, corners: [.topLeft, .topRight])
-                    .cornerRadius(radius: corner_addition, corners: [.bottomLeft, .bottomRight])
-                    .offset(y: isKeyboardVisible ? -keyboardHeight : 0)
+                    .cornerRadius(corner_addition)
+                    .frame(width: UIScreen.main.bounds.width - corner_addition * 2)
+                    .offset(x: corner_addition, y: isKeyboardVisible ? -keyboardHeight : 0)
                     .animation(.easeInOut, value: keyboardHeight)
             }
             .edgesIgnoringSafeArea([.bottom])
