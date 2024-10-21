@@ -26,8 +26,6 @@ import UniformTypeIdentifiers
 struct Home: View {
     @State private var fileImporter = false
     @State private var showProj = false
-    @State private var app = ""
-    @State private var bundleid = ""
     @State private var about = false
     @State private var hello = UUID()
     @Binding var hellnah: UUID
@@ -94,8 +92,9 @@ struct Home: View {
     private var projectButtonsSection: some View {
         Section {
             Button(action: {
+                AppName = ""
+                BundleID = ""
                 showProj = true
-                hellnah = UUID()
             }) {
                 listItem(label: "Create Project", systemImageName: "+", text: "Creates a FCM Project")
             }
