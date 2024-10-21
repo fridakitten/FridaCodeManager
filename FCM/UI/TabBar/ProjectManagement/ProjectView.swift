@@ -28,10 +28,6 @@ struct ProjectView: View {
     @State private var Removal: Bool = false
     @State private var projname: String = ""
     @State private var projrname: String = ""
-    @State private var ql: Bool = false
-    @State private var qls: String = ""
-    @State private var building: Bool = false
-    @State private var current: String = ""
     @State private var pathstate: String = ""
     @State private var action: Int = 0
     var body: some View {
@@ -109,10 +105,6 @@ struct ProjectView: View {
                     }
                 }
             }
-            .alert(isPresented: $building) {
-                Alert(title: Text(NSLocalizedString("Building \(current)", comment: "")),
-                      dismissButton: .none)
-            }
             .id(hello)
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Projects")
@@ -187,7 +179,6 @@ struct ProjectView: View {
     }
 }
 
-//Codespace - Is the View with the Project Files and the Build abilities
 struct CodeSpace: View {
     @State var ProjectInfo: Project
     @State var buildv: Bool = false
@@ -204,8 +195,8 @@ struct CodeSpace: View {
 struct buildView: View {
     @State var ProjectInfo: Project
     @Binding var buildv: Bool
-    @State var compiling: Bool = true
-    @State var status: String = ""
+    @State private var compiling: Bool = true
+    @State private var status: String = ""
     @State private var progress = 0.0
     @State private var Log: [String] = []
     var body: some View {
