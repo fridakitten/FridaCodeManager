@@ -34,43 +34,50 @@ import Foundation
 import UIKit
 
 func grule(_ isaythis: String) -> [HighlightRule] {
+    let color1: UIColor = UIColor(loadColor("C1"))
+    let color2: UIColor = UIColor(loadColor("C2"))
+    let color3: UIColor = UIColor(loadColor("C3"))
+    let color4: UIColor = UIColor(loadColor("C4"))
+    let color5: UIColor = UIColor(loadColor("C5"))
+    let color6: UIColor = UIColor(loadColor("C6"))
+
     switch(isaythis) {
         case "swift":
             return [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(let|var|struct|some|import|private|class|nil|return|func|override)\\b", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C1")))
+                    TextFormattingRule(key: .foregroundColor, value: color1)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\b(let|var|struct|func|class)\\s)\\w+", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C2")))
+                    TextFormattingRule(key: .foregroundColor, value: color2)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b\\w+(?=\\s*(\\(|\\{))", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C2")))
+                    TextFormattingRule(key: .foregroundColor, value: color2)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "@\\w+[^()]", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C3")))
+                    TextFormattingRule(key: .foregroundColor, value: color3)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b((Int|UInt|Float)(|8|16|32|64)?|Double|Bool|Character|String|CGFloat|CGRect|CGPoint|Color|UIColor|\\w+_t)\\b", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C3")))
+                    TextFormattingRule(key: .foregroundColor, value: color3)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(-?\\d+(\\.\\d+)?|true|false)\\b", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C4")))
+                    TextFormattingRule(key: .foregroundColor, value: color4)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(//.*|\\/\\*[\\s\\S]*?\\*\\/)", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C5")))
+                    TextFormattingRule(key: .foregroundColor, value: color5)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<!\\/\\/)(\"(.*?)\")", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C6")))
+                    TextFormattingRule(key: .foregroundColor, value: color6)
                 ])
             ]
         case "c", "m", "cpp", "mm","h":
             return [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(struct|class|enum|nil|return)\\b", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C1")))
+                    TextFormattingRule(key: .foregroundColor, value: color1)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b\\w+(?=\\s*(\\(|\\{))", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C2")))
+                    TextFormattingRule(key: .foregroundColor, value: color2)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "@\\w+[^()]", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C3")))
+                    TextFormattingRule(key: .foregroundColor, value: color3)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(int|short|typedef|long|unsigned|const|float|double|BOOL|bool|char|NSString|CGFloat|CGRect|CGPoint|void|\\w+_t)\\b", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C3")))
+                    TextFormattingRule(key: .foregroundColor, value: color3)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(-?\\d+(\\.\\d+)?|true|false|YES|NO)\\b", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C4")))
+                    TextFormattingRule(key: .foregroundColor, value: color4)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(//.*|\\/\\*[\\s\\S]*?\\*\\/)", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C5")))
+                    TextFormattingRule(key: .foregroundColor, value: color5)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<!\\/\\/)(\"(.*?)\")", options: []), formattingRules: [
-                    TextFormattingRule(key: .foregroundColor, value: UIColor(loadColor("C6")))
+                    TextFormattingRule(key: .foregroundColor, value: color6)
                 ])
             ]
         case "html", "plist", "xml", "api","entitlements":
