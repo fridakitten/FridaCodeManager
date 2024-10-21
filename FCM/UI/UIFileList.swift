@@ -187,40 +187,26 @@ struct FileList: View {
             }
         }
         .sheet(item: $activeSheet) { sheet in
-            switch sheet {
-                case .create:
-                    BottomPopupView {
+            BottomPopupView {
+                switch sheet {
+                    case .create:
                         POHeader(title: "Create")
                         POTextField(title: "Filename", content: $potextfield)
                         POPicker(function: create_selected, title: "Type", items: [PickerItems(id: 0, name: "File"), PickerItems(id: 1, name: "Folder")], type: $type)
-                    }
-                    .background(BackgroundClearView())
-                    .edgesIgnoringSafeArea([.bottom])
-                    .onDisappear {
-                        bindLoadFiles(directoryPath: directoryPath, files: $files)
-                    }
-                case .rename:
-                    BottomPopupView {
+                    case .rename:
                         POHeader(title: "Rename")
                         POTextField(title: "Filename", content: $potextfield)
                         POButtonBar(cancel: dissmiss_sheet, confirm: rename_selected)
-                    }
-                    .background(BackgroundClearView())
-                    .edgesIgnoringSafeArea([.bottom])
-                    .onDisappear {
-                        bindLoadFiles(directoryPath: directoryPath, files: $files)
-                    }
-                case .remove:
-                    BottomPopupView {
+                    case .remove:
                         POBHeader(title: $poheader)
                         Spacer().frame(height: 10)
                         POButtonBar(cancel: dissmiss_sheet, confirm: remove_selected)
-                    }
-                    .background(BackgroundClearView())
-                    .edgesIgnoringSafeArea([.bottom])
-                    .onDisappear {
-                        bindLoadFiles(directoryPath: directoryPath, files: $files)
-                    }
+                }
+            }
+            .background(BackgroundClearView())
+            .edgesIgnoringSafeArea([.bottom])
+            .onDisappear {
+                bindLoadFiles(directoryPath: directoryPath, files: $files)
             }
         }
         .fullScreenCover(isPresented: $quar) {
@@ -291,6 +277,13 @@ struct FileList: View {
 struct ImageView: View {
     @Binding var imagePath: String
     @Binding var fbool: Bool
+
+    init(imagePath: Binding<String>, fbool: Binding<Bool>) {
+        _imagePath = imagePath
+        _fbool = fbool
+        UIInit(type: 1)
+    }
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -306,6 +299,7 @@ struct ImageView: View {
                 .navigationBarTitle("Image Viewer", displayMode: .inline)
                 .navigationBarItems(leading:
                     Button(action: {
+                        UIInit(type: 0)
                         fbool = false
                     }) {
                         Text("Close")
@@ -314,6 +308,7 @@ struct ImageView: View {
             }
         }
     }
+
     private func loadImage() -> UIImage {
         guard let image = UIImage(contentsOfFile: imagePath) else {
             return UIImage(systemName: "photo")!
@@ -328,7 +323,7 @@ struct SDKList: View {
     @Binding var sdk: String
     var body: some View {
         List {
-            Section() {
+            Section {
                 ForEach(files, id: \.self) { folder in
                     Button( action: {
                         sdk = folder.lastPathComponent

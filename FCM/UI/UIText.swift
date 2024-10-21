@@ -38,11 +38,7 @@ struct CodeEditorView: View {
     init(quar: Binding<Bool>,filePath: Binding<String>) {
         _quar = quar
         _filePath = filePath
-        let navigationBarAppearance = UINavigationBarAppearance()
-        navigationBarAppearance.configureWithDefaultBackground()
-        UINavigationBar.appearance().standardAppearance = navigationBarAppearance
-        UINavigationBar.appearance().compactAppearance = navigationBarAppearance
-        UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
+        UIInit(type: 1)
     }
     var body: some View {
         NavigationView {
@@ -54,18 +50,7 @@ struct CodeEditorView: View {
             }
             .navigationBarItems(leading:
                 Button("Close") {
-                    let navigationBarAppearance = UINavigationBarAppearance()
-                    navigationBarAppearance.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.9)
-                    let titleAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-                    navigationBarAppearance.titleTextAttributes = titleAttributes
-                    let buttonAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-                    navigationBarAppearance.buttonAppearance.normal.titleTextAttributes = buttonAttributes
-                    let backItemAppearance = UIBarButtonItemAppearance()
-                    backItemAppearance.normal.titleTextAttributes = [.foregroundColor : UIColor.label]
-                    navigationBarAppearance.backButtonAppearance = backItemAppearance
-                    UINavigationBar.appearance().standardAppearance = navigationBarAppearance
-                    UINavigationBar.appearance().compactAppearance = navigationBarAppearance
-                    UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
+                    UIInit(type: 0)
                     quar = false
                 }
                 .accentColor(.primary)
