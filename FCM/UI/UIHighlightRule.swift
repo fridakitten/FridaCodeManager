@@ -23,16 +23,16 @@
 import SwiftUI
 import UIKit
 
-public typealias SystemColorAlias = UIColor
-public typealias SymbolicTraits = UIFontDescriptor.SymbolicTraits
-public typealias SystemTextView = UITextView
-public typealias SystemScrollView = UIScrollView
+typealias SystemColorAlias = UIColor
+typealias SymbolicTraits = UIFontDescriptor.SymbolicTraits
+typealias SystemTextView = UITextView
+typealias SystemScrollView = UIScrollView
 
 let defaultEditorFont = UIFont.preferredFont(forTextStyle: .body)
 let defaultEditorTextColor = UIColor.label
 
-public struct TextFormattingRule {
-    public typealias AttributedKeyCallback = (String, Range<String.Index>) -> Any
+struct TextFormattingRule {
+    typealias AttributedKeyCallback = (String, Range<String.Index>) -> Any
 
     let key: NSAttributedString.Key?
     let calculateValue: AttributedKeyCallback?
@@ -40,15 +40,15 @@ public struct TextFormattingRule {
 
     // ------------------- convenience ------------------------
 
-    public init(key: NSAttributedString.Key, value: Any) {
+    init(key: NSAttributedString.Key, value: Any) {
         self.init(key: key, calculateValue: { _, _ in value }, fontTraits: [])
     }
 
-    public init(key: NSAttributedString.Key, calculateValue: @escaping AttributedKeyCallback) {
+    init(key: NSAttributedString.Key, calculateValue: @escaping AttributedKeyCallback) {
         self.init(key: key, calculateValue: calculateValue, fontTraits: [])
     }
 
-    public init(fontTraits: SymbolicTraits) {
+    init(fontTraits: SymbolicTraits) {
         self.init(key: nil, fontTraits: fontTraits)
     }
 
@@ -65,20 +65,20 @@ public struct TextFormattingRule {
     }
 }
 
-public struct HighlightRule {
+struct HighlightRule {
     let pattern: NSRegularExpression
 
     let formattingRules: [TextFormattingRule]
 
     // ------------------- convenience ------------------------
 
-    public init(pattern: NSRegularExpression, formattingRule: TextFormattingRule) {
+    init(pattern: NSRegularExpression, formattingRule: TextFormattingRule) {
         self.init(pattern: pattern, formattingRules: [formattingRule])
     }
 
     // ------------------ most powerful initializer ------------------
 
-    public init(pattern: NSRegularExpression, formattingRules: [TextFormattingRule]) {
+    init(pattern: NSRegularExpression, formattingRules: [TextFormattingRule]) {
         self.pattern = pattern
         self.formattingRules = formattingRules
     }
@@ -89,12 +89,12 @@ internal protocol HighlightingTextEditor {
     var highlightRules: [HighlightRule] { get }
 }
 
-public typealias OnSelectionChangeCallback = ([NSRange]) -> Void
-public typealias IntrospectCallback = (_ editor: HighlightedTextEditor.Internals) -> Void
-public typealias EmptyCallback = () -> Void
-public typealias OnCommitCallback = EmptyCallback
-public typealias OnEditingChangedCallback = EmptyCallback
-public typealias OnTextChangeCallback = (_ editorContent: String) -> Void
+typealias OnSelectionChangeCallback = ([NSRange]) -> Void
+typealias IntrospectCallback = (_ editor: HighlightedTextEditor.Internals) -> Void
+typealias EmptyCallback = () -> Void
+typealias OnCommitCallback = EmptyCallback
+typealias OnEditingChangedCallback = EmptyCallback
+typealias OnTextChangeCallback = (_ editorContent: String) -> Void
 
 extension HighlightingTextEditor {
     var placeholderFont: SystemColorAlias { SystemColorAlias() }

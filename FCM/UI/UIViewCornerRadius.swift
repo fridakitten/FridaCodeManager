@@ -18,15 +18,14 @@
 
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
-    
+ */
+
 import SwiftUI
 
 struct RoundedCornersShape: Shape {
-    
     let radius: CGFloat
     let corners: UIRectCorner
-    
+
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(roundedRect: rect,
                                 byRoundingCorners: corners,
@@ -36,7 +35,6 @@ struct RoundedCornersShape: Shape {
 }
 
 extension View {
-    
     func cornerRadius(radius: CGFloat, corners: UIRectCorner = .allCorners) -> some View {
         clipShape(RoundedCornersShape(radius: radius, corners: corners))
     }

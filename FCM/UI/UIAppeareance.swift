@@ -1,6 +1,6 @@
 import UIKit
 
-public func UIInit(type: Int) -> Void {
+func UIInit(type: Int) -> Void {
     switch type {
         case 0:
             let navigationBarAppearance = UINavigationBarAppearance()

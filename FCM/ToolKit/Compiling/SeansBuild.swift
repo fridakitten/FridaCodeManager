@@ -210,7 +210,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     #endif
 }
 
-func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_ tstat: String,_  tproc: Double) {
+private func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_ tstat: String,_  tproc: Double) -> Void {
     DispatchQueue.main.async {
         if let status = status, let progress = progress {
             status.wrappedValue = tstat
@@ -221,11 +221,9 @@ func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_ tstat: 
     }
 }
 
-func splitAndTrim(_ inputString: String) -> [String] {
-    // Split the input string by the delimiter ";"
+private func splitAndTrim(_ inputString: String) -> [String] {
     let parts = inputString.split(separator: ";")
     
-    // Trim whitespaces from each part and return the resulting array
     let trimmedParts = parts.map { $0.trimmingCharacters(in: .whitespaces) }
     
     return trimmedParts
@@ -242,4 +240,3 @@ func sethome(to newHome: String) {
     }
 }
 #endif
-

@@ -19,11 +19,6 @@
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
  */ 
-    
-//
-//SPARKCODE API
-//made by. Frida and SeanIsTethered
-//
 
 func api(_ text: String,_ Project:Project) -> ext {
     //api class

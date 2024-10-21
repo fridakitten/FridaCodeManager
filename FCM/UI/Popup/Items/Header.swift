@@ -1,9 +1,9 @@
 import SwiftUI
 
-public struct POHeader: View {
+struct POHeader: View {
     var title: String
 
-    public var body: some View {
+    var body: some View {
         HStack {
             Text(title)
                 .font(.system(size: 25, weight: .bold, design: .default))
@@ -13,10 +13,10 @@ public struct POHeader: View {
     }
 }
 
-public struct POBHeader: View {
+struct POBHeader: View {
     @Binding var title: String
 
-    public var body: some View {
+    var body: some View {
         HStack {
             Text(title)
                 .font(.system(size: 25, weight: .bold, design: .default))

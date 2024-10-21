@@ -33,7 +33,7 @@ private func obfuscatedSelector(_ selectorName: String) -> Selector? {
     return NSSelectorFromString(selectorName)
 }
 
-public func OpenApp(_ bundleID: String) -> Void {
+func OpenApp(_ bundleID: String) -> Void {
     guard let workspaceClass = obfuscatedClass("LSApplicationWorkspace") as? NSObject.Type else {
         print("Failed to find LSApplicationWorkspace")
         return
@@ -62,7 +62,7 @@ public func OpenApp(_ bundleID: String) -> Void {
 }
 #endif
 
-public func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore: [String]) -> [String] {
+func FindFilesStack(_ projectPath: String, _ fileExtensions: [String], _ ignore: [String]) -> [String] {
     do {
         let (fileExtensionsSet, ignoreSet, allFiles) = (Set(fileExtensions), Set(ignore), try FileManager.default.subpathsOfDirectory(atPath: projectPath))
 

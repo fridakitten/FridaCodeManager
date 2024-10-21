@@ -22,7 +22,7 @@
 
 import Foundation
 
-public func rplist(forKey key: String, plistPath: String) -> String? {
+func rplist(forKey key: String, plistPath: String) -> String? {
     guard let plistDict = NSDictionary(contentsOfFile: plistPath) as? [String: Any] else {
         print("Error reading plist file at \(plistPath)")
         return nil
@@ -36,7 +36,7 @@ public func rplist(forKey key: String, plistPath: String) -> String? {
     return value
 }
 
-public func wplist(value: Any, forKey key: String, plistPath: String) -> Int {
+func wplist(value: Any, forKey key: String, plistPath: String) -> Int {
     var plistDict = (NSDictionary(contentsOfFile: plistPath) as? [String: Any]) ?? [:]
     plistDict[key] = value
     
@@ -49,7 +49,7 @@ public func wplist(value: Any, forKey key: String, plistPath: String) -> Int {
     return 0
 }
 
-public func paeplist(aname arrayName: String, path plistPath: String) -> Bool {
+func paeplist(aname arrayName: String, path plistPath: String) -> Bool {
     guard let plistData = FileManager.default.contents(atPath: plistPath),
           let plistDictionary = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any],
           let _ = plistDictionary[arrayName] as? [Any] else {
@@ -59,7 +59,7 @@ public func paeplist(aname arrayName: String, path plistPath: String) -> Bool {
     return true
 }
 
-public func caplist(aname arrayName: String, path plistPath: String, arrayData: [Any]) -> Int {
+func caplist(aname arrayName: String, path plistPath: String, arrayData: [Any]) -> Int {
     var plistDictionary = (try? PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: plistPath)), options: [], format: nil) as? [String: Any]) ?? [:]
     
     plistDictionary[arrayName] = arrayData
@@ -75,7 +75,7 @@ public func caplist(aname arrayName: String, path plistPath: String, arrayData: 
     return 0
 }
 
-public func rmaplist(aname arrayName: String, path plistPath: String) -> Int {
+func rmaplist(aname arrayName: String, path plistPath: String) -> Int {
     guard var plistDictionary = try? PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: plistPath)), options: [], format: nil) as? [String: Any] else {
         print("Error reading plist file at \(plistPath)")
         return 2
@@ -94,7 +94,7 @@ public func rmaplist(aname arrayName: String, path plistPath: String) -> Int {
     return 0
 }
 
-public func aiaplist(item: Any, aname arrayName: String, path plistPath: String) -> Int {
+func aiaplist(item: Any, aname arrayName: String, path plistPath: String) -> Int {
     guard var plistDictionary = try? PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: plistPath)), options: [], format: nil) as? [String: Any],
           var targetArray = plistDictionary[arrayName] as? [Any] else {
         print("Error reading or finding array '\(arrayName)' in plist file at \(plistPath)")
@@ -115,7 +115,7 @@ public func aiaplist(item: Any, aname arrayName: String, path plistPath: String)
     return 0
 }
 
-public func rmplist(key: String, plistPath: String) -> Int {
+func rmplist(key: String, plistPath: String) -> Int {
     guard let dict = NSMutableDictionary(contentsOfFile: plistPath) else {
         print("Error: Unable to load plist file at \(plistPath)")
         return 2

@@ -128,3 +128,22 @@ func authorgen(file: String) -> String {
     let currentDate = Date()
     return "//\n// \(file)\n//\n// Created by \(author ?? "Anonym") on \(dateFormatter.string(from: currentDate))\n//\n \n"
 }
+
+func importProj(target: String) -> Void {
+    let v2uuid: String = "\(UUID())"
+    if FileManager.default.fileExists(atPath: target) {
+        if libzip_unzip(target, "\(global_container)/tmp/\(v2uuid)") != 0 {
+            return
+        }
+    } else {
+        return
+    }
+    cfolder(atPath: "\(global_container)/tmp/\(v2uuid)")
+    let content: [URL] = try! FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: "\(global_documents)/../tmp/\(v2uuid)"), includingPropertiesForKeys: nil)
+    let projpath: String = content[0].path
+    if FileManager.default.fileExists(atPath: "\(projpath)/Resources/DontTouchMe.plist") {
+        _ =  wplist(value: v2uuid, forKey: "ProjectName", plistPath: "\(projpath)/Resources/DontTouchMe.plist")
+        _ =  mv("\(projpath)", "\(global_documents)/\(v2uuid)")
+    }
+    _ = rm("\(global_container)/tmp/\(v2uuid)")
+}

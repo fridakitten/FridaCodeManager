@@ -22,7 +22,7 @@
 
 import Foundation
 
-public func findFrameworks(in directory: URL, SDKPath: String, ignorePaths: [String] = []) -> [String] {
+func findFrameworks(in directory: URL, SDKPath: String, ignorePaths: [String] = []) -> [String] {
     var frameworksSet = Set<String>()
     
     let fileManager = FileManager.default

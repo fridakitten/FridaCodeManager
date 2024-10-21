@@ -3,7 +3,7 @@ import UIKit
 let generator = UINotificationFeedbackGenerator()
 
 //Haptic Feedback
-public func haptfeedback(_ type: Int) -> Void {
+func haptfeedback(_ type: Int) -> Void {
     switch(type) {
         case 1:
             generator.notificationOccurred(.success)
@@ -17,7 +17,7 @@ public func haptfeedback(_ type: Int) -> Void {
 }
 
 //Alert Feedback
-public func ShowAlert(_ alert: UIAlertController) -> Void {
+func ShowAlert(_ alert: UIAlertController) -> Void {
     DispatchQueue.main.async {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let keyWindow = windowScene.keyWindow,
@@ -34,7 +34,7 @@ public func ShowAlert(_ alert: UIAlertController) -> Void {
     }
 }
 
-public func DismissAlert(completion: (() -> Void)? = nil) {
+func DismissAlert(completion: (() -> Void)? = nil) {
     DispatchQueue.main.async {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let keyWindow = windowScene.keyWindow,

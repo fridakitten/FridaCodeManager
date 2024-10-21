@@ -1,18 +1,18 @@
 import SwiftUI
 
-public struct PickerItems: Identifiable {
+struct PickerItems: Identifiable {
     public let id: Int
     public let name: String
 }
 
-public struct POPicker: View {
+struct POPicker: View {
     let function: () -> Void
 
     var title: String
     var items: [PickerItems]
     @Binding var type: Int
     
-    public var body: some View  {
+    var body: some View  {
         HStack {
             VStack {
                 HStack {

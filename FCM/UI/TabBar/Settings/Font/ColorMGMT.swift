@@ -28,6 +28,7 @@ func saveColor(_ key: String, _ color: Color) {
 
     UserDefaults.standard.set(result, forKey: key)
 }
+
 func loadColor(_ key: String) -> Color {
     var color: Color = Color.black
 
@@ -49,6 +50,7 @@ func colorToRGBString(_ color: Color) -> String {
     
     return "\(redInt),\(greenInt),\(blueInt)"
 }
+
 func RGBStringToColor(_ rgbString: String) -> Color {
     let components = rgbString.components(separatedBy: ",").compactMap { Int($0) }
     guard components.count == 3 else {

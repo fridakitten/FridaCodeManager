@@ -161,7 +161,7 @@ struct FontSettingsBundleMain: View {
     }
 }
 
-public func resetlayout() -> Void {
+func resetlayout() -> Void {
     // resetting code editor color properties back to normal
     saveColor("C1", Color(UIColor(red: 1.0, green: 0.2, blue: 0.6, alpha: 1.0)))
     saveColor("C2", Color(UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0)))

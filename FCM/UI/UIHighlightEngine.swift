@@ -24,9 +24,9 @@ import SwiftUI
 import UIKit
 import Foundation
 
-public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor {
+struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor {
 
-    public struct Internals {
+    struct Internals {
         public let textView: SystemTextView
         public let scrollView: SystemScrollView?
     }
@@ -43,7 +43,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     private(set) var onSelectionChange: OnSelectionChangeCallback?
     private(set) var introspect: IntrospectCallback?
 
-    public init(
+    init(
         text: Binding<String>,
         highlightRules: [HighlightRule]
     ) {
@@ -51,11 +51,11 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         self.highlightRules = highlightRules
     }
 
-    public func makeCoordinator() -> Coordinator {
+    func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
-    public func makeUIView(context: Context) -> UITextView {
+    func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
         textView.delegate = context.coordinator
         //updateTextViewModifiers(textView)
@@ -94,12 +94,12 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         textView.inputAccessoryView = toolbar
     }
 
-    public func buttonTapped() {
+    func buttonTapped() {
         setClipboardText("\t")
         pasteFromClipboard()
     }
 
-    public func updateUIView(_ uiView: UITextView, context: Context) {
+    func updateUIView(_ uiView: UITextView, context: Context) {
         guard !context.coordinator.updatingUIView else { return }
 
         let highlightedText = HighlightedTextEditor.getHighlightedText(
@@ -119,13 +119,13 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         uiView.selectedTextRange = context.coordinator.selectedTextRange
     }
 
-    private func runIntrospect(_ textView: UITextView) {
+    func runIntrospect(_ textView: UITextView) {
         guard let introspect = introspect else { return }
         let internals = Internals(textView: textView, scrollView: nil)
         introspect(internals)
     }
 
-    public final class Coordinator: NSObject, UITextViewDelegate {
+    final class Coordinator: NSObject, UITextViewDelegate {
         var parent: HighlightedTextEditor
         var selectedTextRange: UITextRange?
         var updatingUIView = false
@@ -134,7 +134,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
             self.parent = markdownEditorView
         }
 
-        public func textViewDidChange(_ textView: UITextView) {
+        func textViewDidChange(_ textView: UITextView) {
 
             guard textView.markedTextRange == nil else { return }
             
@@ -142,14 +142,14 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
             selectedTextRange = textView.selectedTextRange
         }
 
-        public func textViewDidChangeSelection(_ textView: UITextView) {
+        func textViewDidChangeSelection(_ textView: UITextView) {
             guard let onSelectionChange = parent.onSelectionChange, !updatingUIView else { gimmetheline(textView) ; return }
 
             selectedTextRange = textView.selectedTextRange
             onSelectionChange([textView.selectedRange])
         }
 
-        public func gimmetheline(_ textView: UITextView) {
+        func gimmetheline(_ textView: UITextView) {
             guard let selectedTextRange = textView.selectedTextRange else {
                 parent.lineNumberLabel.text = "Error"
                 return
@@ -171,7 +171,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     }
 }
 
-public extension HighlightedTextEditor {
+extension HighlightedTextEditor {
     func introspect(callback: @escaping IntrospectCallback) -> Self {
         var new = self
         new.introspect = callback

@@ -19,15 +19,6 @@
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
  */ 
-    
-
-// C1 UIColor(red: 1.0, green: 0.2, blue: 0.6, alpha: 1.0)
-// C2 UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0)
-// C3 UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0)
-// C4 UIColor(red: 0.7569, green: 0.2039, blue: 0.3882, alpha: 1.0)
-// C5 UIColor(red: 0, green: 0.4824, blue: 0.9098, alpha: 1.0)
-// C6 UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0)
-
 
 import SwiftUI
 import Foundation

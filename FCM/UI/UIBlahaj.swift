@@ -6,7 +6,7 @@
  
 import UIKit
 
-public func pasteFromClipboard() -> Void {
+func pasteFromClipboard() -> Void {
     let pasteboard = UIPasteboard.general
     
     guard let clipboardText = pasteboard.string else {
@@ -22,7 +22,7 @@ public func pasteFromClipboard() -> Void {
     }
 }
 
-public func setClipboardText(_ text: String) {
+func setClipboardText(_ text: String) {
     let pasteboard = UIPasteboard.general
     
     pasteboard.string = text

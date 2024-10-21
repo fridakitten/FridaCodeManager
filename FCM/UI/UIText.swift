@@ -1,25 +1,25 @@
- /* 
- UIText.swift 
+ /*
+ UIText.swift
 
- Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
- Copyright (C) 2024 fridakitten 
+ Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
+ Copyright (C) 2024 fridakitten
 
- This file is part of FridaCodeManager. 
+ This file is part of FridaCodeManager.
 
- FridaCodeManager is free software: you can redistribute it and/or modify 
- it under the terms of the GNU General Public License as published by 
- the Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version. 
+ FridaCodeManager is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
  FridaCodeManager is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License 
- along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
-    
+ You should have received a copy of the GNU General Public License
+ along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import SwiftUI
 
 struct CodeEditorView: View {
@@ -40,6 +40,7 @@ struct CodeEditorView: View {
         _filePath = filePath
         UIInit(type: 1)
     }
+
     var body: some View {
         NavigationView {
             VStack {
@@ -75,28 +76,32 @@ struct CodeEditorView: View {
             }
         }
     }
-    private func loadCode() {
+
+    private func loadCode() -> Void {
         do {
             code = load(filePath)
         }
     }
-    private func saveCode() {
+
+    private func saveCode() -> Void {
         do {
             try code.write(toFile: filePath, atomically: true, encoding: .utf8)
         } catch {
             print("something went wrong :(")
         }
     }
+
     private func findFilename() -> String {
-    if let encodedFilePath = filePath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
-       let url = URL(string: encodedFilePath) {
-        let lastPathComponent = url.lastPathComponent
-        let name = lastPathComponent.removingPercentEncoding ?? lastPathComponent
-        return name
+        if let encodedFilePath = filePath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
+            let url = URL(string: encodedFilePath) {
+            let lastPathComponent = url.lastPathComponent
+            let name = lastPathComponent.removingPercentEncoding ?? lastPathComponent
+            return name
+        }
+        return "Untitled"
     }
-    return "Untitled"
-    }
-    func hideKeyboard() {
-    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+
+    private func hideKeyboard() -> Void {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

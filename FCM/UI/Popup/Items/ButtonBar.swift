@@ -1,9 +1,9 @@
 import SwiftUI
 
-public struct POButtonBar: View {
+struct POButtonBar: View {
     let cancel: () -> Void
     let confirm: () -> Void
-    public var body: some View {
+    var body: some View {
         HStack {
             Button(action: {
                 cancel()

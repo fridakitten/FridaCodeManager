@@ -22,7 +22,7 @@
 
 import Foundation
 
-public func altroot(inPath path: String) -> URL? {
+func altroot(inPath path: String) -> URL? {
     do {
         let contents = try FileManager.default.contentsOfDirectory(atPath: path)
 
