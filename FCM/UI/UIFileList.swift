@@ -209,6 +209,8 @@ struct FileList: View {
             .background(BackgroundClearView())
             .edgesIgnoringSafeArea([.bottom])
             .onDisappear {
+                poheader = ""
+                potextfield = ""
                 bindLoadFiles(directoryPath: directoryPath, files: $files)
             }
         }
