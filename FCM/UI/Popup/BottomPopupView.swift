@@ -44,8 +44,8 @@ struct BottomPopupView<Content: View>: View {
                 .padding(20)
                     .padding(.bottom, geometry.safeAreaInsets.bottom + addition)
                     .background {
-                        FluidGradient(blobs: [.green, .primary, .gray],
-                                 highlights: [.green, .primary, .gray],
+                        FluidGradient(blobs: [.purple, .primary, .pink],
+                                 highlights: [.purple, .primary, .pink],
                                                             speed: 0.25,
                                                             blur: 0.75)
                             .ignoresSafeArea()
