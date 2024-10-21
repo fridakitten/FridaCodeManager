@@ -50,7 +50,6 @@ func GetProjects() -> [Project] {
     }
 }
 
-//TODO: Use NSDictionary!!
 func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> Int {
     let v2uuid: UUID = UUID()
     let SDK: String = UserDefaults.standard.string(forKey: "sdk") ?? "iPhoneOS15.6.sdk"
@@ -58,8 +57,32 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
     do {
         let ResourcesPath = "\(global_documents)/\(v2uuid)/Resources"
         try FileManager.default.createDirectory(atPath: ResourcesPath, withIntermediateDirectories: true)
-        FileManager.default.createFile(atPath: "\(ResourcesPath)/Info.plist", contents: Data("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n\t<key>CFBundleExecutable</key>\n\t<string>\(Name)</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>\(BundleID)</string>\n\t<key>CFBundleName</key>\n\t<string>\(Name)</string>\n\t<key>CFBundleShortVersionString</key>\n\t<string>1.0</string>\n\t<key>CFBundleVersion</key>\n\t<string>1.0</string>\n\t<key>MinimumOSVersion</key>\n\t<string>\(String(gosver() ?? "14.0"))</string>\n\t<key>UILaunchScreen</key>\n\t<dict>\n\t\t<key>UILaunchScreen</key>\n\t\t<dict/>\n\t</dict>\n</dict>\n</plist>".utf8))
-        FileManager.default.createFile(atPath: "\(ResourcesPath)/DontTouchMe.plist", contents: Data("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n\t<key>ProjectName</key>\n\t<string>\(v2uuid)</string>\n\t<key>SDK</key>\n\t<string>\(SDK)</string>\n</dict>\n</plist>".utf8))
+
+        let infoPlistData: [String: Any] = [
+            "CFBundleExecutable": Name,
+            "CFBundleIdentifier": BundleID,
+            "CFBundleName": Name,
+            "CFBundleShortVersionString": "1.0",
+            "CFBundleVersion": "1.0",
+            "MinimumOSVersion": gosver() ?? "14.0",
+            "UILaunchScreen": [
+                "UILaunchScreen": [:]
+            ]
+        ]
+
+        let infoPlistPath = "\(ResourcesPath)/Info.plist"
+        let infoPlistDataSerialized = try PropertyListSerialization.data(fromPropertyList: infoPlistData, format: .xml, options: 0)
+        FileManager.default.createFile(atPath: infoPlistPath, contents: infoPlistDataSerialized, attributes: nil)
+
+        let dontTouchMePlistData: [String: Any] = [
+            "ProjectName": v2uuid.uuidString,
+            "SDK": SDK
+        ]
+
+        let dontTouchMePlistPath = "\(ResourcesPath)/DontTouchMe.plist"
+        let dontTouchMePlistDataSerialized = try PropertyListSerialization.data(fromPropertyList: dontTouchMePlistData, format: .xml, options: 0)
+        FileManager.default.createFile(atPath: dontTouchMePlistPath, contents: dontTouchMePlistDataSerialized, attributes: nil)
+
         switch(type) {
             case 1:
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/My App.swift", contents: Data("\(authorgen(file: "My App.swift"))import SwiftUI\n\n@main\nstruct MyApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}".utf8))
@@ -70,22 +93,31 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myAppDelegate.h", contents: Data("\(authorgen(file: "myAppDelegate.h"))#import <UIKit/UIKit.h>\n \n@interface myAppDelegate : UIResponder <UIApplicationDelegate>\n \n@property (nonatomic, strong) UIWindow *window;\n@property (nonatomic, strong) UINavigationController *rootViewController;\n \n@end".utf8))
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myAppDelegate.m", contents: Data("\(authorgen(file: "myAppDelegate.m"))#import \"myAppDelegate.h\"\n#import \"myRootViewController.h\"\n\n@implementation myAppDelegate\n\n- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {\n\t_window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];\n\t_rootViewController = [[UINavigationController alloc] initWithRootViewController:[[myRootViewController alloc] init]];\n\t_window.rootViewController = _rootViewController;\n\t[_window makeKeyAndVisible];\n\treturn YES;\n}\n\n@end".utf8))
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myRootViewController.h", contents: Data("\(authorgen(file: "myRootViewController.h"))#import <UIKit/UIKit.h>\n \n@interface myRootViewController : UIViewController\n \n@end".utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myRootViewController.m", contents: Data("\(authorgen(file: "myRootViewController.m"))#import \"myRootViewController.h\"\n \n@interface myRootViewController () <UITableViewDataSource>\n@property (nonatomic, strong) UITableView *logTableView;\n@property (nonatomic, strong) NSMutableArray *logEntries;\n@end\n \n@implementation myRootViewController\n \n- (void)viewDidLoad {\n    [super viewDidLoad];\n \n    self.title = @\"ObjevtiveC support!\";\n \n    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addButtonTapped:)];\n \n    // Create and configure UITableView for log display\n    self.logTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];\n    self.logTableView.dataSource = self;\n    [self.view addSubview:self.logTableView];\n \n    // Initialize log entries array\n    self.logEntries = [NSMutableArray array];\n}\n \n- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {\n    return self.logEntries.count;\n}\n \n- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {\n    static NSString *CellIdentifier = @\"Cell\";\n    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];\n \n    if (!cell) {\n        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];\n    }\n \n    cell.textLabel.text = self.logEntries[indexPath.row];\n    return cell;\n}\n \n- (void)addButtonTapped:(id)sender {\n    @try {\n        // Add log entry\n        NSString *logEntry = @\"Hello, World!\";\n        [self.logEntries insertObject:logEntry atIndex:0];\n \n        // Update UITableView\n        [self.logTableView reloadData];\n    } @catch (NSException *exception) {\n        NSLog(@\"Exception: %@\", exception);\n    } @finally {\n        NSLog(@\"Add button tapped\");\n    }\n}\n \n@end".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/myRootViewController.m", contents: Data("\(authorgen(file: "myRootViewController.m"))#import \"myRootViewController.h\"\n@interface myRootViewController () <UITableViewDataSource>\n@property (nonatomic, strong) UITableView *logTableView;\n@property (nonatomic, strong) NSMutableArray *logEntries;\n@end\n@implementation myRootViewController\n- (void)viewDidLoad {\n    [super viewDidLoad];\n    self.title = @\"ObjectiveC support!\";\n    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addButtonTapped:)];\n    self.logTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];\n    self.logTableView.dataSource = self;\n    [self.view addSubview:self.logTableView];\n    self.logEntries = [NSMutableArray array];\n}\n- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {\n    return self.logEntries.count;\n}\n- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {\n    static NSString *CellIdentifier = @\"Cell\";\n    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];\n    if (!cell) {\n        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];\n    }\n    cell.textLabel.text = self.logEntries[indexPath.row];\n    return cell;\n}\n- (void)addButtonTapped:(id)sender {\n    @try {\n        NSString *logEntry = @\"Hello, World!\";\n        [self.logEntries insertObject:logEntry atIndex:0];\n        [self.logTableView reloadData];\n    } @catch (NSException *exception) {\n        NSLog(@\"Exception: %@\", exception);\n    } @finally {\n        NSLog(@\"Add button tapped\");\n    }\n}\n@end".utf8))
                 break
             case 3:
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/My App.swift", contents: Data("\(authorgen(file: "My App.swift"))import SwiftUI\n\n@main\nstruct MyApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}".utf8))
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: Data("\(authorgen(file: "ContentView.swift"))import Foundation\nimport SwiftUI\n\nstruct ContentView: View {\n    var body: some View {\n       Text(hello())\n    }\n    func hello() -> String {\n        let myObjCInstance = MyObjectiveCClass()\n        return myObjCInstance.hello()\n    }\n}".utf8))
                 FileManager.default.createFile(atPath:"\(global_documents)/\(v2uuid)/bridge.h", contents: Data("\(authorgen(file: "bridge.h"))#import \"main.h\"".utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.h", contents: Data("\(authorgen(file: "main.h"))#import <Foundation/Foundation.h>\n \n@interface MyObjectiveCClass : NSObject\n \n- (NSString *)hello;\n \n@end".utf8))
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: Data("\(authorgen(file: "main.m"))#import \"main.h\"\n \n@implementation MyObjectiveCClass\n \n- (NSString *)hello {\n    return @\"Hello ObjectiveC World!\";\n}\n \n@end".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.h", contents: Data("\(authorgen(file: "main.h"))#import <Foundation/Foundation.h>\n@interface MyObjectiveCClass : NSObject\n- (NSString *)hello;\n@end".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: Data("\(authorgen(file: "main.m"))#import \"main.h\"\n@implementation MyObjectiveCClass\n- (NSString *)hello {\n    return @\"Hello ObjectiveC World!\";\n}\n@end".utf8))
             default:
                 return 2
         }
-        FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/entitlements.plist", contents: Data("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n\t<key>platform-application</key>\n\t<true/>\n</dict>\n</plist>".utf8))
+
+        let entitlementsPlistData: [String: Any] = [
+            "platform-application": true
+        ]
+
+        let entitlementsPlistPath = "\(global_documents)/\(v2uuid)/entitlements.plist"
+        let entitlementsPlistDataSerialized = try PropertyListSerialization.data(fromPropertyList: entitlementsPlistData, format: .xml, options: 0)
+        FileManager.default.createFile(atPath: entitlementsPlistPath, contents: entitlementsPlistDataSerialized, attributes: nil)
+
     } catch {
         print(error)
         return 1
     }
+
     return 0
 }
 
