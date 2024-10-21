@@ -1,39 +1,39 @@
- /* 
- ProjectView.swift 
+ /*
+ ProjectView.swift
 
- Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered 
- Copyright (C) 2024 fridakitten 
+ Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
+ Copyright (C) 2024 fridakitten
 
- This file is part of FridaCodeManager. 
+ This file is part of FridaCodeManager.
 
- FridaCodeManager is free software: you can redistribute it and/or modify 
- it under the terms of the GNU General Public License as published by 
- the Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version. 
+ FridaCodeManager is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
  FridaCodeManager is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- GNU General Public License for more details. 
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License 
- along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
- */ 
-    
+ You should have received a copy of the GNU General Public License
+ along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import SwiftUI
 
 struct ProjectView: View {
     @Binding var hello: UUID
-    @State var Prefs: Bool = false
-    @State var Removal: Bool = false
-    @State var projname: String = ""
-    @State var projrname: String = ""
-    @State var ql: Bool = false
-    @State var qls: String = ""
-    @State var building: Bool = false
-    @State var current: String = ""
-    @State var pathstate: String = ""
-    @State var action: Int = 0
+    @State private var Prefs: Bool = false
+    @State private var Removal: Bool = false
+    @State private var projname: String = ""
+    @State private var projrname: String = ""
+    @State private var ql: Bool = false
+    @State private var qls: String = ""
+    @State private var building: Bool = false
+    @State private var current: String = ""
+    @State private var pathstate: String = ""
+    @State private var action: Int = 0
     var body: some View {
         NavigationView {
             List {
@@ -57,10 +57,11 @@ struct ProjectView: View {
                                         DispatchQueue.global(qos: .utility).async {
                                             ShowAlert(UIAlertController(title: "Building \(Project.Executable)", message: "", preferredStyle: .alert))
                                             if exportApp(Project) == 0 {
-                                                DismissAlert()
-                                                let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
-                                                if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).ipa") {
-                                                    share(url: stabURL)
+                                                DismissAlert {
+                                                    let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
+                                                    if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).ipa") {
+                                                        share(url: stabURL)
+                                                    }
                                                 }
                                             } else { DismissAlert() }
                                         }
@@ -71,10 +72,11 @@ struct ProjectView: View {
                                         DispatchQueue.global(qos: .utility).async {
                                             ShowAlert(UIAlertController(title: "Exporting \(Project.Executable)", message: "", preferredStyle: .alert))
                                             if exportProj(Project) == 0 {
-                                                DismissAlert()
-                                                let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
-                                                if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).sproj") {
-                                                    share(url: stabURL)
+                                                DismissAlert {
+                                                    let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
+                                                    if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).sproj") {
+                                                        share(url: stabURL)
+                                                    }
                                                 }
                                             } else {
                                                 DismissAlert()
@@ -96,8 +98,8 @@ struct ProjectView: View {
                                         projname = "\(global_documents)/\(Project.Name)"
                                         projrname = "Remove \"\(Project.Executable)\"?"
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        Removal = true
-    }
+                                        Removal = true
+                                    }
                                     }){
                                         Label("Remove", systemImage: "trash")
                                     }
@@ -142,6 +144,30 @@ struct ProjectView: View {
 
     private func Cancel_trigger() -> Void {
         Removal = false
+    }
+
+    private func exportProj(_ project: Project) -> Int {
+        let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
+        _ = rm("\(global_container)/tmp/\(modname).sproj")
+        let result: Int = Int(libzip_zip("\(global_documents)/\(project.Name)","\(global_documents)/\(modname).sproj", true))
+        if result == 0 {
+            _ = mv("\(global_documents)/\(modname).sproj", "\(global_container)/tmp/\(modname).sproj")
+        }
+        return result
+    }
+
+    private func exportApp(_ project: Project) -> Int {
+        #if !stock
+        let result = build(project, false, nil, nil)
+        #else
+        let result = 0
+        #endif
+        let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
+        if result == 0 {
+            _ = rm("\(global_container)/tmp/\(modname).ipa")
+            _ = mv("\(global_documents)/\(project.Name)/ts.ipa", "\(global_container)/tmp/\(modname).ipa")
+        }
+        return result
     }
 
     private func share(url: URL) -> Void {

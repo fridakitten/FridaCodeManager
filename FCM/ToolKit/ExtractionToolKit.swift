@@ -22,32 +22,6 @@
 
 import Foundation
 
-func exportProj(_ project: Project) -> Int {
-    let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
-    _ = rm("\(global_container)/tmp/\(modname).sproj")
-    let result: Int = Int(libzip_zip("\(global_documents)/\(project.Name)","\(global_documents)/\(modname).sproj", true))
-    if result == 0 {
-        _ = mv("\(global_documents)/\(modname).sproj", "\(global_container)/tmp/\(modname).sproj")
-    }
-    sleep(2)
-    return result
-}
-
-func exportApp(_ project: Project) -> Int {
-    #if !stock
-    let result = build(project, false, nil, nil)
-    #else
-    let result = 0
-    #endif
-    let modname = project.Executable.replacingOccurrences(of: " ", with: "_")
-    if result == 0 {
-        _ = rm("\(global_container)/tmp/\(modname).ipa")
-        _ = mv("\(global_documents)/\(project.Name)/ts.ipa", "\(global_container)/tmp/\(modname).ipa")
-    }
-    sleep(2)
-    return result
-}
-
 func importProj(target: String) -> Void {
     let v2uuid: String = "\(UUID())"
     if FileManager.default.fileExists(atPath: target) {

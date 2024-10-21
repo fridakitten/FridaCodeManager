@@ -34,19 +34,22 @@ public func ShowAlert(_ alert: UIAlertController) -> Void {
     }
 }
 
-public func DismissAlert() -> Void {
+public func DismissAlert(completion: (() -> Void)? = nil) {
     DispatchQueue.main.async {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let keyWindow = windowScene.keyWindow,
               let rootViewController = keyWindow.rootViewController else {
+            completion?()
             return
         }
-        
-        // Find the topmost view controller to dismiss the alert from
+
         var topController = rootViewController
         while let presentedController = topController.presentedViewController {
             topController = presentedController
         }
-        topController.dismiss(animated: true, completion: nil)
+        
+        topController.dismiss(animated: true) {
+            completion?()
+        }
     }
 }
