@@ -17,7 +17,7 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import "shellcode_inject.h"
 #import "rop_inject.h"
-
+#import <Foundation/Foundation.h>
 
 char* resolvePath(char* pathToResolve)
 {
@@ -30,7 +30,7 @@ char* resolvePath(char* pathToResolve)
 	{
 		char absolutePath[PATH_MAX];
 		if (realpath(pathToResolve, absolutePath) == NULL) {
-			//perror("[resolvePath] realpath");
+			perror("[resolvePath] realpath");
 			return NULL;
 		}
 		return strdup(absolutePath);
@@ -53,10 +53,10 @@ void spawnPacChild(int argc, char *argv[])
 	kern_return_t kr = KERN_SUCCESS;
 	kr = task_for_pid(mach_task_self(), targetPid, &task);
 	if(kr != KERN_SUCCESS) {
-		//printf("[spawnPacChild] Failed to obtain task port.\n");
+		printf("[spawnPacChild] Failed to obtain task port.\n");
 		return;
 	}
-	//printf("[spawnPacChild] Got task port %d for pid %d\n", task, targetPid);
+	printf("[spawnPacChild] Got task port %d for pid %d\n", task, targetPid);
 
 	posix_spawnattr_t attr;
     posix_spawnattr_init(&attr);
@@ -77,26 +77,35 @@ void spawnPacChild(int argc, char *argv[])
 
 	if(rc != KERN_SUCCESS)
 	{
-		//printf("[spawnPacChild] posix_spawn failed: %d (%s)\n", rc, mach_error_string(rc));
+		printf("[spawnPacChild] posix_spawn failed: %d (%s)\n", rc, mach_error_string(rc));
 		return;
 	}
 
 	do
 	{
 		if (waitpid(pid, &status, 0) != -1) {
-			//printf("[spawnPacChild] Child returned %d\n", WEXITSTATUS(status));
+			printf("[spawnPacChild] Child returned %d\n", WEXITSTATUS(status));
 		}
 	} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 
 	return;
 }
 
-int inject(int argc, char *argv[], char *envp[]) {
+int inject(NSString *inputString) {
+	NSArray<NSString *> *components = [inputString componentsSeparatedByString:@" "];
+	int argc = (int)[components count];
+	char **argv = malloc((argc + 1) * sizeof(char *));
+	for (int i = 0; i < argc; i++) {
+		NSString *argString = components[i];
+		argv[i] = strdup([argString UTF8String]);
+	}
+	argv[argc] = NULL;
+
 	setlinebuf(stdout);
 	setlinebuf(stderr);
 	if (argc < 3 || argc > 4)
 	{
-		//printf("Usage: opainject <pid> <path/to/dylib>\n");
+                printf("Usage: opainject <pid> <path/to/dylib>\n");
 		return -1;
 	}
 
@@ -112,10 +121,6 @@ int inject(int argc, char *argv[], char *envp[]) {
 		return 0;
 	}
 #endif
-
-	//printf("OPAINJECT HERE WE ARE\n");
-	//printf("RUNNING AS %d\n", getuid());
-
 	pid_t targetPid = atoi(argv[1]);
 	kern_return_t kret = 0;
 	task_t procTask = MACH_PORT_NULL;
@@ -123,26 +128,21 @@ int inject(int argc, char *argv[], char *envp[]) {
 	if(!dylibPath) return -3;
 	if(access(dylibPath, R_OK) < 0)
 	{
-		//printf("ERROR: Can't access passed dylib at %s\n", dylibPath);
 		return -4;
 	}
 
-	// get task port
 	kret = task_for_pid(mach_task_self(), targetPid, &procTask);
+        printf("[*] %d\n", targetPid);
 	if(kret != KERN_SUCCESS)
 	{
-		//printf("ERROR: task_for_pid failed with error code %d (%s)\n", kret, mach_error_string(kret));
+                printf("ERROR: task_for_pid failed with error code %d (%s)\n", kret, mach_error_string(kret));
 		return -2;
 	}
 	if(!MACH_PORT_VALID(procTask))
 	{
-		//printf("ERROR: Got invalid task port (%d)\n", procTask);
 		return -3;
 	}
 
-	//printf("Got task port %d for pid %d!\n", procTask, targetPid);
-
-	// get aslr slide
 	task_dyld_info_data_t dyldInfo;
 	uint32_t count = TASK_DYLD_INFO_COUNT;
 	task_info(procTask, TASK_DYLD_INFO, (task_info_t)&dyldInfo, &count);
@@ -150,6 +150,11 @@ int inject(int argc, char *argv[], char *envp[]) {
 	injectDylibViaRop(procTask, targetPid, dylibPath, dyldInfo.all_image_info_addr);
 
 	mach_port_deallocate(mach_task_self(), procTask);
+
+        for (int i = 0; i < argc; i++) {
+            free(argv[i]);
+        }
+        free(argv);
 
 	return 0;
 }
