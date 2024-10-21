@@ -23,27 +23,65 @@
 import Foundation
 
 struct Project: Identifiable {
-    let id = UUID()              // UUID v2 Project Identifier
-    var Name: String             // Name of the Project
-    var BundleID: String         // BundleID of the Project(App)
-    var Version: String          // Version of the Project(App)
-    var ProjectPath: String      // Path of the Project
-    var Executable: String       // Executable of the Project(App)
-    var SDK: String              // SDK of the Project(so the compiler knows what SDK the developer choosed to use)
-    var TG: String               // Minimum iOS Version the Project Supports(so the compiler knows what it should compile for)
+    let id = UUID()
+    var Name: String
+    var BundleID: String
+    var Version: String
+    var ProjectPath: String
+    var Executable: String
+    var SDK: String
+    var TG: String
 }
 
 func GetProjects() -> [Project] {
     do {
         var Projects: [Project] = []
+        
         for Item in try FileManager.default.contentsOfDirectory(atPath: global_documents) {
-            if let Info = NSDictionary(contentsOfFile: "\(global_documents)/\(Item)/Resources/Info.plist"), let BundleID = Info["CFBundleIdentifier"] as? String, let Version = Info["CFBundleVersion"] as? String, let Executable = Info["CFBundleExecutable"] as? String, let TG = Info["MinimumOSVersion"] as? String {
-                if let Info2 = NSDictionary(contentsOfFile: "\(global_documents)/\(Item)/Resources/DontTouchMe.plist"), let SDK = Info2["SDK"] as? String, let Name = Info2["ProjectName"] as? String {
-                    Projects.append(Project(Name: Name, BundleID: BundleID, Version: Version, ProjectPath: "\(global_documents)/\(Item)", Executable: Executable, SDK: SDK, TG: TG))
+            if Item == "Inbox" {
+                continue
+            }
+
+            do {
+                let infoPlistPath = "\(global_documents)/\(Item)/Resources/Info.plist"
+                let dontTouchMePlistPath = "\(global_documents)/\(Item)/Resources/DontTouchMe.plist"
+                
+                var BundleID = "Corrupted"
+                var Version = "Unknown"
+                var Executable = "Unknown"
+                var TG = "Unknown"
+                var SDK = "Unknown"
+                
+                if let Info = NSDictionary(contentsOfFile: infoPlistPath) {
+                    if let extractedBundleID = Info["CFBundleIdentifier"] as? String {
+                        BundleID = extractedBundleID
+                    }
+                    if let extractedVersion = Info["CFBundleVersion"] as? String {
+                        Version = extractedVersion
+                    }
+                    if let extractedExecutable = Info["CFBundleExecutable"] as? String {
+                        Executable = extractedExecutable
+                    }
+                    if let extractedTG = Info["MinimumOSVersion"] as? String {
+                        TG = extractedTG
+                    }
                 }
+
+                if let Info2 = NSDictionary(contentsOfFile: dontTouchMePlistPath) {
+                    if let extractedSDK = Info2["SDK"] as? String {
+                        SDK = extractedSDK
+                    }
+                }
+                Projects.append(Project(Name: Item, BundleID: BundleID, Version: Version, ProjectPath: "\(global_documents)/\(Item)", Executable: Executable, SDK: SDK, TG: TG))
+                
+            } catch {
+                print("Failed to process item: \(Item), error: \(error)")
+                Projects.append(Project(Name: "Corrupted", BundleID: "Corrupted", Version: "Unknown", ProjectPath: "\(global_documents)/\(Item)", Executable: "Unknown", SDK: "Unknown", TG: "Unknown"))
             }
         }
+        
         return Projects
+        
     } catch {
         print(error)
         return []
@@ -75,7 +113,6 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
         FileManager.default.createFile(atPath: infoPlistPath, contents: infoPlistDataSerialized, attributes: nil)
 
         let dontTouchMePlistData: [String: Any] = [
-            "ProjectName": v2uuid.uuidString,
             "SDK": SDK
         ]
 

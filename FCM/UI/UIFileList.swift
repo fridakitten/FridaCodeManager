@@ -223,7 +223,7 @@ struct FileList: View {
     }
 
     private func create_selected() -> Void {
-        if !potextfield.isEmpty && potextfield != "DontTouchMe.plist" && potextfield.rangeOfCharacter(from: CharacterSet(charactersIn: String(invalidFS))) == nil {
+        if !potextfield.isEmpty && potextfield.rangeOfCharacter(from: CharacterSet(charactersIn: String(invalidFS))) == nil {
             if type == 0 {
                 var content = ""
                 switch gsuffix(from: potextfield) {
@@ -255,13 +255,9 @@ struct FileList: View {
     }
 
     private func remove_selected() -> Void {
-        if !selpath.contains("DontTouchMe.plist") {
-            _ = rm(selpath)
-            haptfeedback(1)
-            activeSheet = nil
-        } else {
-            haptfeedback(2)
-        }
+        _ = rm(selpath)
+        haptfeedback(1)
+        activeSheet = nil
     }
 
     private func dissmiss_sheet() -> Void {
@@ -434,7 +430,7 @@ private func bindLoadFiles(directoryPath: URL, files: Binding<[URL]>) -> Void {
 
             for item in items {
                 let fileExtension = item.pathExtension.lowercased()
-                if !isDirectory(item) && item.lastPathComponent != "DontTouchMe.plist" {
+                if !isDirectory(item) {
                     if fileGroups[fileExtension] == nil {
                         fileGroups[fileExtension] = []
                     }
