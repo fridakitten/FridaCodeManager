@@ -27,7 +27,7 @@ struct BottomPopupView<Content: View>: View {
 
     @State private var keyboardHeight: CGFloat = 0
     @State private var isKeyboardVisible: Bool = false
-    @State private var addition: CGFloat = 25
+    @State private var addition: CGFloat = UIDevice.current.hasNotch ? 25.0 : 0.0
     @State private var corner_addition: CGFloat = 0
 
     init(@ViewBuilder content: () -> Content) {
@@ -71,7 +71,9 @@ struct BottomPopupView<Content: View>: View {
                 }
                 NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
                     withAnimation(.easeOut(duration: 0.5)) {
-                        addition = 25
+                        if UIDevice.current.hasNotch {
+                            addition = 25.0
+                        }
                         corner_addition = 0
                         self.keyboardHeight = 0
                         self.isKeyboardVisible = false
@@ -85,3 +87,11 @@ struct BottomPopupView<Content: View>: View {
         .transition(.move(edge: .bottom))
     }
 }
+
+extension UIDevice {
+    var hasNotch: Bool {
+        let bottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+        return bottom > 0
+    }
+}
+
