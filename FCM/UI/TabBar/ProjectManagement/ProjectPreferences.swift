@@ -100,7 +100,8 @@ struct PrefsInfo: View {
         .navigationTitle("App Information")
         .navigationBarTitleDisplayMode(.inline)
     }
-    private func save() {
+
+    private func save() -> Void {
         let keys = ["CFBundleName", "CFBundleExecutable", "CFBundleIdentifier", "CFBundleVersion", "CFBundleShortVersionString", "MinimumOSVersion"]
         let values = [AppName, AppliName, BundleID, Version, Version, MIOS]
 
@@ -149,7 +150,7 @@ struct Appeareance: View {
          .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func update() {
+    private func update() -> Void {
         let proj = "\(global_documents)/\(projname)"
         let plist = "\(proj)/Resources/Info.plist"
         let array = "UISupportedInterfaceOrientations"
@@ -172,7 +173,7 @@ struct Appeareance: View {
         }
     }
 
-    private func config() {
+    private func config() -> Void {
         let proj = "\(global_documents)/\(projname)"
         let plist = "\(proj)/Resources/Info.plist"
         let array = "UISupportedInterfaceOrientations"
@@ -205,7 +206,7 @@ struct asksdk: View {
     var body: some View {
         List {
             Text("\(sdk)")
-            NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
+            NavigationLink(destination: SDKList(directoryPath: URL(fileURLWithPath: global_sdkpath) ,sdk: $sdk)) {
                 Text("Change")
             }
         }

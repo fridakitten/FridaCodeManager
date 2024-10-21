@@ -142,7 +142,7 @@ struct FileList: View {
             }
         }
         .onAppear {
-            loadFiles()
+            bindLoadFiles(directoryPath: directoryPath, files: $files)
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(directoryPath.lastPathComponent)
@@ -168,14 +168,14 @@ struct FileList: View {
                         Section {
                             Button(action: {
                                 if action == 1 {
-                                    cp(actpath, "\(directoryPath.path)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
+                                    _ = cp(actpath, "\(directoryPath.path)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
                                     action = 0
                                 } else if action == 2 {
-                                    mv(actpath, "\(directoryPath.path)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
+                                    _ = mv(actpath, "\(directoryPath.path)/\(URL(fileURLWithPath: actpath).lastPathComponent)")
                                     action = 0
                                 }
                                 haptfeedback(1)
-                                loadFiles()
+                                bindLoadFiles(directoryPath: directoryPath, files: $files)
                             }) {
                                 Label("Paste", systemImage: "doc.on.clipboard")
                             }
@@ -197,7 +197,7 @@ struct FileList: View {
                     .background(BackgroundClearView())
                     .edgesIgnoringSafeArea([.bottom])
                     .onDisappear {
-                        loadFiles()
+                        bindLoadFiles(directoryPath: directoryPath, files: $files)
                     }
                 case .rename:
                     BottomPopupView {
@@ -208,7 +208,7 @@ struct FileList: View {
                     .background(BackgroundClearView())
                     .edgesIgnoringSafeArea([.bottom])
                     .onDisappear {
-                        loadFiles()
+                        bindLoadFiles(directoryPath: directoryPath, files: $files)
                     }
                 case .remove:
                     BottomPopupView {
@@ -219,7 +219,7 @@ struct FileList: View {
                     .background(BackgroundClearView())
                     .edgesIgnoringSafeArea([.bottom])
                     .onDisappear {
-                        loadFiles()
+                        bindLoadFiles(directoryPath: directoryPath, files: $files)
                     }
             }
         }
@@ -286,57 +286,6 @@ struct FileList: View {
                 return false
         }
     }
-
-    private func loadFiles() -> Void {
-        let fileManager = FileManager.default
-
-        DispatchQueue.global(qos: .background).async {
-            do {
-                let items = try fileManager.contentsOfDirectory(at: self.directoryPath, includingPropertiesForKeys: nil)
-
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.files.removeAll { file in
-                            !fileManager.fileExists(atPath: file.path)
-                        }
-                    }
-                }
-
-                for item in items {
-                    if isDirectory(item) {
-                        DispatchQueue.main.async {
-                            if !self.files.contains(item) {
-                                withAnimation {
-                                    self.files.append(item)
-                                }
-                            }
-                        }
-                        usleep(500)
-                    }
-                }
-
-                usleep(500)
-
-                for item in items {
-                    if !isDirectory(item) && item.lastPathComponent != "DontTouchMe.plist" {
-                        DispatchQueue.main.async {
-                            if !self.files.contains(item) {
-                                withAnimation {
-                                    self.files.append(item)
-                                }
-                            }
-                        }
-                        usleep(500)
-                    }
-                }
-
-            } catch {
-                DispatchQueue.main.async {
-                   print("Error loading files: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
 }
 
 struct ImageView: View {
@@ -375,7 +324,7 @@ struct ImageView: View {
 
 struct SDKList: View {
     @State private var files: [URL] = []
-    @State var directoryPath: String
+    @State var directoryPath: URL
     @Binding var sdk: String
     var body: some View {
         List {
@@ -393,22 +342,12 @@ struct SDKList: View {
             }
         }
         .onAppear {
-            loadFiles()
+            bindLoadFiles(directoryPath: directoryPath, files: $files)
         }
         .accentColor(.primary)
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("SDKs")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func loadFiles() {
-        let fileManager = FileManager.default
-        let directoryURL = URL(fileURLWithPath: directoryPath)
-        do {
-            files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
-        } catch {
-            print("Error loading files: \(error.localizedDescription)")
-        }
     }
 }
 
@@ -480,4 +419,54 @@ private func gProperty(_ fileURL: URL) -> FileProperty {
     }
 
     return property
+}
+
+private func bindLoadFiles(directoryPath: URL, files: Binding<[URL]>) -> Void {
+    let fileManager = FileManager.default
+
+    DispatchQueue.global(qos: .background).async {
+        do {
+            let items = try fileManager.contentsOfDirectory(at: directoryPath, includingPropertiesForKeys: nil)
+
+            DispatchQueue.main.async {
+                withAnimation {
+                    files.wrappedValue.removeAll { file in
+                        !fileManager.fileExists(atPath: file.path)
+                    }
+                }
+            }
+
+            for item in items {
+                if isDirectory(item) {
+                    DispatchQueue.main.async {
+                        if !files.wrappedValue.contains(item) {
+                            withAnimation {
+                                files.wrappedValue.append(item)
+                            }
+                        }
+                    }
+                    usleep(500)
+                }
+            }
+
+            usleep(500)
+
+            for item in items {
+                if !isDirectory(item) && item.lastPathComponent != "DontTouchMe.plist" {
+                    DispatchQueue.main.async {
+                        if !files.wrappedValue.contains(item) {
+                            withAnimation {
+                                files.wrappedValue.append(item)
+                            }
+                        }
+                    }
+                    usleep(500)
+                }
+            }
+        } catch {
+            DispatchQueue.main.async {
+                print("Error loading files: \(error.localizedDescription)")
+            }
+        }
+    }
 }

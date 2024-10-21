@@ -36,7 +36,7 @@ struct Settings: View {
         NavigationView {
             List {
                 Section(header: Text("default sdk")) {
-                    NavigationLink(destination: SDKList(directoryPath: "\(global_sdkpath)" ,sdk: $sdk)) {
+                    NavigationLink(destination: SDKList(directoryPath: URL(fileURLWithPath: global_sdkpath) ,sdk: $sdk)) {
                         Text(sdk)
                     }
                 }
