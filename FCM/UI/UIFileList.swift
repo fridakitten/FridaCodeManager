@@ -65,8 +65,9 @@ struct FileObject: View {
 }
 
 struct FileList: View {
-    @State private var activeSheet: ActiveSheet?
+    var title: String?
     var directoryPath: URL
+    @State private var activeSheet: ActiveSheet?
     @State private var files: [URL] = []
     @State private var quar: Bool = false
     @State private var selpath: String = ""
@@ -84,7 +85,7 @@ struct FileList: View {
                 ForEach(files, id: \.self) { item in
                     HStack {
                         if isDirectory(item) {
-                            NavigationLink(destination: FileList(directoryPath: item, buildv: nil, actpath: $actpath, action: $action)) {
+                            NavigationLink(destination: FileList(title: nil, directoryPath: item, actpath: $actpath, action: $action)) {
                                 HStack {
                                     Image(systemName: "folder.fill")
                                         .foregroundColor(.primary)
@@ -145,7 +146,9 @@ struct FileList: View {
             bindLoadFiles(directoryPath: directoryPath, files: $files)
         }
         .listStyle(InsetGroupedListStyle())
-        .navigationTitle(directoryPath.lastPathComponent)
+        .navigationTitle(
+            title ?? directoryPath.lastPathComponent
+        )
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {

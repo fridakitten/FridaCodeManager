@@ -168,7 +168,7 @@ struct CodeSpace: View {
     @Binding var pathstate: String
     @Binding var action: Int
     var body: some View {
-        FileList(directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, actpath: $pathstate, action: $action)
+        FileList(title: ProjectInfo.Executable, directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
                 buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
             }
