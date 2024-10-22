@@ -38,7 +38,7 @@ func GetProjects() -> [Project] {
         var Projects: [Project] = []
         
         for Item in try FileManager.default.contentsOfDirectory(atPath: global_documents) {
-            if Item == "Inbox" || Item == "savedLayouts.json" {
+            if Item == "Inbox" || Item == "savedLayouts.json" || Item == ".sdk" || Item == ".cache" {
                 continue
             }
 
