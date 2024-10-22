@@ -26,6 +26,8 @@ let LogPipe = Pipe()
 
 struct NeoLog: View {
     @State var LogItems: [LogItem] = []
+    @State var width: CGFloat
+    @State var height: CGFloat
     var body: some View {
         ScrollView {
             ScrollViewReader { scroll in
@@ -55,7 +57,7 @@ struct NeoLog: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
-        .frame(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 2.5)
+        .frame(width:  width, height: height)
         .background(Color(UIColor.systemGray6))
         .cornerRadius(20)
         .contextMenu {

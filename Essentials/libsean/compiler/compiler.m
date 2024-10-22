@@ -230,5 +230,12 @@ int sean16compiler(NSString *arguments)
     }
     free(argv);
 
+    for (int i = 0; i < sym_count; i++) {
+        free(symbols[i].modified_str);
+    }
+
+    sym_count = 0;
+    roffset = 1;
+
     return 0;
 }

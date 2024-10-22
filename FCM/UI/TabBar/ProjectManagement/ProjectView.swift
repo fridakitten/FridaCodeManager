@@ -205,7 +205,7 @@ struct buildView: View {
     @State private var Log: [String] = []
     var body: some View {
         VStack {
-            NeoLog()
+            NeoLog(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 2.5)
             Spacer().frame(height: 25)
             if !compiling {
                 Button( action: {
@@ -277,6 +277,7 @@ struct sean16View: View {
                         runtime_sean16(ProjectInfo)
                     }
                 }
+            NeoLog(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 4)
             Spacer().frame(height: 25)
             Button( action: {
                 send_cpu(1)
