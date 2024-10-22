@@ -10,3 +10,4 @@
 
 void kickstart(NSString *path);
 TouchTracker *getTracker(void *arg);
+void send_cpu(uint8_t);

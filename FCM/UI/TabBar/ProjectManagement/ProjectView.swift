@@ -269,12 +269,28 @@ struct sean16View: View {
     @Binding var buildv: Bool
 
     var body: some View {
-        ScreenEmulator()
-            .frame(width: screenWidth, height: screenWidth)
-            .onAppear {
-                serialQueue.async {
-                    runtime_sean16(ProjectInfo)
+        VStack {
+            ScreenEmulator()
+                .frame(width: screenWidth, height: screenWidth)
+                .onAppear {
+                    serialQueue.async {
+                        runtime_sean16(ProjectInfo)
+                    }
+                }
+            Spacer().frame(height: 25)
+            Button( action: {
+                send_cpu(1)
+                buildv = false
+            }){
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(.red)
+                        .cornerRadius(15)
+                    Text("Abort")
+                        .foregroundColor(.white)
                 }
             }
+            .frame(width: UIScreen.main.bounds.width / 1.2, height: 50)
+        }
     }
 }

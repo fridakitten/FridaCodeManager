@@ -15,6 +15,11 @@
 
 static uint16_t reg[S_CPU_REGISTER_MAX];
 static uint16_t dummyreg[5];
+static uint8_t cpu_signal = 0;
+
+void send_cpu(uint8_t signal) {
+    cpu_signal = signal;
+}
 
 uint16_t* getPointer(uint16_t value, uint8_t quad) {
     if (value < 65) {
@@ -46,6 +51,8 @@ void evaluate(int *i, int mode, int reg1, int reg2, int jmpaddr) {
 }
 
 void *execute(void *arg) {
+    cpu_signal = 0;
+
     proc *proccess = (proc *)arg;
     
     for(int i = 0; i < S_CPU_REGISTER_MAX; i++) {
@@ -63,6 +70,10 @@ void *execute(void *arg) {
     printf("[cpu] executing\n");
     
     for(int i = 0; i < 1000; i++) {
+        if(cpu_signal != 0) {
+            return NULL;
+        }
+
         instruction = *(proccess->page[0]->memory[i][0]);
         
         ptr1 = getPointer(*(proccess->page[0]->memory[i][1]), 1);

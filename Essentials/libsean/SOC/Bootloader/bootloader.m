@@ -52,10 +52,11 @@ void bootloader(uint8_t binmap[1000][6]) {
     // DEINIT
     printf("[soc-bootloader-chip] process has finished execution\n");
     printf("[soc-bootloader-chip] deinitialising mouse\n");
-    /*[mouse stopTracking];
-    [mouse setInit:NO];*/
     
     // killing task
     printf("[soc-bootloader-chip] freeing process\n");
     proc_kill(child_task);
+
+    // clear my screen
+    clearScreen();
 }
