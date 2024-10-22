@@ -176,32 +176,41 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
     #endif
 
-    messenger(status,progress,"compressing \(ProjectInfo.Executable) into .ipa archive",0.5)
-    #if !stock
-    shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'")
-    #endif
+    if ProjectInfo.TYPE == "Applications" {
+        messenger(status,progress,"compressing \(ProjectInfo.Executable) into .ipa archive",0.5)
+        #if !stock
+        shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'")
+        #endif
 
-    libzip_zip("\(ProjectInfo.ProjectPath)/Payload", "\(ProjectInfo.ProjectPath)/ts.ipa", true)
+        libzip_zip("\(ProjectInfo.ProjectPath)/Payload", "\(ProjectInfo.ProjectPath)/ts.ipa", true)
 
-    //installing app
-    messenger(status,progress,"installing \(ProjectInfo.Executable)",0.7)
-    var result: Int = 0
-    #if !stock
-    if erase {
-        result = shell("\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa' > /dev/null 2>&1", uid: 0)
-        _ = climessenger("install--stage","TrollStore Helper returned \(String(result))")
-    }
-    #endif
-    _ = rm(info[0])
-    _ = rm(info[4])
-    if erase {
-        _ = rm("\(ProjectInfo.ProjectPath)/ts.ipa")
-    }
-    #if !stock
-    return result
-    #else
-    return 0
-    #endif
+        //installing app
+        messenger(status,progress,"installing \(ProjectInfo.Executable)",0.7)
+        var result: Int = 0
+        #if !stock
+        if erase {
+            result = shell("\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa' > /dev/null 2>&1", uid: 0)
+            _ = climessenger("install--stage","TrollStore Helper returned \(String(result))")
+        }
+        #endif
+        _ = rm(info[0])
+        _ = rm(info[4])
+        if erase {
+            _ = rm("\(ProjectInfo.ProjectPath)/ts.ipa")
+        }
+        #if !stock
+        return result
+        #else
+        return 0
+        #endif
+    } else {
+        shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'")
+        let result = shell("\(info[1])/\(ProjectInfo.Executable)")
+        print("[*] Binary returned \(result)\n")
+        _ = rm(info[0])
+        _ = rm(info[4])
+        return 0;
+    } 
 }
 
 private func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_ tstat: String,_  tproc: Double) -> Void {

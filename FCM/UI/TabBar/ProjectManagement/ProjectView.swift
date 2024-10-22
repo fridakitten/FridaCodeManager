@@ -196,10 +196,15 @@ struct CodeSpace: View {
     var body: some View {
         FileList(title: ProjectInfo.Executable, directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
-                if ProjectInfo.SDK != "sean16runtime" {
-                    buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
-                } else {
-                    sean16View(ProjectInfo: ProjectInfo, buildv: $buildv)
+                switch ProjectInfo.TYPE {
+                    case "Applications":
+                       buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
+                    case "Utilities":
+                       buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
+                    case "Sean16":
+                       sean16View(ProjectInfo: ProjectInfo, buildv: $buildv)
+                    default:
+                       Spacer()
                 }
             }
     }
@@ -259,7 +264,9 @@ struct buildView: View {
                 DispatchQueue.main.async {
                     if status == 0 {
                         #if !stock
-                        OpenApp(ProjectInfo.BundleID)
+                        if ProjectInfo.TYPE == "Applications" {
+                            OpenApp(ProjectInfo.BundleID)
+                        }
                         #else
                         print("[*] you have to export the app!\n")
                         #endif

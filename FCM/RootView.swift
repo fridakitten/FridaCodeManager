@@ -81,7 +81,7 @@ func GetProjectsBind(Projects: Binding<[Project]>) -> Void {
                     var Executable = "Unknown"
                     var TG = "Unknown"
                     var SDK = "Unknown"
-                    var TYPE = "APP"
+                    var TYPE = "Applications"
 
                     if let Info = NSDictionary(contentsOfFile: infoPlistPath) {
                         if let extractedBundleID = Info["CFBundleIdentifier"] as? String {

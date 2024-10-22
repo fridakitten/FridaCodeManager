@@ -48,7 +48,7 @@ struct Project: Identifiable, Equatable {
 func GetProjects() -> [Project] {
     do {
         var Projects: [Project] = []
-        
+
         for Item in try FileManager.default.contentsOfDirectory(atPath: global_documents) {
             if Item == "Inbox" || Item == "savedLayouts.json" || Item == ".sdk" || Item == ".cache" || Item == "virtualFS.dat" {
                 continue
@@ -57,14 +57,14 @@ func GetProjects() -> [Project] {
             do {
                 let infoPlistPath = "\(global_documents)/\(Item)/Resources/Info.plist"
                 let dontTouchMePlistPath = "\(global_documents)/\(Item)/Resources/DontTouchMe.plist"
-                
+
                 var BundleID = "Corrupted"
                 var Version = "Unknown"
                 var Executable = "Unknown"
                 var TG = "Unknown"
                 var SDK = "Unknown"
-                var TYPE = "APP"
-                
+                var TYPE = "Applications"
+
                 if let Info = NSDictionary(contentsOfFile: infoPlistPath) {
                     if let extractedBundleID = Info["CFBundleIdentifier"] as? String {
                         BundleID = extractedBundleID
@@ -84,20 +84,17 @@ func GetProjects() -> [Project] {
                     if let extractedSDK = Info2["SDK"] as? String {
                         SDK = extractedSDK
                     }
-                    if let extractedSDK = Info2["TYPE"] as? String {
-                        TYPE = extractedSDK
+                    if let extractedTYPE = Info2["TYPE"] as? String {
+                        TYPE = extractedTYPE
                     }
                 }
                 Projects.append(Project(Name: Item, BundleID: BundleID, Version: Version, ProjectPath: "\(global_documents)/\(Item)", Executable: Executable, SDK: SDK, TG: TG, TYPE: TYPE))
-                
             } catch {
                 print("Failed to process item: \(Item), error: \(error)")
                 Projects.append(Project(Name: "Corrupted", BundleID: "Corrupted", Version: "Unknown", ProjectPath: "\(global_documents)/\(Item)", Executable: "Unknown", SDK: "Unknown", TG: "Unknown", TYPE: "Unknown"))
             }
         }
-        
         return Projects
-        
     } catch {
         print(error)
         return []
@@ -110,13 +107,13 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
     let TYPE: String = {
         switch type {
             case 1, 2, 3:
-                return "APP"
+                return "Applications"
             case 4:
-                return "BIN"
+                return "Utilities"
             case 5:
-                return "SEAN16"
+                return "Sean16"
             default:
-                return "APP"
+                return "Applications"
         }
     }()
 
@@ -130,7 +127,7 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
             "CFBundleName": Name,
             "CFBundleShortVersionString": "1.0",
             "CFBundleVersion": "1.0",
-            "MinimumOSVersion": gosver() ?? "14.0",
+            "MinimumOSVersion": gosver() ?? "15.0",
             "UILaunchScreen": [
                 "UILaunchScreen": [:]
             ]
@@ -169,20 +166,23 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.m", contents: Data("\(authorgen(file: "main.m"))#import \"main.h\"\n@implementation MyObjectiveCClass\n- (NSString *)hello {\n    return @\"Hello ObjectiveC World!\";\n}\n@end".utf8))
                 break
             case 4: // C Binary
-                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.c", contents: Data("\(authorgen(file: "main.c"))#include <stdio.h>\n\nint main(void) {\n    printf(\"Hello, World\")\n}".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.c", contents: Data("\(authorgen(file: "main.c"))#include <stdio.h>\n\nint main(void) {\n    printf(\"Hello, World\");\n}".utf8))
                 break
             default:
                 return 2
         }
 
-        let entitlementsPlistData: [String: Any] = [
-            "platform-application": true
-        ]
+        var entitlementsPlistData: [String: Any] = [ "platform-application": true ]
+        if type == 4 {
+            entitlementsPlistData = [
+                "platform-application": true,
+                "com.apple.private.security.no-sandbox": true
+            ]
+        }
 
         let entitlementsPlistPath = "\(global_documents)/\(v2uuid)/entitlements.plist"
         let entitlementsPlistDataSerialized = try PropertyListSerialization.data(fromPropertyList: entitlementsPlistData, format: .xml, options: 0)
         FileManager.default.createFile(atPath: entitlementsPlistPath, contents: entitlementsPlistDataSerialized, attributes: nil)
-
     } catch {
         print(error)
         return 1
