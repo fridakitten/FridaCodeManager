@@ -16,5 +16,6 @@
 
 //sean16 architecture
 #import <libsean/ios.h>
+#import <libsean/compiler.h>
 
 #endif // BRIDGE_H
