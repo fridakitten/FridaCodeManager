@@ -10,9 +10,10 @@
 #include "Sean16.h"
 #include "libasmfile.h"
 #include <Bootloader/bootloader.h>
+#include <compiler.h>
 
 void kickstart(NSString *path) {
-    uint8_t **asmData = readasm([path UTF8String]);
+    uint8_t **asmData = sean16compiler([NSString stringWithFormat:@"sean16cmp %@ void", path]);
     
     if (asmData == NULL) {
         return;

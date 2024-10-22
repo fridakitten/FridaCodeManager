@@ -5,4 +5,4 @@
 // Created by SeanIsNotAConstant
 //
 
-int sean16compiler(NSString *arguments);
+uint8_t** sean16compiler(NSString *arguments);

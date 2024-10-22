@@ -14,6 +14,9 @@
 extern void *execute(void *arg);
 
 void bootloader(uint8_t binmap[1000][6]) {
+    // clear my screen
+    clearScreen();
+
     if(!fs_check()) {
         printf("[soc-bootloader-chip] initialising block device\n");
         fs_init();
@@ -56,7 +59,4 @@ void bootloader(uint8_t binmap[1000][6]) {
     // killing task
     printf("[soc-bootloader-chip] freeing process\n");
     proc_kill(child_task);
-
-    // clear my screen
-    clearScreen();
 }

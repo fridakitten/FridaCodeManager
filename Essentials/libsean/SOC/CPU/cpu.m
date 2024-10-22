@@ -17,11 +17,13 @@ static uint16_t reg[S_CPU_REGISTER_MAX];
 static uint16_t dummyreg[5];
 static uint8_t cpu_signal = 0;
 
-void send_cpu(uint8_t signal) {
+void send_cpu(uint8_t signal)
+{
     cpu_signal = signal;
 }
 
-uint16_t* getPointer(uint16_t value, uint8_t quad) {
+uint16_t* getPointer(uint16_t value, uint8_t quad)
+{
     if (value < 65) {
         return &reg[value];
     } else {
@@ -30,7 +32,8 @@ uint16_t* getPointer(uint16_t value, uint8_t quad) {
     }
 }
 
-void evaluate(int *i, int mode, int reg1, int reg2, int jmpaddr) {
+void evaluate(int *i, int mode, int reg1, int reg2, int jmpaddr)
+{
     if(mode == 0) { // EQUALS
         if(reg1 == reg2) {
             *i = jmpaddr - 1;
