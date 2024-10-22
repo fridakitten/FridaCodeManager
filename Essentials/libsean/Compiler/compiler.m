@@ -190,6 +190,19 @@ uint8_t** sean16compiler(NSString *arguments)
         array[0][1] = symbols[sym_count - 1].offset + 65;
     } else {
         printf("[!] \"MAIN\" LABEL not found. Make sure that its the last LABEL!\n");
+        for (int i = 0; i < argc; i++) {
+            free(argv[i]);
+        }
+        free(argv);
+
+        for (int i = 0; i < sym_count; i++) {
+            free(symbols[i].modified_str);
+        }
+
+        free_content(raw);
+
+        sym_count = 0;
+        roffset = 1;
         return NULL;
     }
 
