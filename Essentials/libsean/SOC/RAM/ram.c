@@ -16,14 +16,20 @@ typedef struct FreePageNode {
     struct FreePageNode *next;
 } FreePageNode;
 
-FreePageNode *free_pages = NULL;
+static FreePageNode *free_pages = NULL;
 
-page_t* genpage(void) {
+page_t* genpage(void)
+{
     if (free_pages != NULL) {
         FreePageNode *node = free_pages;
         page_t *page = node->page;
         free_pages = free_pages->next;
         free(node);
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 1024; j++) {
+                *(page->memory[i][j]) = 0;
+            }
+        }
         printf("[ram] reusing page %d\n", page->id);
         return page;
     } else if (current_addr + (1024 * 6) > S_RAMSIZE_MAX) {
@@ -49,12 +55,13 @@ page_t* genpage(void) {
         S_RAMSIZE_MAX - current_addr,
         (S_RAMSIZE_MAX - current_addr) / (1024.0 * 1024.0),
         current_addr);
-    
+
     current_page += 1;
     return page;
 }
 
-void freepage(page_t *page) {
+void freepage(page_t *page)
+{
     FreePageNode *node = malloc(sizeof(FreePageNode));
     if (node == NULL) {
         printf("[ram] Unable to free page: Out of memory\n");

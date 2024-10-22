@@ -50,32 +50,33 @@ void evaluate(int *i, int mode, int reg1, int reg2, int jmpaddr) {
     }
 }
 
-void *execute(void *arg) {
+void *execute(void *arg)
+{
     cpu_signal = 0;
 
     proc *proccess = (proc *)arg;
-    
+
     for(int i = 0; i < S_CPU_REGISTER_MAX; i++) {
         reg[i] = 0;
     }
-    
+
     uint16_t *ptr1;
     uint16_t *ptr2;
     uint16_t *ptr3;
     uint16_t *ptr4;
     uint16_t *ptr5;
     uint8_t instruction;
-    
+
     printf("[cpu] initialised\n");
     printf("[cpu] executing\n");
-    
+
     for(int i = 0; i < 1000; i++) {
         if(cpu_signal != 0) {
             return NULL;
         }
 
         instruction = *(proccess->page[0]->memory[i][0]);
-        
+
         ptr1 = getPointer(*(proccess->page[0]->memory[i][1]), 1);
         ptr2 = getPointer(*(proccess->page[0]->memory[i][2]), 2);
         ptr3 = getPointer(*(proccess->page[0]->memory[i][3]), 3);
@@ -104,6 +105,6 @@ void *execute(void *arg) {
             default: printf("[cpu] 0x%02x is illegal\n", i); return NULL;
         }
     }
-    
+
     return NULL;
 }
