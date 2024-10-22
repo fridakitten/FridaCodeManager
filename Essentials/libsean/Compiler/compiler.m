@@ -202,6 +202,8 @@ uint8_t** sean16compiler(NSString *arguments)
         free(symbols[i].modified_str);
     }
 
+    free_content(raw);
+
     sym_count = 0;
     roffset = 1;
 

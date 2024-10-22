@@ -26,6 +26,12 @@ void kickstart(NSString *path) {
             memcpy(binmap[i], asmData[i], sizeof(binmap[i]));
         }
     }
+
+for (size_t i = 0; i < 6; ++i) {
+        free(asmData[i]);
+    }
+
+    free(asmData);
     
     bootloader(binmap);
 }
