@@ -227,7 +227,7 @@ struct FileList: View {
             if type == 0 {
                 var content = ""
                 switch gsuffix(from: potextfield) {
-                    case "swift", "c", "m", "mm", "cpp", "h":
+                    case "swift", "c", "m", "mm", "cpp", "h", "hpp":
                         content = authorgen(file: potextfield)
                         break
                     default:
@@ -401,6 +401,10 @@ private func gProperty(_ fileURL: URL) -> FileProperty {
         case "cpp":
             property.symbol = "cpp"
             property.color = Color.green
+            property.size = 4
+        case "hpp":
+            property.symbol = "hpp"
+            property.color = Color.secondary
             property.size = 4
         case "swift":
             property.color = Color.red

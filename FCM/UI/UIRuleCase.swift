@@ -53,7 +53,7 @@ func grule(_ isaythis: String) -> [HighlightRule] {
                     TextFormattingRule(key: .foregroundColor, value: color6)
                 ])
             ]
-        case "c", "m", "cpp", "mm","h":
+        case "c","m","cpp","mm","h","hpp":
             return [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(struct|class|enum|nil|return)\\b", options: []), formattingRules: [
                     TextFormattingRule(key: .foregroundColor, value: color1)
