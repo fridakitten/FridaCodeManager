@@ -1,4 +1,4 @@
- /*
+/*
  ProjectView.swift
 
  Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
@@ -30,74 +30,56 @@ struct ProjectView: View {
     @State private var projrname: String = ""
     @State private var pathstate: String = ""
     @State private var action: Int = 0
+
+    @Binding var Projects: [Project]
     var body: some View {
         NavigationView {
             List {
-                Section {
-                    ForEach(GetProjects()) { Project in
-                        NavigationLink(destination: CodeSpace(ProjectInfo: Project, pathstate: $pathstate, action: $action)) {
-                            HStack {
-                                PubImg(projpath: "\(global_documents)/\(Project.Name)")
-                                Spacer().frame(width: 15)
-                                VStack(alignment: .leading) {
-                                    Text(Project.Executable)
-                                        .font(.system(size: 16))
-                                    Text(Project.BundleID)
-                                        .font(.system(size: 12))
-                                        .opacity(0.5)
+                ForEach(Dictionary(grouping: Projects, by: { $0.TYPE }).sorted(by: { $0.key < $1.key }), id: \.key) { type, projects in
+                    Section(header: Text(type)) {
+                        ForEach(projects) { Project in
+                            NavigationLink(destination: CodeSpace(ProjectInfo: Project, pathstate: $pathstate, action: $action)) {
+                                HStack {
+                                    PubImg(projpath: "\(global_documents)/\(Project.Name)")
+                                    Spacer().frame(width: 15)
+                                    VStack(alignment: .leading) {
+                                        Text(Project.Executable)
+                                            .font(.system(size: 16))
+                                        Text(Project.BundleID)
+                                            .font(.system(size: 12))
+                                            .opacity(0.5)
+                                   }
                                 }
-                            }
-                            .contextMenu {
-                                Section {
-                                    Button(action: {
-                                        DispatchQueue.global(qos: .utility).async {
-                                            ShowAlert(UIAlertController(title: "Building \(Project.Executable)", message: "", preferredStyle: .alert))
-                                            if exportApp(Project) == 0 {
-                                                DismissAlert {
-                                                    let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
-                                                    if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).ipa") {
-                                                        share(url: stabURL)
-                                                    }
-                                                }
-                                            } else { DismissAlert() }
+                                .contextMenu {
+                                    Section {
+                                        Button(action: {
+                                            app_btn(Project)
+                                        }) {
+                                            Label("Export App", systemImage: "app")
                                         }
-                                    }){
-                                        Label("Export App", systemImage: "app")
+                                        Button(action: {
+                                            proj_btn(Project)
+                                        }) {
+                                            Label("Export Project", systemImage: "archivebox")
+                                        }
                                     }
                                     Button(action: {
-                                        DispatchQueue.global(qos: .utility).async {
-                                            ShowAlert(UIAlertController(title: "Exporting \(Project.Executable)", message: "", preferredStyle: .alert))
-                                            if exportProj(Project) == 0 {
-                                                DismissAlert {
-                                                    let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
-                                                    if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).sproj") {
-                                                        share(url: stabURL)
-                                                    }
-                                                }
-                                            } else {
-                                                DismissAlert()
+                                        projname = Project.Name
+                                        projrname = Project.Executable
+                                        Prefs = true
+                                    }) {
+                                        Label("Project Preferences", systemImage: "gear")
+                                    }
+                                    Section {
+                                        Button(role: .destructive, action: {
+                                            projname = "\(global_documents)/\(Project.Name)"
+                                            projrname = "Remove \"\(Project.Executable)\"?"
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                Removal = true
                                             }
+                                        }) {
+                                            Label("Remove", systemImage: "trash")
                                         }
-                                    }){
-                                        Label("Export Project", systemImage: "archivebox")
-                                    }
-                                }
-                                Button(action: {
-                                    projname = Project.Name
-                                    projrname = Project.Executable
-                                    Prefs = true
-                                }){
-                                    Label("Project Preferences", systemImage: "gear")
-                                }
-                                Section {
-                                    Button(role: .destructive, action: {
-                                        projname = "\(global_documents)/\(Project.Name)"
-                                        projrname = "Remove \"\(Project.Executable)\"?"
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        Removal = true
-                                    }
-                                    }){
-                                        Label("Remove", systemImage: "trash")
                                     }
                                 }
                             }
@@ -105,7 +87,6 @@ struct ProjectView: View {
                     }
                 }
             }
-            .id(hello)
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Projects")
             .navigationBarTitleDisplayMode(.inline)
@@ -124,6 +105,34 @@ struct ProjectView: View {
                 .background(BackgroundClearView())
                 .edgesIgnoringSafeArea([.bottom])
             }
+        }
+    }
+
+    private func app_btn(_ Project: Project) -> Void {
+        DispatchQueue.global(qos: .utility).async {
+            ShowAlert(UIAlertController(title: "Building \(Project.Executable)", message: "", preferredStyle: .alert))
+            if exportApp(Project) == 0 {
+                DismissAlert {
+                    let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
+                    if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).ipa") {
+                        share(url: stabURL)
+                    }
+                }
+            } else { DismissAlert() }
+        }
+    }
+
+    private func proj_btn(_ Project: Project) -> Void {
+        DispatchQueue.global(qos: .utility).async {
+            ShowAlert(UIAlertController(title: "Exporting \(Project.Executable)", message: "", preferredStyle: .alert))
+            if exportProj(Project) == 0 {
+                DismissAlert {
+                    let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
+                    if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).sproj") {
+                        share(url: stabURL)
+                    }
+                }
+            } else { DismissAlert() }
         }
     }
 

@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Peripherals/Display/Display.h"
-#import "Peripherals/Mouse/Mouse.h""
+#import "Peripherals/Mouse/Mouse.h"
 
 void kickstart(NSString *path);
 TouchTracker *getTracker(void *arg);

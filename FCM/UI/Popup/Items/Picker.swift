@@ -1,17 +1,23 @@
 import SwiftUI
 
 struct PickerItems: Identifiable {
-    public let id: Int
-    public let name: String
+    let id: Int
+    let name: String
+}
+
+struct PickerArrays: Identifiable {
+    let id: UUID = UUID()
+    let title: String
+    let items: [PickerItems]
 }
 
 struct POPicker: View {
     let function: () -> Void
 
     var title: String
-    var items: [PickerItems]
+    var arrays: [PickerArrays]
     @Binding var type: Int
-    
+
     var body: some View  {
         HStack {
             VStack {
@@ -21,8 +27,12 @@ struct POPicker: View {
                         .foregroundColor(.primary)
                     Spacer()
                     Picker("", selection: $type) {
-                        ForEach(items) { item in
-                            Text(item.name).tag(item.id)
+                        ForEach(arrays) { item in
+                            Section(header: Text(item.title)) {
+                                ForEach(item.items) { item in
+                                     Text(item.name).tag(item.id)
+                                }
+                            }
                         }
                     }
                     .pickerStyle(MenuPickerStyle())
@@ -36,7 +46,7 @@ struct POPicker: View {
             .cornerRadius(10)
 
             Spacer()
-            
+
             Button(action: {
                 function()
             }, label: {

@@ -195,7 +195,7 @@ struct FileList: View {
                     case .create:
                         POHeader(title: "Create")
                         POTextField(title: "Filename", content: $potextfield)
-                        POPicker(function: create_selected, title: "Type", items: [PickerItems(id: 0, name: "File"), PickerItems(id: 1, name: "Folder")], type: $type)
+                        POPicker(function: create_selected, title: "Type", arrays: [PickerArrays(title: "Type", items: [PickerItems(id: 0, name: "File"), PickerItems(id: 1, name: "Folder")])], type: $type)
                     case .rename:
                         POHeader(title: "Rename")
                         POTextField(title: "Filename", content: $potextfield)
