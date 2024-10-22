@@ -14,4 +14,7 @@
 #import <libzip/libzip.h>
 #import <libdycall/dyexec.h>
 
+//sean16 architecture
+#import <libsean/ios.h>
+
 #endif // BRIDGE_H

@@ -18,24 +18,24 @@ endif
 PLF := -LEssentials/lib/prebuild -LEssentials/lib/build
 
 # Targets
-all: LF := -lroot -lfcm  -lzip
+all: LF := -lroot -lfcm  -lzip -lsean
 all: ARCH := iphoneos-arm64
 all: JB_PATH := /var/jb/
 all: TARGET := jailbreak
 all: greet compile_swift sign package_fs clean done
 
-roothide: LF := -lroot -lfcm  -lzip
+roothide: LF := -lroot -lfcm  -lzip -lsean
 roothide: ARCH := iphoneos-arm64e
 roothide: JB_PATH := /
 roothide: TARGET := jailbreak
 roothide: greet compile_swift sign  package_fs clean done
 
-trollstore: LF := -lfcm -lzip
+trollstore: LF := -lfcm -lzip -lsean
 trollstore: TARGET := trollstore
 trollstore: greet compile_swift sign makechain ipa clean done
 
 # under construction!!!
-stock: LF := -lfcm -lzip -ldycall
+stock: LF := -lfcm -lzip -ldycall -lsean
 stock: TARGET := stock
 stock: greet compile_swift makechain_jailed ipa clean done
 
