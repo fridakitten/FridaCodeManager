@@ -187,7 +187,11 @@ struct CodeSpace: View {
     var body: some View {
         FileList(title: ProjectInfo.Executable, directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, actpath: $pathstate, action: $action)
             .fullScreenCover(isPresented: $buildv) {
-                buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
+                if ProjectInfo.SDK != "sean16runtime" {
+                    buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
+                } else {
+                    sean16View(ProjectInfo: ProjectInfo, buildv: $buildv)
+                }
             }
     }
 }
@@ -257,5 +261,20 @@ struct buildView: View {
                 }
             }
         }
+    }
+}
+
+struct sean16View: View {
+    @State var ProjectInfo: Project
+    @Binding var buildv: Bool
+
+    var body: some View {
+        ScreenEmulator()
+            .frame(width: screenWidth, height: screenWidth)
+            .onAppear {
+                serialQueue.async {
+                    runtime_sean16(ProjectInfo)
+                }
+            }
     }
 }
