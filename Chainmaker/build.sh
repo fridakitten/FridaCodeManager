@@ -34,7 +34,7 @@ CHAIN_RPATH=@loader_path/../lib
 ## COPY STAGE ##
 echo -e "\e[38;5;208mcopy stage\e[0m"
 binaries=("dash" "echo" "ld" "ln" "install_name_tool" "otool" "ldid" "zip" "unzip" "killall")
-libraries=("libedit.0.dylib" "libiosexec.1.dylib" "libreadline.8.dylib" "libhistory.8.dylib" "libncursesw.6.dylib" "libintl.8.dylib" "libzstd.1.dylib" "libxar.1.dylib" "libcrypto.3.dylib" "libuuid.16.dylib" "libtapi.dylib" "libplist-2.0.3.dylib" "libcares.2.dylib" "libnghttp2.14.dylib" "libidn2.0.dylib" "librtmp.1.dylib" "libgmp.10.dylib" "libgnutls.30.dylib" "libhogweed.6.dylib" "libnettle.8.dylib" "libssh2.1.dylib" "libssl.3.dylib" "libbrotlidec.1.dylib" "libbrotlicommon.1.dylib" "libunistring.5.dylib" "libp11-kit.0.dylib" "libtasn1.6.dylib" "libffi.8.dylib")
+libraries=("libedit.0.dylib" "libiosexec.1.dylib" "libreadline.8.dylib" "libhistory.8.dylib" "libncursesw.6.dylib" "libzstd.1.dylib" "libxar.1.dylib" "libcrypto.3.dylib" "libtapi.dylib" "libplist-2.0.3.dylib" "libp11-kit.0.dylib" "libtasn1.6.dylib" "libffi.8.dylib")
 
 for binary in "${binaries[@]}"; do
     cp $ROOT_BIN/$binary $CHAIN_BIN/$binary

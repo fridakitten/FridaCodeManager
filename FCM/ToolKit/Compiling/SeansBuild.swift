@@ -179,7 +179,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     if ProjectInfo.TYPE == "Applications" {
         messenger(status,progress,"compressing \(ProjectInfo.Executable) into .ipa archive",0.5)
         #if !stock
-        shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'")
+        shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'", uid: 0)
         #endif
 
         libzip_zip("\(ProjectInfo.ProjectPath)/Payload", "\(ProjectInfo.ProjectPath)/ts.ipa", true)

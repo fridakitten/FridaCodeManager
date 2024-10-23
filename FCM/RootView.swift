@@ -36,9 +36,9 @@ struct RootView: View {
                 .tabItem {
                     Label("Projects", systemImage: "folder")
                 }
-            StatsView()
+            WikiView()
                 .tabItem {
-                    Label("Stats", systemImage: "chart.line.uptrend.xyaxis")
+                    Label("Wiki", systemImage: "book.fill")
                 }
             Settings()
                 .tabItem {
