@@ -56,7 +56,7 @@ struct Home: View {
                     POHeader(title: "Create Project")
                     POTextField(title: "Application Name", content: $AppName)
                     POTextField(title: "Bundle Identifier", content: $BundleID)
-                    POPicker(function: createProject_trigger, title: "Scheme", arrays: [PickerArrays(title: "App", items: [PickerItems(id: 1, name: "Swift"), PickerItems(id: 2, name: "ObjC"), PickerItems(id: 1, name: "Swift/ObjC")]), PickerArrays(title: "Binary", items: [PickerItems(id: 4, name: "C")])], type: $type)
+                    POPicker(function: createProject_trigger, title: "Scheme", arrays: [PickerArrays(title: "App", items: [PickerItems(id: 1, name: "Swift"), PickerItems(id: 2, name: "ObjC"), PickerItems(id: 3, name: "Swift/ObjC")]), PickerArrays(title: "Binary", items: [PickerItems(id: 4, name: "C")])], type: $type)
                 }
                 .background(BackgroundClearView())
                 .edgesIgnoringSafeArea([.bottom])
