@@ -28,9 +28,17 @@ struct POPicker: View {
                     Spacer()
                     Picker("", selection: $type) {
                         ForEach(arrays) { item in
-                            Section(header: Text(item.title)) {
-                                ForEach(item.items) { item in
-                                     Text(item.name).tag(item.id)
+                            if ProcessInfo.processInfo.isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 16, minorVersion: 0, patchVersion: 0)) {
+                                Section(header: Text(item.title)) {
+                                    ForEach(item.items) { subItem in
+                                        Text(subItem.name).tag(subItem.id)
+                                    }
+                                }
+                            } else {
+                                Section {
+                                    ForEach(item.items) { subItem in
+                                        Text("\(subItem.name) (\(item.title))").tag(subItem.id)
+                                    }
                                 }
                             }
                         }
