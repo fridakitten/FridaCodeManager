@@ -106,11 +106,11 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
     let SDK: String = UserDefaults.standard.string(forKey: "sdk") ?? "iPhoneOS15.6.sdk"
     let TYPE: String = {
         switch type {
-            case 1, 2, 3:
+            case 1, 2, 3, 5:
                 return "Applications"
             case 4:
                 return "Utilities"
-            case 5:
+            case 6:
                 return "Sean16"
             default:
                 return "Applications"
@@ -167,6 +167,13 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
                 break
             case 4: // C Binary
                 FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.c", contents: Data("\(authorgen(file: "main.c"))#include <stdio.h>\n\nint main(void) {\n    printf(\"Hello, World\");\n}".utf8))
+                break
+            case 5: // Swift/C++ App
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/My App.swift", contents: Data("\(authorgen(file: "My App.swift"))import SwiftUI\n\n@main\nstruct MyApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/ContentView.swift", contents: Data("\(authorgen(file: "ContentView.swift"))import Foundation\nimport SwiftUI\n\nstruct ContentView: View {\n    var body: some View {\n        Button(\"Test\") {\n            test()\n        }\n    }\n}".utf8))
+                FileManager.default.createFile(atPath:"\(global_documents)/\(v2uuid)/bridge.h", contents: Data("\(authorgen(file: "bridge.h"))int test();".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/main.cpp", contents: Data("\(authorgen(file: "main.cpp"))#include <iostream>\n\nextern \"C\" {\n\nint test() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}\n\n}".utf8))
+                FileManager.default.createFile(atPath: "\(global_documents)/\(v2uuid)/api.api", contents: Data("<api>\n    <version>1.1</version>\n    <build>-lc -lc++</build>\n</api>".utf8))
                 break
             default:
                 return 2

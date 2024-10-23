@@ -62,7 +62,7 @@ struct RootView: View {
 func GetProjectsBind(Projects: Binding<[Project]>) -> Void {
     DispatchQueue.global(qos: .background).async {
         do {
-            var currentProjects = Projects.wrappedValue
+            let currentProjects = Projects.wrappedValue
             var foundProjectNames = Set<String>()
 
             for Item in try FileManager.default.contentsOfDirectory(atPath: global_documents) {
