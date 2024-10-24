@@ -37,26 +37,45 @@ struct NeoEditorHelper: View {
             }
         }
         .onAppear {
+            UIInit(type: 1)
             ready = true
+        }
+        .onDisappear {
+            UIInit(type: 0)
         }
     }
 }
 
 struct NeoEditor: UIViewRepresentable {
-    
     let navigationBar: UINavigationBar
     let lineNumberLabel: UILabel
     let highlightRules: [HighlightRule]
     let filepath: String
     let filename: String
     @Binding var sheet: Bool
-    
+
+    let font: UIFont = {
+        let bold: Bool = UserDefaults.standard.bool(forKey: "fbold")
+
+        let name: String = UserDefaults.standard.string(forKey: "fontname") ?? "Menlo"
+
+        let size: CGFloat = {
+            if let sizeUnwrapped = UserDefaults.standard.value(forKey: "savedfont") as? CGFloat {
+                return sizeUnwrapped
+            } else {
+                return 13.0
+            }
+        }()
+
+        return UIFont(name: "\(name)\(bold ? "-Bold" : "")", size: size) ?? UIFont.systemFont(ofSize: size)
+    }()
+
     init(
         isPresented: Binding<Bool>,
         filepath: String
     ) {
         _sheet = isPresented
-        
+
         self.filepath = filepath
         self.filename = {
             if let fileURL = URL(string: filepath) {
@@ -65,12 +84,12 @@ struct NeoEditor: UIViewRepresentable {
                 return "NULL"
             }
         }()
-        
+
         self.highlightRules = grule(gsuffix(from: filename))
         navigationBar = UINavigationBar()
         lineNumberLabel = UILabel()
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -79,7 +98,7 @@ struct NeoEditor: UIViewRepresentable {
         let containerView = UIView()
 
         let navigationItem = UINavigationItem(title: "Code Editor")
-        
+
         let textView = UITextView()
 
         let saveButton = ClosureBarButtonItem(title: "Save", style: .plain) {
@@ -97,7 +116,7 @@ struct NeoEditor: UIViewRepresentable {
                 print("[*] error to retrieve content\n")
             }
         }
-        
+
         let closeButton = ClosureBarButtonItem(title: "Close", style: .plain) {
             sheet = false
         }
@@ -120,9 +139,9 @@ struct NeoEditor: UIViewRepresentable {
         textView.delegate = context.coordinator
         context.coordinator.applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
         context.coordinator.runIntrospect(textView)
-        
+
         textView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         containerView.addSubview(navigationBar)
         containerView.addSubview(textView)
 
@@ -135,8 +154,8 @@ struct NeoEditor: UIViewRepresentable {
             textView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             textView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
-        
-        textView.backgroundColor = .clear
+
+        textView.backgroundColor = UIColor.systemGray6
         textView.tintColor = UIColor(Color.primary)
         textView.keyboardType = .asciiCapable
         textView.textContentType = .none
@@ -148,32 +167,28 @@ struct NeoEditor: UIViewRepresentable {
         textView.layoutManager.allowsNonContiguousLayout = false
         textView.layer.shouldRasterize = true
         textView.layer.rasterizationScale = UIScreen.main.scale
-        
+
         setupToolbar(textView: textView)
-        
+
         return containerView
     }
 
     func setupToolbar(textView: UITextView) {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
-        
-        // Create the "Tab" button
+
         let tabButton = ClosureBarButtonItem(title: "Tab", style: .plain) {
             insertTextAtCurrentPosition(textView: textView, newText: "\t")
         }
-        
-        // Create flexible space
+
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 
-        // Create the line label
         let lineLabel = UILabel()
         lineLabel.text = "Line"
         lineLabel.sizeToFit()
         lineLabel.lineBreakMode = .byWordWrapping
         lineLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        // Create the line number label
         lineNumberLabel.text = "n/a"
         lineNumberLabel.sizeToFit()
         lineNumberLabel.lineBreakMode = .byWordWrapping
@@ -181,32 +196,27 @@ struct NeoEditor: UIViewRepresentable {
         lineNumberLabel.font = UIFont.boldSystemFont(ofSize: 15) // Make the line number bold
         lineNumberLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        // Create a stack view to hold the line label and line number label
         let stackView = UIStackView(arrangedSubviews: [lineLabel, lineNumberLabel])
         stackView.axis = .horizontal
         stackView.spacing = 4 // Add spacing between "Line" and line number
         stackView.translatesAutoresizingMaskIntoConstraints = false
 
-        // Create a bar button item for the stack view
         let stackItem = UIBarButtonItem(customView: stackView)
 
-        // Add items to the toolbar
         toolbar.items = [tabButton, flexibleSpace, stackItem]
 
-        // Set the text view's delegate to self
         textView.inputAccessoryView = toolbar
-        
-        // Set content hugging and compression resistance priorities
+
         lineNumberLabel.setContentHuggingPriority(.required, for: .horizontal)
         lineNumberLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
-    
+
     func insertTextAtCurrentPosition(textView: UITextView, newText: String) {
         if let selectedRange = textView.selectedTextRange {
             textView.replace(selectedRange, withText: newText)
         }
     }
-    
+
     func updateUIView(_ uiView: UIView, context: Context) { }
 
     final class Coordinator: NSObject, UITextViewDelegate {
@@ -219,11 +229,11 @@ struct NeoEditor: UIViewRepresentable {
         init(_ markdownEditorView: NeoEditor) {
             self.parent = markdownEditorView
         }
-        
+
         func runIntrospect(_ textView: UITextView) {
-            textView.font = UIFont(name: "Menlo", size: 13.0)
+            textView.font = self.parent.font
         }
-        
+
         private func getCaretLineRange(for textView: UITextView) -> NSRange? {
             guard let textRange = textView.selectedTextRange else {
                 return nil
@@ -235,15 +245,15 @@ struct NeoEditor: UIViewRepresentable {
             let text = textView.text as NSString
 
             let lineRange = text.lineRange(for: NSRange(location: caretIndex, length: 0))
-            
+
             return lineRange
         }
 
         func textViewDidChange(_ textView: UITextView) {
             editing = true
-            
+
             debounceTimer?.invalidate()
-            
+
             debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
                 guard textView.markedTextRange == nil else { return }
 
@@ -257,11 +267,11 @@ struct NeoEditor: UIViewRepresentable {
                 self?.runIntrospect(textView)
             }
         }
-        
+
         func textViewDidBeginEditing(_ textView: UITextView) {
             gimmetheline(textView)
         }
-        
+
         func applyHighlighting(to textView: UITextView, with visibleRange: NSRange) {
             textView.textStorage.beginEditing()
             textView.textStorage.addAttribute(.foregroundColor, value: UIColor.label, range: visibleRange)
@@ -284,7 +294,7 @@ struct NeoEditor: UIViewRepresentable {
                     }
                 }
             }
-            
+
             textView.textStorage.endEditing()
         }
 
@@ -301,7 +311,7 @@ struct NeoEditor: UIViewRepresentable {
             let characterIndex = textView.offset(from: textView.beginningOfDocument, to: selectedTextRange.start)
 
             let textBeforeCaret = textView.text.prefix(characterIndex)
-            
+
             DispatchQueue.global(qos: .userInitiated).async {
 
                 let logicalLineNumber = textBeforeCaret.filter { $0.isNewline }.count + 1
