@@ -1,5 +1,5 @@
 /*
-UIHighlightEngine.swift
+UINeoEditor.swift
 
 Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
 Copyright (C) 2024 fridakitten
@@ -25,7 +25,7 @@ import SwiftUI
 import UIKit
 import Foundation
 
-struct HighlightedTextEditor: UIViewRepresentable {
+struct NeoEditor: UIViewRepresentable {
     
     let navigationBar: UINavigationBar
     let lineNumberLabel: UILabel
@@ -76,13 +76,17 @@ struct HighlightedTextEditor: UIViewRepresentable {
                 } catch {
                     print("Failed to write to file: \(error)")
                 }
-                sheet = false
             } else {
                 print("[*] error to retrieve content\n")
             }
         }
+        
+        let closeButton = ClosureBarButtonItem(title: "Close", style: .plain) {
+            sheet = false
+        }
 
         navigationItem.rightBarButtonItem = saveButton
+        navigationItem.leftBarButtonItem = closeButton
 
         navigationBar.setItems([navigationItem], animated: false)
         navigationBar.translatesAutoresizingMaskIntoConstraints = false
@@ -101,7 +105,7 @@ struct HighlightedTextEditor: UIViewRepresentable {
         context.coordinator.runIntrospect(textView)
         
         textView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         containerView.addSubview(navigationBar)
         containerView.addSubview(textView)
 
@@ -189,13 +193,13 @@ struct HighlightedTextEditor: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: Context) { }
 
     final class Coordinator: NSObject, UITextViewDelegate {
-        var parent: HighlightedTextEditor
+        var parent: NeoEditor
         var selectedTextRange: UITextRange?
         var updatingUIView = false
         var debounceTimer: Timer?
         var editing: Bool = false
 
-        init(_ markdownEditorView: HighlightedTextEditor) {
+        init(_ markdownEditorView: NeoEditor) {
             self.parent = markdownEditorView
         }
         
@@ -203,28 +207,31 @@ struct HighlightedTextEditor: UIViewRepresentable {
             textView.font = UIFont(name: "Menlo", size: 13.0)
         }
         
-        private func getVisibleRange(for textView: UITextView) -> NSRange {
-            let layoutManager = textView.layoutManager
-            let textContainer = textView.textContainer
-            let visibleRect = textView.bounds
+        private func getCaretLineRange(for textView: UITextView) -> NSRange? {
+            guard let textRange = textView.selectedTextRange else {
+                return nil
+            }
 
-            let visibleGlyphRange = layoutManager.glyphRange(forBoundingRect: visibleRect, in: textContainer)
+            let caretPosition = textRange.start
+            let caretIndex = textView.offset(from: textView.beginningOfDocument, to: caretPosition)
 
-            let startIndex = layoutManager.characterIndexForGlyph(at: visibleGlyphRange.location)
-            let endIndex = layoutManager.characterIndexForGlyph(at: NSMaxRange(visibleGlyphRange))
+            let text = textView.text as NSString
+
+            let lineRange = text.lineRange(for: NSRange(location: caretIndex, length: 0))
             
-            return NSRange(location: startIndex, length: endIndex - startIndex)
+            return lineRange
         }
 
         func textViewDidChange(_ textView: UITextView) {
             editing = true
+            
             debounceTimer?.invalidate()
             
             debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
                 guard textView.markedTextRange == nil else { return }
 
                 let currentSelectedRange = textView.selectedTextRange
-                let visibleRange = self?.getVisibleRange(for: textView) ?? NSRange(location: 0, length: 0)
+                let visibleRange = self?.getCaretLineRange(for: textView) ?? NSRange(location: 0, length: 0)
 
                 self?.applyHighlighting(to: textView, with: visibleRange)
 
@@ -238,22 +245,9 @@ struct HighlightedTextEditor: UIViewRepresentable {
             gimmetheline(textView)
         }
         
-        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-            if editing {
-                if let textView = scrollView as? UITextView {
-                    applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
-                    runIntrospect(textView)
-                    editing = false
-                    textView.endEditing(true)
-                }
-            }
-        }
-        
         func applyHighlighting(to textView: UITextView, with visibleRange: NSRange) {
-            let fullRange = NSRange(location: 0, length: textView.text.utf16.count)
-
             textView.textStorage.beginEditing()
-            textView.textStorage.addAttribute(.foregroundColor, value: UIColor.label, range: fullRange)
+            textView.textStorage.addAttribute(.foregroundColor, value: UIColor.label, range: visibleRange)
 
             self.parent.highlightRules.forEach { rule in
                 let matches = rule.pattern.matches(in: textView.text, options: [], range: visibleRange)
@@ -363,12 +357,6 @@ class ClosureBarButtonItem: UIBarButtonItem {
 }
 
 // MARK: Highlighting Ruler
-func gsuffix(from fileName: String) -> String {
-    let trimmedFileName = fileName.replacingOccurrences(of: " ", with: "")
-    let suffix = URL(string: trimmedFileName)?.pathExtension
-    return suffix ?? ""
-}
-
 func grule(_ isaythis: String) -> [HighlightRule] {
    let color1: UIColor = UIColor(red: 1.0, green: 0.2, blue: 0.6, alpha: 1.0)
    let color2: UIColor = UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0)

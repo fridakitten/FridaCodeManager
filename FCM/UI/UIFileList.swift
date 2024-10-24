@@ -215,7 +215,7 @@ struct FileList: View {
             }
         }
         .fullScreenCover(isPresented: $quar) {
-            CodeEditorView(quar: $quar, filePath: $selpath)
+            NeoEditor(isPresented: $quar, filepath: selpath)
         }
         .fullScreenCover(isPresented: $fbool) {
             ImageView(imagePath: $selpath, fbool: $fbool)

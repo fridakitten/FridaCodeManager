@@ -48,7 +48,7 @@ struct CodeEditorPreview: View {
                 loadColor("C7")
                     .ignoresSafeArea()
             }
-            HighlightedTextEditor(text: $text, highlightRules: rules)
+/*            HighlightedTextEditor(text: $text, highlightRules: rules)
                 .introspect { editor in
                      editor.textView.font = UIFont(name: "\(fname)\(bold ? "-Bold" : "")", size: font)
                      editor.textView.backgroundColor = .clear
@@ -69,7 +69,7 @@ struct CodeEditorPreview: View {
                          editor.textView.layer.shadowOpacity = 0.2
                          editor.textView.layer.shadowOffset = CGSize(width: 0, height: 1)
                      }
-                }
+                }*/
         }
     }
 }
