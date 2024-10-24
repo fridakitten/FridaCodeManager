@@ -25,6 +25,23 @@ import SwiftUI
 import UIKit
 import Foundation
 
+struct NeoEditorHelper: View {
+    @Binding var isPresented: Bool
+    @Binding var filepath: String
+    @State var ready: Bool = false
+
+    var body: some View {
+        VStack {
+            if ready {
+                NeoEditor(isPresented: $isPresented, filepath: filepath)
+            }
+        }
+        .onAppear {
+            ready = true
+        }
+    }
+}
+
 struct NeoEditor: UIViewRepresentable {
     
     let navigationBar: UINavigationBar
