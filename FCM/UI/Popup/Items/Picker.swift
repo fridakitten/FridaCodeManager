@@ -27,16 +27,18 @@ struct POPicker: View {
                         .foregroundColor(.primary)
                     Spacer()
                     Picker("", selection: $type) {
-                        ForEach(arrays) { item in
-                            if ProcessInfo.processInfo.isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 16, minorVersion: 0, patchVersion: 0)) {
+                        if isiOS16 {
+                            ForEach(arrays) { item in
                                 Section(header: Text(item.title)) {
                                     ForEach(item.items) { subItem in
                                         Text(subItem.name).tag(subItem.id)
                                     }
                                 }
-                            } else {
+                            }
+                        } else {
+                            ForEach(arrays.reversed()) { item in
                                 Section {
-                                    ForEach(item.items) { subItem in
+                                    ForEach(item.items.reversed()) { subItem in
                                         Text("\(subItem.name) (\(item.title))").tag(subItem.id)
                                     }
                                 }

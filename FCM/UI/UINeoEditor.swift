@@ -385,12 +385,12 @@ class ClosureBarButtonItem: UIBarButtonItem {
 
 // MARK: Highlighting Ruler
 func grule(_ isaythis: String) -> [HighlightRule] {
-   let color1: UIColor = UIColor(red: 1.0, green: 0.2, blue: 0.6, alpha: 1.0)
-   let color2: UIColor = UIColor(red: 0, green: 0.6, blue: 0.498, alpha: 1.0)
-   let color3: UIColor = UIColor(red: 0.7137, green: 0, blue: 1, alpha: 1.0)
-   let color4: UIColor = UIColor(red: 0.7569, green: 0.2039, blue: 0.3882, alpha: 1.0)
-   let color5: UIColor = UIColor(red: 0, green: 0.4824, blue: 0.9098, alpha: 1.0)
-   let color6: UIColor = UIColor(red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0)
+   let color1: UIColor = UIColor(loadColor("C1"))
+   let color2: UIColor = UIColor(loadColor("C2"))
+   let color3: UIColor = UIColor(loadColor("C3"))
+   let color4: UIColor = UIColor(loadColor("C4"))
+   let color5: UIColor = UIColor(loadColor("C5"))
+   let color6: UIColor = UIColor(loadColor("C6"))
 
    switch(isaythis) {
        case "swift":
