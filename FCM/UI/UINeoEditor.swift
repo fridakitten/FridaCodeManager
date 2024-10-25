@@ -53,7 +53,6 @@ struct NeoEditorConfig {
 }
 
 struct NeoEditor: UIViewRepresentable {
-    
     let navigationBar: UINavigationBar
     let lineNumberLabel: UILabel
     let highlightRules: [HighlightRule]
@@ -63,11 +62,11 @@ struct NeoEditor: UIViewRepresentable {
     // not checking over and over again, please no, we dont wanna do the yandere dev!
     let config: NeoEditorConfig = {
         let userInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
-        
+
         // temporary placeholder
         var tmpFont: UIFont
         var tmpBackground: UIColor
-        
+
         // placeholder initialisation
         if userInterfaceStyle == .light {
              tmpFont = UIFont.monospacedSystemFont(ofSize: 12.0, weight: UIFont.Weight.medium)
@@ -79,18 +78,18 @@ struct NeoEditor: UIViewRepresentable {
         } else {
             tmpBackground = UIColor(red: 31.0/255.0, green: 31.0/255.0, blue: 36.0/255.0, alpha: 1.0)
         }
-        
+
         return NeoEditorConfig(background: tmpBackground, font: tmpFont)
     }()
-    
+
     @Binding var sheet: Bool
-    
+
     init(
         isPresented: Binding<Bool>,
         filepath: String
     ) {
         _sheet = isPresented
-        
+
         self.filepath = filepath
         self.filename = {
             if let fileURL = URL(string: filepath) {
@@ -99,12 +98,12 @@ struct NeoEditor: UIViewRepresentable {
                 return "NULL"
             }
         }()
-        
+
         self.highlightRules = grule(gsuffix(from: filename))
         navigationBar = UINavigationBar()
         lineNumberLabel = UILabel()
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -225,13 +224,13 @@ struct NeoEditor: UIViewRepresentable {
         lineNumberLabel.setContentHuggingPriority(.required, for: .horizontal)
         lineNumberLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
-        
+
     func insertTextAtCurrentPosition(textView: UITextView, newText: String) {
         if let selectedRange = textView.selectedTextRange {
             textView.replace(selectedRange, withText: newText)
         }
     }
-    
+
     func updateUIView(_ uiView: UIView, context: Context) { }
 
     final class Coordinator: NSObject, UITextViewDelegate {
@@ -242,11 +241,11 @@ struct NeoEditor: UIViewRepresentable {
         init(_ markdownEditorView: NeoEditor) {
             self.parent = markdownEditorView
         }
-        
+
         func runIntrospect(_ textView: UITextView) {
             textView.font = parent.config.font
         }
-        
+
         private func getCaretLineRange(for textView: UITextView) -> NSRange? {
             guard let textRange = textView.selectedTextRange else {
                 return nil
@@ -258,22 +257,22 @@ struct NeoEditor: UIViewRepresentable {
             let text = textView.text as NSString
 
             let lineRange = text.lineRange(for: NSRange(location: caretIndex, length: 0))
-            
+
             return lineRange
         }
 
         func textViewDidChange(_ textView: UITextView) {
             let customTextView = textView as! CustomTextView
             if customTextView.didPasted {
-                applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
+                applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf8.count))
                 customTextView.didPasted = false
             }
-            
+
             if let visibleRange = getCaretLineRange(for: textView) {
                 applyHighlighting(to: textView, with: visibleRange)
             }
         }
-        
+
         func applyHighlighting(to textView: UITextView, with visibleRange: NSRange) {
             textView.textStorage.beginEditing()
             textView.textStorage.addAttribute(.foregroundColor, value: UIColor.label, range: visibleRange)
@@ -302,15 +301,15 @@ struct NeoEditor: UIViewRepresentable {
             }
             textView.textStorage.endEditing()
         }
-        
+
         func textViewDidBeginEditing(_ textView: UITextView) {
             gimmetheline(textView)
         }
-        
+
         func textViewDidChangeSelection(_ textView: UITextView) {
             gimmetheline(textView)
         }
-        
+
         func gimmetheline(_ textView: UITextView) {
             guard let selectedTextRange = textView.selectedTextRange else {
                 parent.lineNumberLabel.text = "Error"
@@ -320,7 +319,7 @@ struct NeoEditor: UIViewRepresentable {
             let characterIndex = textView.offset(from: textView.beginningOfDocument, to: selectedTextRange.start)
 
             let textBeforeCaret = textView.text.prefix(characterIndex)
-                    
+
             DispatchQueue.global(qos: .userInitiated).async {
                 let logicalLineNumber = textBeforeCaret.filter { $0.isNewline }.count + 1
                 DispatchQueue.main.async {
@@ -336,7 +335,7 @@ class CustomTextView: UITextView {
     var markedTextNSRange: NSRange? {
         markedTextRange.map { NSRange(location: offset(from: beginningOfDocument, to: $0.start), length: offset(from: $0.start, to: $0.end)) }
     }
-    
+
     override func paste(_ sender: Any?) {
         didPasted = true
         super.paste(sender)
@@ -399,9 +398,8 @@ class ClosureBarButtonItem: UIBarButtonItem {
 
 // MARK: Highlighting Ruler
 func grule(_ isaythis: String) -> [HighlightRule] {
-    
     let userInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
-    
+
     var color1: UIColor = UIColor.clear
     var color2: UIColor = UIColor.clear
     var color4: UIColor = UIColor.clear
@@ -410,7 +408,7 @@ func grule(_ isaythis: String) -> [HighlightRule] {
     var color7: UIColor = UIColor.clear
     var color8: UIColor = UIColor.clear
     var color9: UIColor = UIColor.clear
-    
+
     if userInterfaceStyle == .light {
         color1 = UIColor(red: 155.0/255.0, green: 35.0/255.0, blue: 147.0/255.0, alpha: 1.0)  // Keywords
         color2 = UIColor(red: 28.0/255.0, green: 70.0/255.0,   blue: 74.0/255.0, alpha: 1.0)  // Structure or Class Name

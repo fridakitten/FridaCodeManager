@@ -26,19 +26,11 @@ import SwiftUI
 struct MyApp: App {
     init() {
         UIInit(type: 0)
-        UpdateFixer()
     }
 
     var body: some Scene {
         WindowGroup {
             RootView()
-        }
-    }
-
-    private func UpdateFixer() -> Void {
-        if !UserDefaults.standard.bool(forKey: "ui_update152") {
-            resetlayout()
-            UserDefaults.standard.set(true, forKey: "ui_update152")
         }
     }
 }
