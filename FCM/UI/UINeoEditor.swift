@@ -46,6 +46,12 @@ struct NeoEditorHelper: View {
     }
 }
 
+// configuration for NeoEditor
+struct NeoEditorConfig {
+    let background: UIColor
+    let font: UIFont
+}
+
 struct NeoEditor: UIViewRepresentable {
     
     let navigationBar: UINavigationBar
@@ -53,6 +59,30 @@ struct NeoEditor: UIViewRepresentable {
     let highlightRules: [HighlightRule]
     let filepath: String
     let filename: String
+
+    // not checking over and over again, please no, we dont wanna do the yandere dev!
+    let config: NeoEditorConfig = {
+        let userInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
+        
+        // temporary placeholder
+        var tmpFont: UIFont
+        var tmpBackground: UIColor
+        
+        // placeholder initialisation
+        if userInterfaceStyle == .light {
+             tmpFont = UIFont.monospacedSystemFont(ofSize: 12.0, weight: UIFont.Weight.medium)
+        } else {
+             tmpFont = UIFont.monospacedSystemFont(ofSize: 12.0, weight: UIFont.Weight.medium)
+        }
+        if userInterfaceStyle == .light {
+            tmpBackground = UIColor(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 1.0)
+        } else {
+            tmpBackground = UIColor(red: 31.0/255.0, green: 31.0/255.0, blue: 36.0/255.0, alpha: 1.0)
+        }
+        
+        return NeoEditorConfig(background: tmpBackground, font: tmpFont)
+    }()
+    
     @Binding var sheet: Bool
     
     init(
@@ -140,7 +170,7 @@ struct NeoEditor: UIViewRepresentable {
             textView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
 
-        textView.backgroundColor = UIColor(red: 31.0/255.0, green: 31.0/255.0, blue: 36.0/255.0, alpha: 1.0)
+        textView.backgroundColor = config.background
         textView.tintColor = UIColor(Color.primary)
         textView.keyboardType = .asciiCapable
         textView.textContentType = .none
@@ -214,7 +244,7 @@ struct NeoEditor: UIViewRepresentable {
         }
         
         func runIntrospect(_ textView: UITextView) {
-            textView.font = UIFont.monospacedSystemFont(ofSize: 10.0, weight: UIFont.Weight.medium)
+            textView.font = parent.config.font
         }
         
         private func getCaretLineRange(for textView: UITextView) -> NSRange? {
@@ -369,15 +399,37 @@ class ClosureBarButtonItem: UIBarButtonItem {
 
 // MARK: Highlighting Ruler
 func grule(_ isaythis: String) -> [HighlightRule] {
-    let color1: UIColor = UIColor(red: 252.0/255.0, green: 95.0/255.0, blue: 163.0/255.0, alpha: 1.0)
-    let color2: UIColor = UIColor(red: 93.0/255.0, green: 216.0/255.0, blue: 255.0/255.0, alpha: 1.0)
-    //let color3: UIColor = UIColor(red: 208.0/255.0, green: 168.0/255.0, blue: 255.0/255.0, alpha: 1.0)
-    let color4: UIColor = UIColor(red: 208.0/255.0, green: 191.0/255.0, blue: 105.0/255.0, alpha: 1.0)
-    let color5: UIColor = UIColor(red: 108.0/255.0, green: 121.0/255.0, blue: 134.0/255.0, alpha: 1.0)
-    let color6: UIColor = UIColor(red: 252.0/255.0, green: 106.0/255.0, blue: 93.0/255.0, alpha: 1.0)
-    let color7: UIColor = UIColor(red: 208.0/255.0, green: 168.0/255.0, blue: 255.0/255.0, alpha: 1.0)
-    let color8: UIColor = UIColor(red: 65.0/255.0, green: 161.0/255.0, blue: 192.0/255.0, alpha: 1.0)
-    let color9: UIColor = UIColor(red: 208.0/255.0, green: 168.0/255.0, blue: 255.0/255.0, alpha: 1.0)
+    
+    let userInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
+    
+    var color1: UIColor = UIColor.clear
+    var color2: UIColor = UIColor.clear
+    var color4: UIColor = UIColor.clear
+    var color5: UIColor = UIColor.clear
+    var color6: UIColor = UIColor.clear
+    var color7: UIColor = UIColor.clear
+    var color8: UIColor = UIColor.clear
+    var color9: UIColor = UIColor.clear
+    
+    if userInterfaceStyle == .light {
+        color1 = UIColor(red: 155.0/255.0, green: 35.0/255.0, blue: 147.0/255.0, alpha: 1.0)  // Keywords
+        color2 = UIColor(red: 28.0/255.0, green: 70.0/255.0,   blue: 74.0/255.0, alpha: 1.0)  // Structure or Class Name
+        color4 = UIColor(red: 28.0/255.0, green: 0.0/255.0, blue: 207.0/255.0, alpha: 1.0)    // Numbers
+        color5 = UIColor(red: 93.0/255.0, green: 108.0/255.0, blue: 121.0/255.0, alpha: 1.0)  // Comments
+        color6 = UIColor(red: 196.0/255.0, green: 26.0/255.0, blue: 22.0/255.0, alpha: 1.0)   // Strings
+        color7 = UIColor(red: 57.0/255.0, green: 0.0/255.0, blue: 160.0/255.0, alpha: 1.0)    // Functions
+        color8 = UIColor(red: 15.0/255.0, green: 104.0/255.0, blue: 160.0/255.0, alpha: 1.0)  // Function/Variable names
+        color9 = UIColor(red: 57.0/255.0, green: 0.0/255.0, blue: 160.0/255.0, alpha: 1.0)    // @Example Definitions
+    } else {
+        color1 = UIColor(red: 252.0/255.0, green: 95.0/255.0, blue: 163.0/255.0, alpha: 1.0)  // Keywords
+        color2 = UIColor(red: 93.0/255.0, green: 216.0/255.0, blue: 255.0/255.0, alpha: 1.0)  // Structure or Class Name
+        color4 = UIColor(red: 208.0/255.0, green: 191.0/255.0, blue: 105.0/255.0, alpha: 1.0) // Numbers
+        color5 = UIColor(red: 108.0/255.0, green: 121.0/255.0, blue: 134.0/255.0, alpha: 1.0) // Comments
+        color6 = UIColor(red: 252.0/255.0, green: 106.0/255.0, blue: 93.0/255.0, alpha: 1.0)  // Strings
+        color7 = UIColor(red: 208.0/255.0, green: 168.0/255.0, blue: 255.0/255.0, alpha: 1.0) // Functions
+        color8 = UIColor(red: 65.0/255.0, green: 161.0/255.0, blue: 192.0/255.0, alpha: 1.0)  // Function/Variable names
+        color9 = UIColor(red: 208.0/255.0, green: 168.0/255.0, blue: 255.0/255.0, alpha: 1.0) // @Example Definitions
+    }
 
     switch(isaythis) {
         case "swift":
