@@ -264,7 +264,7 @@ struct NeoEditor: UIViewRepresentable {
         func textViewDidChange(_ textView: UITextView) {
             let customTextView = textView as! CustomTextView
             if customTextView.didPasted {
-                applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf8.count))
+                applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
                 customTextView.didPasted = false
             }
 
