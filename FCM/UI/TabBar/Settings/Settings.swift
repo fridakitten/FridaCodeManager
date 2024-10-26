@@ -41,6 +41,9 @@ struct Settings: View {
                     }
                 }
                 Section(header: Text("Advanced")) {
+                    NavigationLink(destination: NeoEditorSettings()) {
+                        Label("Code Editor", systemImage: "doc")
+                    }
                     NavigationLink(destination: AuthorSettings()) {
                         Label("Author", systemImage: "person.fill")
                     }
