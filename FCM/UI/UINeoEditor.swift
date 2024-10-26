@@ -117,14 +117,11 @@ struct NeoEditor: UIViewRepresentable {
         let textView = CustomTextView()
 
         let saveButton = ClosureBarButtonItem(title: "Save", style: .plain) {
-            if let text = textView.text {
-                textView.endEditing(true)
-                let fileURL = URL(fileURLWithPath: filepath)
-                do {
-                    try textView.text.write(to: fileURL, atomically: true, encoding: .utf8)
-                } catch {
-                }
-            } else {
+            textView.endEditing(true)
+            let fileURL = URL(fileURLWithPath: filepath)
+            do {
+                try textView.text.write(to: fileURL, atomically: true, encoding: .utf8)
+            } catch {
             }
         }
 
@@ -181,6 +178,7 @@ struct NeoEditor: UIViewRepresentable {
         textView.layoutManager.allowsNonContiguousLayout = true
         textView.layer.shouldRasterize = true
         textView.layer.rasterizationScale = UIScreen.main.scale
+        textView.isUserInteractionEnabled = true
 
         setupToolbar(textView: textView)
 
@@ -222,17 +220,16 @@ struct NeoEditor: UIViewRepresentable {
         }
 
         func textViewDidChange(_ textView: UITextView) {
-            if let textView = textView as? CustomTextView {
-                DispatchQueue.global(qos: .userInitiated).async {
-                    if textView.didPasted {
-                        DispatchQueue.main.async {
-                            self.applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
-                            textView.didPasted = false
-                        }
-                    }
+            guard let textView = textView as? CustomTextView else { return }
+            DispatchQueue.global(qos: .userInitiated).async {
+                if textView.didPasted {
                     DispatchQueue.main.async {
-                        self.applyHighlighting(to: textView, with: textView.currentLineRange ?? NSRange(location: 0, length: 0))
+                        self.applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
+                        textView.didPasted = false
                     }
+                }
+                DispatchQueue.main.async {
+                    self.applyHighlighting(to: textView, with: textView.cachedLineRange ?? NSRange(location: 0, length: 0))
                 }
             }
         }
@@ -281,16 +278,16 @@ struct NeoEditor: UIViewRepresentable {
 class CustomTextView: UITextView {
     var didPasted: Bool = false
     var lineLight: CGColor = UIColor.clear.cgColor
-    var markedTextNSRange: NSRange? {
-        markedTextRange.map { NSRange(location: offset(from: beginningOfDocument, to: $0.start), length: offset(from: $0.start, to: $0.end)) }
-    }
-    private(set) var currentLineRange: NSRange? {
-        didSet {
-            updateHighlightLayer()
-        }
-    }
-    
+
+    var cachedLineRange: NSRange?
     private let highlightLayer = CAShapeLayer()
+    private(set) var currentLineRange: NSRange? /*{
+        didSet {
+            guard currentLineRange?.location != cachedRange?.location else { return }
+            updateHighlightLayer()
+            cachedRange = currentLineRange
+        }
+    }*/
     
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -302,22 +299,11 @@ class CustomTextView: UITextView {
         setupHighlightLayer()
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        updateHighlightLayer()
-    }
-    
     override func paste(_ sender: Any?) {
         didPasted = true
         super.paste(sender)
     }
-        
-    override var selectedTextRange: UITextRange? {
-        didSet {
-            updateCurrentLineRange()
-        }
-    }
-        
+    
     override func caretRect(for position: UITextPosition) -> CGRect {
         let caretRect = super.caretRect(for: position)
         updateCurrentLineRange()
@@ -336,30 +322,27 @@ class CustomTextView: UITextView {
         }
         
         let caretIndex = offset(from: beginningOfDocument, to: caretPosition)
-        
         let text = self.text as NSString
         let lineRange = text.lineRange(for: NSRange(location: caretIndex, length: 0))
-            
-        if currentLineRange != lineRange {
-            currentLineRange = lineRange
+        
+        // Update only if the line range has changed
+        if cachedLineRange != lineRange {
+            cachedLineRange = lineRange
+            updateHighlightLayer()
         }
     }
     
     private func updateHighlightLayer() {
-        guard let currentLineRange = currentLineRange else {
+        guard let currentLineRange = cachedLineRange else {
             highlightLayer.path = nil
             return
         }
         
-        let textRangeLocation = currentLineRange.location
-        let textRangeLength = currentLineRange.length
-        
-        guard let start = position(from: beginningOfDocument, offset: textRangeLocation),
-              let end = position(from: start, offset: textRangeLength),
-              let rangeForHighlight = textRange(from: start, to: end) else {
-            return
-        }
-        
+        let start = position(from: beginningOfDocument, offset: currentLineRange.location)!
+        let end = position(from: start, offset: currentLineRange.length)!
+        let rangeForHighlight = textRange(from: start, to: end)!
+
+        // Use selectionRects to calculate the path
         let lineRects = selectionRects(for: rangeForHighlight)
         
         let path = UIBezierPath()
@@ -367,10 +350,12 @@ class CustomTextView: UITextView {
             path.append(UIBezierPath(rect: rect.rect))
         }
         
-        highlightLayer.path = path.cgPath
+        // Only update the path if it has changed
+        if highlightLayer.path != path.cgPath {
+            highlightLayer.path = path.cgPath
+        }
     }
 }
-
 
 // MARK: Highlighting Rules
 struct TextFormattingRule {
@@ -688,26 +673,24 @@ extension UserDefaults {
 // MARK: settings
 struct NeoEditorSettings: View {
     var body: some View {
-        NavigationView {
-            List {
-                Section(header: Text("Themes")) {
-                    Button("Default") {
-                        setTheme(0)
-                        storeTheme()
-                    }
-                    Button("Dusk") {
-                        setTheme(1)
-                        storeTheme()
-                    }
-                    Button("Midnight") {
-                        setTheme(2)
-                        storeTheme()
-                    }
+        List {
+            Section(header: Text("Themes")) {
+                Button("Default") {
+                    setTheme(0)
+                    storeTheme()
+                }
+                Button("Dusk") {
+                    setTheme(1)
+                    storeTheme()
+                }
+                Button("Midnight") {
+                    setTheme(2)
+                    storeTheme()
                 }
             }
-            .navigationTitle("Code Editor")
-            .navigationBarTitleDisplayMode(.inline)
-            .listStyle(InsetGroupedListStyle())
         }
+        .navigationTitle("Code Editor")
+        .navigationBarTitleDisplayMode(.inline)
+        .listStyle(InsetGroupedListStyle())
     }
 }

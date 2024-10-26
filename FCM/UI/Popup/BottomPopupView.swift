@@ -52,9 +52,9 @@ struct BottomPopupView<Content: View>: View {
                             .background(.quaternary)
                     }
                     .background(Color(.systemBackground))
-                    .cornerRadius(corner_addition)
-                    .frame(width: UIScreen.main.bounds.width - corner_addition * 2)
-                    .offset(x: corner_addition, y: isKeyboardVisible ? -keyboardHeight : 0)
+                    .cornerRadius(isPad ? 16 : corner_addition)
+                    .frame(width: isPad ? UIScreen.main.bounds.width / 2 : UIScreen.main.bounds.width - corner_addition * 2)
+                    .offset(x: corner_addition , y: isKeyboardVisible ? -keyboardHeight : 0)
                     .animation(.easeInOut, value: keyboardHeight)
             }
             .edgesIgnoringSafeArea([.bottom])
@@ -94,4 +94,3 @@ extension UIDevice {
         return bottom > 0
     }
 }
-

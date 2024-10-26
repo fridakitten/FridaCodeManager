@@ -1,3 +1,5 @@
+import UIKit
+
 // Basically the "bootup" of FridaCodeManager
 
 // fatal error handling
@@ -42,3 +44,11 @@ let global_version: String = "v1.6"
 
 // compatibiloty checks
 let isiOS16: Bool = ProcessInfo.processInfo.isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 16, minorVersion: 0, patchVersion: 0))
+
+let isPad: Bool = {
+    if UIDevice.current.userInterfaceIdiom == .pad {
+        return true
+    } else {
+        return false
+    }
+}()

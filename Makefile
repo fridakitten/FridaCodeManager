@@ -59,7 +59,7 @@ compile_swift:
 
 sign:
 	@echo "\033[32msigning FridaCodeManager $(Version)\033[0m"
-	@ldid -S./FCM/ent.xml $(OUTPUT_DIR)/swifty
+	@ldid -S./FCM/debug.xml $(OUTPUT_DIR)/swifty
 
 package_fs:
 	@echo "\033[32mpackaging FridaCodeManager\033[0m"

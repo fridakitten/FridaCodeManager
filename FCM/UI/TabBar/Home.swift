@@ -62,6 +62,7 @@ struct Home: View {
                 .edgesIgnoringSafeArea([.bottom])
             }
         }
+        .navigationViewStyle(.stack)
     }
 
     private func createProject_trigger() -> Void {
