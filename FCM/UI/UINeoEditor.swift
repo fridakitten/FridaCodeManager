@@ -60,7 +60,7 @@ struct NeoEditor: UIViewRepresentable {
     
     let navigationBar: UINavigationBar
     let navigationItem: UINavigationItem
-    let lineNumberLabel: UILabel
+    //let lineNumberLabel: UILabel
     let highlightRules: [HighlightRule]
     let filepath: String
     let filename: String
@@ -103,7 +103,7 @@ struct NeoEditor: UIViewRepresentable {
         }()
         
         self.highlightRules = grule(gsuffix(from: filename))
-        lineNumberLabel = UILabel()
+        //lineNumberLabel = UILabel()
         navigationBar = UINavigationBar()
         navigationItem = UINavigationItem(title: filename)
     }
@@ -185,6 +185,7 @@ struct NeoEditor: UIViewRepresentable {
         return containerView
     }
 
+    // basically the toolbar
     func setupToolbar(textView: UITextView) {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
@@ -194,10 +195,11 @@ struct NeoEditor: UIViewRepresentable {
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         toolbar.items = [tabButton, flexibleSpace]
         textView.inputAccessoryView = toolbar
-        lineNumberLabel.setContentHuggingPriority(.required, for: .horizontal)
-        lineNumberLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        //lineNumberLabel.setContentHuggingPriority(.required, for: .horizontal)
+        //lineNumberLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
         
+    // function to insert content to the textView
     func insertTextAtCurrentPosition(textView: UITextView, newText: String) {
         if let selectedRange = textView.selectedTextRange {
             textView.replace(selectedRange, withText: newText)
@@ -210,8 +212,10 @@ struct NeoEditor: UIViewRepresentable {
         var parent: NeoEditor
         var currentRange: NSRange?
         var updatingUIView = false
+        private var highlightCache: [NSRange: [NSAttributedString.Key: Any]] = [:]
 
         init(_ markdownEditorView: NeoEditor) {
+            // getting parent
             self.parent = markdownEditorView
         }
         
@@ -220,46 +224,64 @@ struct NeoEditor: UIViewRepresentable {
         }
 
         func textViewDidChange(_ textView: UITextView) {
+            // getting/converting (to) CustomTextView
             guard let textView = textView as? CustomTextView else { return }
-            DispatchQueue.global(qos: .userInitiated).async {
-                if textView.didPasted {
-                    DispatchQueue.main.async {
-                        self.applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
-                        textView.didPasted = false
-                    }
-                }
-                DispatchQueue.main.async {
-                    self.applyHighlighting(to: textView, with: textView.cachedLineRange ?? NSRange(location: 0, length: 0))
-                }
+            
+            // cheking if the user did paste
+            if textView.didPasted {
+                // re-applying highlighting to the entire file to ensure that the pasted content is highlighted
+                self.applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
+
+                // resetting variable to avoid recalling
+                textView.didPasted = false
+            } else {
+                // applying single-line highlighting
+                self.applyHighlighting(to: textView, with: textView.cachedLineRange ?? NSRange(location: 0, length: 0))
             }
         }
         
         func applyHighlighting(to textView: UITextView, with visibleRange: NSRange) {
+            // Getting text for background thread processing
             let text = textView.text ?? ""
-            let highlightRules = self.parent.highlightRules
+
             DispatchQueue.global(qos: .userInitiated).async {
-                var highlightedRanges = [NSRange]()
                 var attributesToApply = [(NSRange, NSAttributedString.Key, Any)]()
-                highlightRules.forEach { rule in
+                self.parent.highlightRules.forEach { rule in
                     let matches = rule.pattern.matches(in: text, options: [], range: visibleRange)
                     matches.forEach { match in
                         let matchRange = match.range
-                        let isOverlapping = highlightedRanges.contains { highlightedRange in
-                            NSIntersectionRange(highlightedRange, matchRange).length > 0
+                        
+                        // Check if the match is already cached
+                        if let cachedAttributes = self.highlightCache[matchRange] {
+                            // Use cached attributes
+                            for (key, value) in cachedAttributes {
+                                attributesToApply.append((matchRange, key, value))
+                            }
+                            return
+                        }
+
+                        // Check for overlapping ranges
+                        let isOverlapping = attributesToApply.contains { (range, _, _) in
+                            NSIntersectionRange(range, matchRange).length > 0
                         }
                         guard !isOverlapping else { return }
+                        
                         rule.formattingRules.forEach { formattingRule in
                             guard let key = formattingRule.key,
                                   let calculateValue = formattingRule.calculateValue else { return }
                             if let matchRangeStr = Range(match.range, in: text) {
                                 let matchContent = String(text[matchRangeStr])
                                 let value = calculateValue(matchContent, matchRangeStr)
+
+                                // Store the result in the cache
+                                self.highlightCache[matchRange] = [key: value]
                                 attributesToApply.append((match.range, key, value))
-                                highlightedRanges.append(match.range)
                             }
                         }
                     }
                 }
+                
+                // Update the text storage with the attributes
                 DispatchQueue.main.async {
                     textView.textStorage.beginEditing()
                     textView.textStorage.addAttribute(.foregroundColor, value: self.parent.config.standard, range: visibleRange)
@@ -270,8 +292,17 @@ struct NeoEditor: UIViewRepresentable {
                 }
             }
         }
-            
-        func textViewDidChangeSelection(_ textView: UITextView) {}
+
+        
+        func textViewDidBeginEditing(_ textView: UITextView) {
+            guard let textView = textView as? CustomTextView else { return }
+            textView.enableHighlightLayer()
+        }
+        
+        func textViewDidEndEditing(_ textView: UITextView) {
+            guard let textView = textView as? CustomTextView else { return }
+            textView.disableHighlightLayer()
+        }
     }
 }
 
@@ -279,15 +310,8 @@ class CustomTextView: UITextView {
     var didPasted: Bool = false
     var lineLight: CGColor = UIColor.clear.cgColor
 
-    var cachedLineRange: NSRange?
+    private(set) var cachedLineRange: NSRange?
     private let highlightLayer = CAShapeLayer()
-    private(set) var currentLineRange: NSRange? /*{
-        didSet {
-            guard currentLineRange?.location != cachedRange?.location else { return }
-            updateHighlightLayer()
-            cachedRange = currentLineRange
-        }
-    }*/
     
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -317,19 +341,16 @@ class CustomTextView: UITextView {
     
     private func updateCurrentLineRange() {
         guard let caretPosition = selectedTextRange?.start else {
-            currentLineRange = nil
             return
         }
         
         let caretIndex = offset(from: beginningOfDocument, to: caretPosition)
         let text = self.text as NSString
         let lineRange = text.lineRange(for: NSRange(location: caretIndex, length: 0))
-        
-        // Update only if the line range has changed
-        if cachedLineRange != lineRange {
-            cachedLineRange = lineRange
-            updateHighlightLayer()
-        }
+
+        // this always runs, no matter the check, mostlikely because of location being always offset
+        cachedLineRange = lineRange
+        updateHighlightLayer()
     }
     
     private func updateHighlightLayer() {
@@ -338,22 +359,22 @@ class CustomTextView: UITextView {
             return
         }
         
-        let start = position(from: beginningOfDocument, offset: currentLineRange.location)!
-        let end = position(from: start, offset: currentLineRange.length)!
-        let rangeForHighlight = textRange(from: start, to: end)!
-
-        // Use selectionRects to calculate the path
-        let lineRects = selectionRects(for: rangeForHighlight)
-        
         let path = UIBezierPath()
-        for rect in lineRects {
-            path.append(UIBezierPath(rect: rect.rect))
+        
+        layoutManager.enumerateLineFragments(forGlyphRange: currentLineRange) { (rect, _, _, _, _) in
+            let adjustedRect = rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
+            path.append(UIBezierPath(rect: adjustedRect))
         }
         
-        // Only update the path if it has changed
-        if highlightLayer.path != path.cgPath {
-            highlightLayer.path = path.cgPath
-        }
+        highlightLayer.path = path.cgPath
+    }
+    
+    func enableHighlightLayer() {
+        updateHighlightLayer()
+    }
+    
+    func disableHighlightLayer() {
+        highlightLayer.path = nil
     }
 }
 
@@ -449,9 +470,9 @@ func grule(_ isaythis: String) -> [HighlightRule] {
             return [
                 HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<!\\/\\/)(\"(.*?)\")", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color6)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(//.*|\\/\\*[\\s\\S]*?\\*\\/)", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color5)
-                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(let|var|if|else|func|return|class|struct|self|public|private|true|false|init|try|do|catch|guard|import|override|nil|switch|case|default|some|throw|for|in)\\b", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color1)
+                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(let|var|if|else|func|return|class|struct|self|public|private|extension|true|false|init|try|do|catch|guard|import|override|nil|switch|case|default|some|throw|for|in)\\b", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color1)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: #"(?<=: |-> |some )[A-Za-z0-9]+"#, options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color7)
-                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\b(struct|class)\\s)\\w+", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color2)
+                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\b(struct|class|extension)\\s)\\w+", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color2)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(-?\\d+(\\.\\d+)?)\\b", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color4)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\b(func|let|var)\\s)\\w+", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color8)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b\\w+(?=(\\())", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color7)
