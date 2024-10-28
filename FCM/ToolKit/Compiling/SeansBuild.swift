@@ -134,7 +134,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     }
     messenger(status,progress,"compiling \(ProjectInfo.Executable)",0.4)
     if climessenger("compiler-stage","","\(CDEXEC) ; \(EXEC)", nil, bashenv) != 0 {
-        _ = climessenger("error-occurred","compiling \(ProjectInfo.Executable) failed")
+        _ = climessenger("compiling-failed","compiling \(ProjectInfo.Executable) failed")
         _ = rm(info[0])
         _ = rm(info[4])
         return 1

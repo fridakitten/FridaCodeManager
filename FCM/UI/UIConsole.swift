@@ -28,21 +28,22 @@ struct NeoLog: View {
     @State var LogItems: [LogItem] = []
     @State var width: CGFloat
     @State var height: CGFloat
+
     var body: some View {
         ScrollView {
             ScrollViewReader { scroll in
                 VStack(alignment: .leading) {
-                    ForEach(LogItems) { Item in
-                        let cleanedMessage = Item.Message
+                    ForEach(LogItems) { item in
+                        let cleanedMessage = item.Message
                             .split(separator: "\n")
                             .filter { !$0.contains("perform implicit import of") }
                             .joined(separator: "\n")
 
                         if !cleanedMessage.isEmpty {
-                            Text("\(cleanedMessage.lineFix())")
+                            Text(highlightMessage(cleanedMessage))
                                 .font(.system(size: 9, weight: .regular, design: .monospaced))
                                 .foregroundColor(.primary)
-                                .id(Item.id)
+                                .id(item.id)
                         }
                     }
                 }
@@ -57,16 +58,15 @@ struct NeoLog: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
-        .frame(width:  width, height: height)
+        .frame(width: width, height: height)
         .background(Color(UIColor.systemGray6))
         .cornerRadius(20)
         .contextMenu {
-            Button( action: {
+            Button(action: {
                 var textToCopy: String = ""
-                for LogItem in LogItems {
-                    textToCopy += "\(LogItem.Message)"
+                for logItem in LogItems {
+                    textToCopy += "\(logItem.Message)\n"
                 }
-
                 let cleanTextToCopy = textToCopy
                     .split(separator: "\n")
                     .filter { !$0.contains("perform implicit import of") }
@@ -78,7 +78,7 @@ struct NeoLog: View {
         }
         .onAppear {
             LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
-            let logData = fileHandle.availableData
+                let logData = fileHandle.availableData
                 if !logData.isEmpty, let logString = String(data: logData, encoding: .utf8) {
                     LogItems.append(LogItem(Message: logString))
                 }
@@ -90,6 +90,53 @@ struct NeoLog: View {
             dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
             dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
         }
+    }
+
+    private func highlightMessage(_ message: String) -> AttributedString {
+        var attributedString = AttributedString()
+
+        let patterns: [(String, Color)] = [
+            ("(?i)warning(?=\\s*:)", .orange),
+            ("(?i)error(?=\\s*:)", .red),
+            ("(?i)note(?=\\s*:)", .blue)
+        ]
+
+        var currentIndex = message.startIndex
+        var matches: [(range: NSRange, color: Color)] = []
+
+        for pattern in patterns {
+            guard let regex = try? NSRegularExpression(pattern: pattern.0) else { continue }
+            let patternMatches = regex.matches(in: message, options: [], range: NSRange(location: 0, length: message.utf16.count))
+            for match in patternMatches {
+                matches.append((match.range, pattern.1))
+            }
+        }
+
+        matches.sort { $0.range.location < $1.range.location }
+
+        for match in matches {
+            let range = Range(match.range, in: message)!
+
+            if currentIndex < range.lowerBound {
+                let preText = String(message[currentIndex..<range.lowerBound])
+                attributedString.append(AttributedString(preText))
+            }
+
+            let matchText = String(message[range])
+            var highlightedText = AttributedString(matchText)
+            highlightedText.foregroundColor = match.color
+            highlightedText.font = .system(size: 9, weight: .bold, design: .monospaced)
+            attributedString.append(highlightedText)
+
+            currentIndex = range.upperBound
+        }
+
+        if currentIndex < message.endIndex {
+            let remainingText = String(message[currentIndex...])
+            attributedString.append(AttributedString(remainingText))
+        }
+
+        return attributedString
     }
 }
 
