@@ -42,7 +42,7 @@ struct Settings: View {
                 }
                 Section(header: Text("Advanced")) {
                     NavigationLink(destination: NeoEditorSettings()) {
-                        Label("Code Editor", systemImage: "doc")
+                        Label("Code Editor", systemImage: "doc.plaintext.fill")
                     }
                     NavigationLink(destination: AuthorSettings()) {
                         Label("Author", systemImage: "person.fill")

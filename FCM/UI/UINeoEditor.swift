@@ -72,7 +72,7 @@ struct NeoEditor: UIViewRepresentable {
         
         var meow: NeoEditorConfig = NeoEditorConfig(background: UIColor.clear, selection: UIColor.clear, current: UIColor.clear, standard: UIColor.clear, font: UIFont.systemFont(ofSize: 10.0))
         
-        meow.font = UIFont.monospacedSystemFont(ofSize: 13.0, weight: UIFont.Weight.medium)
+        meow.font = UIFont.monospacedSystemFont(ofSize: CGFloat(UserDefaults.standard.double(forKey: "CEFontSize")), weight: UIFont.Weight.medium)
         
         if userInterfaceStyle == .light {
             meow.background = light_background
@@ -708,6 +708,7 @@ extension UserDefaults {
 // MARK: settings
 struct NeoEditorSettings: View {
     @AppStorage("CERender") var render: Double = 1.0
+    @AppStorage("CEFontSize") var font: Double = 13.0
     @AppStorage("CEToolbar") var toolbar: Bool = true
     @AppStorage("CECurrentLineHighlighting") var current_line_highlighting: Bool = true
     var body: some View {
@@ -732,6 +733,7 @@ struct NeoEditorSettings: View {
                         .frame(width: 150)
                     Slider(value: $render, in: 0...1)
                 }
+                Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
                 Toggle("Toolbar", isOn: $toolbar)
                 Toggle("Current Line Highlighting", isOn: $current_line_highlighting)
             }
