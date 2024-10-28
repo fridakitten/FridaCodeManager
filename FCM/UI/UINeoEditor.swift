@@ -58,15 +58,16 @@ struct NeoEditorConfig {
 
 struct NeoEditor: UIViewRepresentable {
     
-    let navigationBar: UINavigationBar
-    let navigationItem: UINavigationItem
-    //let lineNumberLabel: UILabel
-    let highlightRules: [HighlightRule]
-    let filepath: String
-    let filename: String
+    private let navigationBar: UINavigationBar
+    private let navigationItem: UINavigationItem
+    private let containerView: UIView
+    private let textView: CustomTextView
+    private let highlightRules: [HighlightRule]
+    private let filepath: String
+    private let filename: String
 
     // not checking over and over again, please no, we dont wanna do the yandere dev!
-    let config: NeoEditorConfig = {
+    private let config: NeoEditorConfig = {
         let userInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
         
         var meow: NeoEditorConfig = NeoEditorConfig(background: UIColor.clear, selection: UIColor.clear, current: UIColor.clear, standard: UIColor.clear, font: UIFont.systemFont(ofSize: 10.0))
@@ -88,7 +89,10 @@ struct NeoEditor: UIViewRepresentable {
         return meow
     }()
     
-    @Binding var sheet: Bool
+    @Binding private var sheet: Bool
+    private var render: Double
+    private var toolbar: Bool
+    private var current_line_highlighting: Bool
     
     init(
         isPresented: Binding<Bool>,
@@ -103,9 +107,19 @@ struct NeoEditor: UIViewRepresentable {
         }()
         
         self.highlightRules = grule(gsuffix(from: filename))
-        //lineNumberLabel = UILabel()
         navigationBar = UINavigationBar()
         navigationItem = UINavigationItem(title: filename)
+        self.render = {
+            return UserDefaults.standard.double(forKey: "CERender")
+        }()
+        self.toolbar = {
+            return UserDefaults.standard.bool(forKey: "CEToolbar")
+        }()
+        self.current_line_highlighting = {
+            return UserDefaults.standard.bool(forKey: "CECurrentLineHighlighting")
+        }()
+        self.containerView = UIView()
+        self.textView = CustomTextView()
     }
     
     func makeCoordinator() -> Coordinator {
@@ -113,9 +127,6 @@ struct NeoEditor: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> UIView {
-        let containerView = UIView()
-        let textView = CustomTextView()
-
         let saveButton = ClosureBarButtonItem(title: "Save", style: .plain) {
             textView.endEditing(true)
             let fileURL = URL(fileURLWithPath: filepath)
@@ -167,7 +178,9 @@ struct NeoEditor: UIViewRepresentable {
         textView.tintColor = config.selection
         textView.textColor = config.standard
         textView.lineLight = config.current.cgColor
-        textView.setupHighlightLayer()
+        if current_line_highlighting {
+            textView.setupHighlightLayer()
+        }
         textView.keyboardType = .asciiCapable
         textView.textContentType = .none
         textView.smartQuotesType = .no
@@ -177,10 +190,12 @@ struct NeoEditor: UIViewRepresentable {
         textView.autocapitalizationType = .none
         textView.layoutManager.allowsNonContiguousLayout = true
         textView.layer.shouldRasterize = true
-        textView.layer.rasterizationScale = UIScreen.main.scale
+        textView.layer.rasterizationScale = UIScreen.main.scale * CGFloat(render)
         textView.isUserInteractionEnabled = true
 
-        setupToolbar(textView: textView)
+        if toolbar {
+            setupToolbar(textView: textView)
+        }
 
         return containerView
     }
@@ -309,19 +324,10 @@ struct NeoEditor: UIViewRepresentable {
 class CustomTextView: UITextView {
     var didPasted: Bool = false
     var lineLight: CGColor = UIColor.clear.cgColor
-
+    
+    private(set) var hightlight_setuped: Bool = false
     private(set) var cachedLineRange: NSRange?
     private let highlightLayer = CAShapeLayer()
-    
-    override init(frame: CGRect, textContainer: NSTextContainer?) {
-        super.init(frame: frame, textContainer: textContainer)
-        setupHighlightLayer()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupHighlightLayer()
-    }
     
     override func paste(_ sender: Any?) {
         didPasted = true
@@ -337,6 +343,7 @@ class CustomTextView: UITextView {
     func setupHighlightLayer() {
         highlightLayer.fillColor = lineLight
         layer.insertSublayer(highlightLayer, at: 0)
+        hightlight_setuped = true
     }
     
     private func updateCurrentLineRange() {
@@ -350,7 +357,10 @@ class CustomTextView: UITextView {
 
         // this always runs, no matter the check, mostlikely because of location being always offset
         cachedLineRange = lineRange
-        updateHighlightLayer()
+        
+        if hightlight_setuped {
+            updateHighlightLayer()
+        }
     }
     
     private func updateHighlightLayer() {
@@ -370,11 +380,15 @@ class CustomTextView: UITextView {
     }
     
     func enableHighlightLayer() {
-        updateHighlightLayer()
+        if hightlight_setuped {
+            updateHighlightLayer()
+        }
     }
     
     func disableHighlightLayer() {
-        highlightLayer.path = nil
+        if hightlight_setuped {
+            highlightLayer.path = nil
+        }
     }
 }
 
@@ -693,6 +707,9 @@ extension UserDefaults {
 
 // MARK: settings
 struct NeoEditorSettings: View {
+    @AppStorage("CERender") var render: Double = 1.0
+    @AppStorage("CEToolbar") var toolbar: Bool = true
+    @AppStorage("CECurrentLineHighlighting") var current_line_highlighting: Bool = true
     var body: some View {
         List {
             Section(header: Text("Themes")) {
@@ -708,6 +725,15 @@ struct NeoEditorSettings: View {
                     setTheme(2)
                     storeTheme()
                 }
+            }
+            Section(header: Text("Advanced Graphic Settings")) {
+                HStack {
+                    Text("Render: \(NumberFormatter.localizedString(from: NSNumber(value: render), number: .percent))")
+                        .frame(width: 150)
+                    Slider(value: $render, in: 0...1)
+                }
+                Toggle("Toolbar", isOn: $toolbar)
+                Toggle("Current Line Highlighting", isOn: $current_line_highlighting)
             }
         }
         .navigationTitle("Code Editor")
