@@ -26,4 +26,6 @@ NSString *gcpu();
  */
 NSString* contgen(void);
 
+void killTaskWithBundleID(NSString *bundleID);
+
 #endif // FCM_H
