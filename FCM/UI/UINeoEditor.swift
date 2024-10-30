@@ -470,7 +470,7 @@ class CustomTextView: UITextView {
     
     func highlightLine(at lineNumber: Int, with color: UIColor, with text: String, with symbol: String) {
         guard let range = rangeOfLine(in: self.text, lineNumber: lineNumber) else { return }
-        guard let rect = visualRangeRect(in: self, for: range) else { return }
+        //guard let rect = visualRangeRect(in: self, for: range) else { return }
         
         textStorage.beginEditing()
         textStorage.addAttribute(.backgroundColor, value: color.withAlphaComponent(0.3), range: range)

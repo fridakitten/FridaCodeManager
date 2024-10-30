@@ -147,16 +147,37 @@ func getlog(logitems: [LogItem]) -> [logstruct] {
         for substring in substrings {
             let subitems: [String] = splitStringByColon(input: substring)
             
-            if subitems.count == 5 {
-                if subitems[4] != " no such module found" {
-                    let finalitem: logstruct = logstruct(file: subitems[0], line: Int(subitems[1]) ?? -1, level: getlevel(subitems[3]), description: subitems[4])
-                    logstructs.append(finalitem)
-                }
+            if subitems.count == 5 && subitems[4] != " no such module found" && FileManager.default.fileExists(atPath: subitems[0])  {
+                let finalitem: logstruct = logstruct(file: subitems[0], line: Int(subitems[1]) ?? -1, level: getlevel(subitems[3]), description: subitems[4], detail: extractLine(from: subitems[0], lineNumber: Int(subitems[1]) ?? -1) ?? "Error: File couldnt be opened")
+                logstructs.append(finalitem)
             }
         }
     }
     
     return logstructs
+}
+
+func extractLine(from filePath: String, lineNumber: Int) -> String? {
+    guard FileManager.default.fileExists(atPath: filePath) else {
+        print("File does not exist: \(filePath)")
+        return nil
+    }
+
+    do {
+        let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
+        let lines = fileContents.components(separatedBy: .newlines)
+        
+        // Ensure line number is valid
+        if lineNumber > 0 && lineNumber <= lines.count {
+            return lines[lineNumber - 1].trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            print("Line number \(lineNumber) is out of range.")
+            return nil
+        }
+    } catch {
+        print("An error occurred: \(error)")
+        return nil
+    }
 }
 
 func getlevel(_ messageParty: String) -> Int {
@@ -179,6 +200,7 @@ struct logstruct: Identifiable {
     let line: Int
     let level: Int
     let description: String
+    let detail: String
 }
 
 struct LevelItem: View {
@@ -205,7 +227,15 @@ struct LevelItem: View {
             }
             Rectangle()
                 .frame(height: 0.5)
-                .foregroundColor(.primary)
+                .foregroundColor(.secondary)
+            HStack {
+                Text("\(logstruct.detail)")
+                    .font(.system(size: 10.0))
+                Spacer()
+            }
+            Rectangle()
+                .frame(height: 0.5)
+                .foregroundColor(.secondary)
             HStack {
                 Text("file: \(logstruct.file)")
                     .font(.system(size: 10.0))
