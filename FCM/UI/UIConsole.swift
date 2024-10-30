@@ -51,8 +51,12 @@ struct NeoLog: View {
                 }
             }
             .onChange(of: LogItems) { _ in
-                errorcache = getlog(logitems: LogItems)
-                LogViews = errorcache
+                let tmpcache = getlog(logitems: LogItems)
+                LogItems = []
+                withAnimation {
+                    LogViews += tmpcache
+                }
+                errorcache = LogViews
             }
             .navigationTitle("Log")
             .navigationBarTitleDisplayMode(.inline)
