@@ -194,7 +194,7 @@ struct NeoEditor: UIViewRepresentable {
         textView.isUserInteractionEnabled = true
 
         for item in errorcache {
-            if item.file == filename {
+            if item.file == filepath {
                 switch item.level {
                     case 0:
                         textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
