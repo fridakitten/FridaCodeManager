@@ -193,6 +193,24 @@ struct NeoEditor: UIViewRepresentable {
         textView.layer.rasterizationScale = UIScreen.main.scale * CGFloat(render)
         textView.isUserInteractionEnabled = true
 
+        for item in errorcache {
+            if item.file == filename {
+                switch item.level {
+                    case 0:
+                        textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
+                        break
+                    case 1:
+                        textView.highlightLine(at: item.line - 1, with: UIColor.systemYellow, with: item.description, with: "exclamationmark.triangle.fill")
+                        break
+                    case 2:
+                        textView.highlightLine(at: item.line - 1, with: UIColor.systemRed, with: item.description, with: "xmark.circle.fill")
+                        break
+                    default:
+                        break
+                }
+            }
+        }
+
         if toolbar {
             setupToolbar(textView: textView)
         }
@@ -390,6 +408,76 @@ class CustomTextView: UITextView {
             highlightLayer.path = nil
         }
     }
+
+    private func rangeOfLine(at logicalLineIndex: Int) -> NSRange? {
+        guard let text = self.text, !text.isEmpty else { return nil }
+
+        let logicalLines = text.split(separator: "\n", omittingEmptySubsequences: false)
+        guard logicalLineIndex >= 0 && logicalLineIndex < logicalLines.count else { return nil }
+        var visualLineGlyphRange = NSRange(location: 0, length: 0)
+
+        var currentVisualLineIndex = 0
+
+        layoutManager.enumerateLineFragments(forGlyphRange: NSRange(location: 0, length: layoutManager.numberOfGlyphs)) { (_, _, _, lineGlyphRange, _) in
+
+            if logicalLines[logicalLineIndex].trimmingCharacters(in: .whitespacesAndNewlines) != "" {
+                if currentVisualLineIndex == logicalLineIndex {
+                    visualLineGlyphRange = lineGlyphRange
+                }
+                currentVisualLineIndex += 1
+            } else {
+            }
+        }
+        return visualLineGlyphRange
+    }
+
+    
+    private func addPath(for range: NSRange, color: UIColor) {
+        let newHighlightLayer = CAShapeLayer()
+        newHighlightLayer.fillColor = color.cgColor
+        layer.insertSublayer(newHighlightLayer, at: 0)
+
+        let path = UIBezierPath()
+
+        layoutManager.enumerateLineFragments(forGlyphRange: range) { (rect, usedRect, textContainer, glyphRange, _) in
+            let adjustedRect = rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
+            path.append(UIBezierPath(rect: adjustedRect))
+        }
+
+        newHighlightLayer.path = path.cgPath
+    }
+    
+    func highlightLine(at lineNumber: Int, with color: UIColor, with text: String, with symbol: String) {
+        if let range = rangeOfLine(at: lineNumber) {
+            addPath(for: range, color: color.withAlphaComponent(0.3))
+            
+            let button = ClosureButton(title: "") {
+                showAlert(with: text)
+            }
+            let symbolConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .regular)
+            let image = UIImage(systemName: symbol, withConfiguration: symbolConfig)
+            button.setImage(image, for: .normal)
+            button.tintColor = color
+            button.backgroundColor = .clear
+            
+            var lineRect: CGRect = .zero
+            layoutManager.enumerateLineFragments(forGlyphRange: range) { (rect, _, _, _, _) in
+                lineRect = rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
+            }
+            
+            let buttonWidth: CGFloat = font?.pointSize ?? 0.0
+            let buttonHeight: CGFloat = font?.pointSize ?? 0.0
+            let buttonX = (UIScreen.main.bounds.width - 5) - (font?.pointSize ?? 0.0)
+            let buttonY = lineRect.midY - (buttonHeight / 2)
+            
+            button.frame = CGRect(x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight)
+
+            print("Button frame: \(button.frame)")
+
+            self.addSubview(button)
+            bringSubviewToFront(button)
+        }
+    }
 }
 
 // MARK: Highlighting Rules
@@ -435,6 +523,26 @@ class ClosureBarButtonItem: UIBarButtonItem {
         self.target = self
         self.tintColor = UIColor.label
         self.action = #selector(didTapButton)
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+
+    @objc private func didTapButton() {
+        actionHandler?()
+    }
+}
+
+class ClosureButton: UIButton {
+    private var actionHandler: (() -> Void)?
+
+    init(title: String, actionHandler: @escaping () -> Void) {
+        self.actionHandler = actionHandler
+        super.init(frame: .zero)
+        setTitle(title, for: .normal)
+        self.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+        self.tintColor = UIColor.label
     }
 
     required init?(coder: NSCoder) {

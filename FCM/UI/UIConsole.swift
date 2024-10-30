@@ -1,159 +1,221 @@
- /*
- UIConsole.swift
+/*
+UIConsole.swift
 
- Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
- Copyright (C) 2024 fridakitten
+Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
+Copyright (C) 2024 fridakitten
 
- This file is part of FridaCodeManager.
+This file is part of FridaCodeManager.
 
- FridaCodeManager is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+FridaCodeManager is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- FridaCodeManager is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+FridaCodeManager is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
- */
+You should have received a copy of the GNU General Public License
+along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
+*/
 
 import SwiftUI
 
 let LogPipe = Pipe()
+var errorcache: [logstruct] = []
 
 struct NeoLog: View {
-    @State var LogItems: [LogItem] = []
-    @State var width: CGFloat
-    @State var height: CGFloat
+   @State var LogItems: [LogItem] = []
+    @State var LogViews: [logstruct] = []
 
-    var body: some View {
-        ScrollView {
-            ScrollViewReader { scroll in
-                VStack(alignment: .leading) {
-                    ForEach(LogItems) { item in
-                        let cleanedMessage = item.Message
-                            .split(separator: "\n")
-                            .filter { !$0.contains("perform implicit import of") }
-                            .joined(separator: "\n")
-
-                        if !cleanedMessage.isEmpty {
-                            Text(highlightMessage(cleanedMessage))
-                                .font(.system(size: 9, weight: .regular, design: .monospaced))
-                                .foregroundColor(.primary)
-                                .id(item.id)
-                        }
-                    }
-                }
-                .onChange(of: LogItems) { _ in
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            scroll.scrollTo(LogItems.last?.id, anchor: .bottom)
-                        }
-                    }
+   var body: some View {
+       NavigationView {
+            List {
+                ForEach(LogViews) { item in
+                    LevelItem(logstruct: item)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding()
-        .frame(width: width, height: height)
-        .background(Color(UIColor.systemGray6))
-        .cornerRadius(20)
-        .contextMenu {
-            Button(action: {
-                var textToCopy: String = ""
-                for logItem in LogItems {
-                    textToCopy += "\(logItem.Message)\n"
-                }
-                let cleanTextToCopy = textToCopy
-                    .split(separator: "\n")
-                    .filter { !$0.contains("perform implicit import of") }
-                    .joined(separator: "\n")
-                copyToClipboard(text: cleanTextToCopy)
-            }) {
-                Label("Copy", systemImage: "doc.on.doc")
+            .onChange(of: LogItems) { _ in
+                errorcache = getlog(logitems: LogItems)
+                LogViews = errorcache
             }
-        }
-        .onAppear {
-            LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
-                let logData = fileHandle.availableData
-                if !logData.isEmpty, let logString = String(data: logData, encoding: .utf8) {
-                    LogItems.append(LogItem(Message: logString))
-                }
-            }
+            .navigationTitle("Log")
+            .navigationBarTitleDisplayMode(.inline)
+       }
+       .navigationViewStyle(.stack)
+       .onAppear {
+           LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
+               let logData = fileHandle.availableData
+               if !logData.isEmpty, let logString = String(data: logData, encoding: .utf8) {
+                   LogItems.append(LogItem(Message: logString))
+               }
+           }
 
-            setvbuf(stdout, nil, _IOLBF, 0)
-            setvbuf(stderr, nil, _IOLBF, 0)
+           setvbuf(stdout, nil, _IOLBF, 0)
+           setvbuf(stderr, nil, _IOLBF, 0)
 
-            dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
-            dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
-        }
-    }
+           dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
+           dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
+       }
+   }
 
-    private func highlightMessage(_ message: String) -> AttributedString {
-        var attributedString = AttributedString()
+   private func highlightMessage(_ message: String) -> AttributedString {
+       var attributedString = AttributedString()
 
-        let patterns: [(String, Color)] = [
-            ("(?i)warning(?=\\s*:)", .orange),
-            ("(?i)error(?=\\s*:)", .red),
-            ("(?i)note(?=\\s*:)", .blue)
-        ]
+       let patterns: [(String, Color)] = [
+           ("(?i)warning(?=\\s*:)", .orange),
+           ("(?i)error(?=\\s*:)", .red),
+           ("(?i)note(?=\\s*:)", .blue)
+       ]
 
-        var currentIndex = message.startIndex
-        var matches: [(range: NSRange, color: Color)] = []
+       var currentIndex = message.startIndex
+       var matches: [(range: NSRange, color: Color)] = []
 
-        for pattern in patterns {
-            guard let regex = try? NSRegularExpression(pattern: pattern.0) else { continue }
-            let patternMatches = regex.matches(in: message, options: [], range: NSRange(location: 0, length: message.utf16.count))
-            for match in patternMatches {
-                matches.append((match.range, pattern.1))
-            }
-        }
+       for pattern in patterns {
+           guard let regex = try? NSRegularExpression(pattern: pattern.0) else { continue }
+           let patternMatches = regex.matches(in: message, options: [], range: NSRange(location: 0, length: message.utf16.count))
+           for match in patternMatches {
+               matches.append((match.range, pattern.1))
+           }
+       }
 
-        matches.sort { $0.range.location < $1.range.location }
+       matches.sort { $0.range.location < $1.range.location }
 
-        for match in matches {
-            let range = Range(match.range, in: message)!
+       for match in matches {
+           let range = Range(match.range, in: message)!
 
-            if currentIndex < range.lowerBound {
-                let preText = String(message[currentIndex..<range.lowerBound])
-                attributedString.append(AttributedString(preText))
-            }
+           if currentIndex < range.lowerBound {
+               let preText = String(message[currentIndex..<range.lowerBound])
+               attributedString.append(AttributedString(preText))
+           }
 
-            let matchText = String(message[range])
-            var highlightedText = AttributedString(matchText)
-            highlightedText.foregroundColor = match.color
-            highlightedText.font = .system(size: 9, weight: .bold, design: .monospaced)
-            attributedString.append(highlightedText)
+           let matchText = String(message[range])
+           var highlightedText = AttributedString(matchText)
+           highlightedText.foregroundColor = match.color
+           highlightedText.font = .system(size: 9, weight: .bold, design: .monospaced)
+           attributedString.append(highlightedText)
 
-            currentIndex = range.upperBound
-        }
+           currentIndex = range.upperBound
+       }
 
-        if currentIndex < message.endIndex {
-            let remainingText = String(message[currentIndex...])
-            attributedString.append(AttributedString(remainingText))
-        }
+       if currentIndex < message.endIndex {
+           let remainingText = String(message[currentIndex...])
+           attributedString.append(AttributedString(remainingText))
+       }
 
-        return attributedString
-    }
+       return attributedString
+   }
 }
 
 struct LogItem: Identifiable, Equatable {
-    var id = UUID()
-    var Message: String
+   var id = UUID()
+   var Message: String
 }
 
 extension String {
-    func lineFix() -> String {
-        return String(self.last == "\n" ? String(self.dropLast()) : self)
+   func lineFix() -> String {
+       return String(self.last == "\n" ? String(self.dropLast()) : self)
+   }
+}
+
+// MARK: LOG
+func getlog(logitems: [LogItem]) -> [logstruct] {
+    var logstructs: [logstruct] = []
+    
+    for item in logitems {
+        let substrings: [String] = extractLines(from: item.Message)
+
+        for substring in substrings {
+            let subitems: [String] = splitStringByColon(input: substring)
+            
+            if subitems.count == 5 {
+                if subitems[4] != " no such module found" {
+                    let finalitem: logstruct = logstruct(file: subitems[0], line: Int(subitems[1]) ?? -1, level: getlevel(subitems[3]), description: subitems[4])
+                    logstructs.append(finalitem)
+                }
+            }
+        }
+    }
+    
+    return logstructs
+}
+
+func getlevel(_ messageParty: String) -> Int {
+    switch messageParty {
+    case " note":
+        return 0
+    case " warning":
+        return 1
+    case " error":
+        return 2
+    default:
+        return 0
     }
 }
 
-func copyToClipboard(text: String, alert: Bool? = true) {
-    haptfeedback(1)
-    if (alert ?? true) {ShowAlert(UIAlertController(title: "Copied", message: "", preferredStyle: .alert))}
-    UIPasteboard.general.string = text
-    if (alert ?? true) {DismissAlert()}
+// MARK: XCode error list stuff
+struct logstruct: Identifiable {
+    let id: UUID = UUID()
+    let file: String
+    let line: Int
+    let level: Int
+    let description: String
+}
+
+struct LevelItem: View {
+    @State var logstruct: logstruct
+    var body: some View {
+        VStack {
+            HStack {
+                switch logstruct.level {
+                case 2:
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(Color.red)
+                case 1:
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(Color.yellow)
+                case 0:
+                    Image(systemName: "info.circle.fill")
+                        .foregroundColor(Color.blue)
+                default:
+                    Spacer().frame(width: 0, height: 0)
+                }
+                Text(logstruct.description)
+                    .font(.system(size: 10.0))
+                Spacer()
+            }
+            Rectangle()
+                .frame(height: 0.5)
+                .foregroundColor(.primary)
+            HStack {
+                Text("file: \(logstruct.file)")
+                    .font(.system(size: 10.0))
+                Spacer()
+            }
+            HStack {
+                Text("line: \(logstruct.line)")
+                    .font(.system(size: 10.0))
+                Spacer()
+            }
+        }
+    }
+}
+
+func splitStringByColon(input: String) -> [String] {
+    return input.components(separatedBy: ":")
+}
+
+func extractFirstLine(from input: String) -> String {
+    let lines = input.components(separatedBy: .newlines)
+    
+    if let first = lines.first {
+        return first
+    }
+    
+    return input
+}
+
+func extractLines(from input: String) -> [String] {
+    return input.components(separatedBy: .newlines)
 }

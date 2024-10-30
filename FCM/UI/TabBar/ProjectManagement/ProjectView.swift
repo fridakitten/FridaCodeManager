@@ -219,7 +219,7 @@ struct buildView: View {
     @State private var Log: [String] = []
     var body: some View {
         VStack {
-            NeoLog(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 2.5)
+            NeoLog()
             Spacer().frame(height: 25)
             if !compiling {
                 Button( action: {
@@ -293,7 +293,7 @@ struct sean16View: View {
                         runtime_sean16(ProjectInfo)
                     }
                 }
-            NeoLog(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 4)
+            //NeoLog(width: UIScreen.main.bounds.width / 1.2, height: UIScreen.main.bounds.height / 4)
             Spacer().frame(height: 25)
             Button( action: {
                 send_cpu(1)
@@ -310,4 +310,11 @@ struct sean16View: View {
             .frame(width: UIScreen.main.bounds.width / 1.2, height: 50)
         }
     }
+}
+
+func copyToClipboard(text: String, alert: Bool? = true) {
+    haptfeedback(1)
+    if (alert ?? true) {ShowAlert(UIAlertController(title: "Copied", message: "", preferredStyle: .alert))}
+    UIPasteboard.general.string = text
+    if (alert ?? true) {DismissAlert()}
 }
