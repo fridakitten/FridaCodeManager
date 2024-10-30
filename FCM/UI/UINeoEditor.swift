@@ -339,6 +339,34 @@ struct NeoEditor: UIViewRepresentable {
     }
 }
 
+func visualRangeRect(in textView: UITextView, for textRange: NSRange) -> CGRect? {
+    guard textRange.location != NSNotFound,
+          textRange.location + textRange.length <= textView.textStorage.length else {
+        return nil
+    }
+
+    let nsText = textView.text as NSString
+    let paragraphRange = nsText.paragraphRange(for: textRange)
+    
+    let layoutManager = textView.layoutManager
+    let textContainer = textView.textContainer
+
+    layoutManager.addTextContainer(textContainer)
+    var paragraphRect = layoutManager.boundingRect(forGlyphRange: paragraphRange, in: textContainer)
+    
+    paragraphRect.origin.x += textView.textContainerInset.left
+    paragraphRect.origin.y += textView.textContainerInset.top
+    paragraphRect.origin.x -= textView.contentOffset.x
+    paragraphRect.origin.y -= textView.contentOffset.y
+
+    paragraphRect.origin.x = round(paragraphRect.origin.x)
+    paragraphRect.origin.y = round(paragraphRect.origin.y)
+    paragraphRect.size.width = round(paragraphRect.size.width)
+    paragraphRect.size.height = round(paragraphRect.size.height)
+    
+    return paragraphRect.isEmpty ? nil : paragraphRect
+}
+
 class CustomTextView: UITextView {
     var didPasted: Bool = false
     var lineLight: CGColor = UIColor.clear.cgColor
@@ -409,94 +437,48 @@ class CustomTextView: UITextView {
         }
     }
 
-func visualLineStart(forLogicalLine logicalLineNumber: Int) -> (visualLine: Int, range: NSRange)? {
-            guard logicalLineNumber > 0 else { return nil }
-
-            // Split text by logical lines (preserving empty lines from multiple breaks)
-            let logicalLines = text.components(separatedBy: .newlines)
-
-            // Check if the logical line number is valid
-            guard logicalLineNumber <= logicalLines.count else { return nil }
-
-            // Calculate the character index of the start of the specified logical line
-            var characterIndex = 0
-            for i in 0..<logicalLineNumber - 1 {
-                characterIndex += logicalLines[i].count + 1 // Include newline
-            }
-
-            // Determine the glyph range for this line
-            let targetLineText = logicalLines[logicalLineNumber - 1]
-            let targetRange = NSRange(location: characterIndex, length: targetLineText.count)
-            let glyphRange = layoutManager.glyphRange(forCharacterRange: targetRange, actualCharacterRange: nil)
-
-            // Track visual line position and Y-coordinate to account for line spacing variations
-            var visualLineNumber = 1
-            var currentY: CGFloat? = nil
-            var foundRange: NSRange? = nil
-
-            // Iterate over line fragments and calculate visual line position
-            layoutManager.enumerateLineFragments(forGlyphRange: NSRange(location: 0, length: glyphRange.location + 1)) { (_, usedRect, _, glyphRangeFragment, _) in
-
-                // Check if we reached the glyph range start for the target logical line
-                if glyphRangeFragment.contains(glyphRange.location) {
-                    foundRange = glyphRangeFragment
-                    return
-                }
-
-                // Track new visual lines by changes in the Y-coordinate
-                if currentY == nil || usedRect.origin.y > currentY! {
-                    visualLineNumber += 1
-                    currentY = usedRect.origin.y
-                }
-            }
-
-            // Return both the visual line and the NSRange for the start of this line
-            return foundRange != nil ? (visualLineNumber, foundRange!) : nil
+    func rangeOfLine(in string: String, lineNumber: Int) -> NSRange? {
+        let nsString = string as NSString
+        
+        let lines = nsString.components(separatedBy: .newlines)
+        
+        guard lineNumber >= 0 && lineNumber < lines.count else {
+            return nil
         }
-
-    private func rangeOfLine(at logicalLineIndex: Int) -> NSRange? {
-        guard let text = self.text, !text.isEmpty else { return nil }
-
-        let logicalLines = text.split(separator: "\n", omittingEmptySubsequences: false)
-        guard logicalLineIndex >= 0 && logicalLineIndex < logicalLines.count else { return nil }
-        var visualLineGlyphRange = NSRange(location: 0, length: 0)
-
-        var currentVisualLineIndex = 0
-
-        layoutManager.enumerateLineFragments(forGlyphRange: NSRange(location: 0, length: layoutManager.numberOfGlyphs)) { (_, _, _, lineGlyphRange, _) in
-
-            if logicalLines[logicalLineIndex].trimmingCharacters(in: .whitespacesAndNewlines) != "" {
-                if currentVisualLineIndex == logicalLineIndex {
-                    visualLineGlyphRange = lineGlyphRange
-                }
-                currentVisualLineIndex += 1
-            } else {
-            }
+        
+        var location = 0
+        for i in 0..<lineNumber {
+            location += (lines[i] as NSString).length + 1
         }
-        return visualLineGlyphRange
+        
+        let length = (lines[lineNumber] as NSString).length
+        
+        return NSRange(location: location, length: length)
     }
-
     
-    private func addPath(for range: NSRange, color: UIColor) {
+    private func addPath(for range: NSRange, color: UIColor, rect: CGRect) {
         let newHighlightLayer = CAShapeLayer()
         newHighlightLayer.fillColor = color.cgColor
         layer.insertSublayer(newHighlightLayer, at: 0)
 
         let path = UIBezierPath()
 
-        layoutManager.enumerateLineFragments(forGlyphRange: range) { (rect, usedRect, textContainer, glyphRange, _) in
-            let adjustedRect = rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
-            path.append(UIBezierPath(rect: adjustedRect))
-        }
+        path.append(UIBezierPath(rect: rect))
 
         newHighlightLayer.path = path.cgPath
     }
     
     func highlightLine(at lineNumber: Int, with color: UIColor, with text: String, with symbol: String) {
-        guard let (visualLine, range) = visualLineStart(forLogicalLine: lineNumber) else { return }
-            addPath(for: range, color: color.withAlphaComponent(0.3))
+        guard let range = rangeOfLine(in: self.text, lineNumber: lineNumber) else { return }
+        guard let rect = visualRangeRect(in: self, for: range) else { return }
+        
+        textStorage.beginEditing()
+        textStorage.addAttribute(.backgroundColor, value: color.withAlphaComponent(0.3), range: range)
+        textStorage.endEditing()
+
+        //addPath(for: range, color: color.withAlphaComponent(0.3), rect: rect)
             
-            let button = ClosureButton(title: "") {
+/*            let button = ClosureButton(title: "") {
                 showAlert(with: text)
             }
             let symbolConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .regular)
@@ -520,7 +502,7 @@ func visualLineStart(forLogicalLine logicalLineNumber: Int) -> (visualLine: Int,
             print("Button frame: \(button.frame)")
 
             self.addSubview(button)
-            bringSubviewToFront(button)
+            bringSubviewToFront(button)*/
     }
 }
 

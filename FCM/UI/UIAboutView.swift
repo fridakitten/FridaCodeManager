@@ -31,6 +31,7 @@ struct Frida: View {
         ("RoothideDev", "Contributor", "https://github.com/roothide.png"),
         ("Snoolie", "Contributor", "https://github.com/0xilis.png"),
         ("HAHALOSAH", "Contributor", "https://github.com/HAHALOSAH.png"),
+        ("Manuel Chakravarty", "Contributor", "https://github.com/mchakravarty.png"),
         ("Ayame Yumemi", "Icon Designer", "https://github.com/ayayame09.png"),
         ("meighler", "Licensor", "https://github.com/meighler.png")
     ]
