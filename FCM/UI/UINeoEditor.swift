@@ -409,6 +409,49 @@ class CustomTextView: UITextView {
         }
     }
 
+func visualLineStart(forLogicalLine logicalLineNumber: Int) -> Int? {
+            guard logicalLineNumber > 0 else { return nil }
+
+            // Split text by logical lines (preserving empty lines from multiple breaks)
+            let logicalLines = text.components(separatedBy: .newlines)
+
+            // Check if the logical line number is valid
+            guard logicalLineNumber <= logicalLines.count else { return nil }
+
+            // Calculate character index of the start of the specified logical line
+            var characterIndex = 0
+            for i in 0..<logicalLineNumber - 1 {
+                characterIndex += logicalLines[i].count + 1 // Include newline
+            }
+
+            // Determine the glyph range for this line
+            let targetLineText = logicalLines[logicalLineNumber - 1]
+            let targetRange = NSRange(location: characterIndex, length: targetLineText.count)
+            let glyphRange = layoutManager.glyphRange(forCharacterRange: targetRange, actualCharacterRange: nil)
+
+            // Track visual line position and Y-coordinate to account for different line spacings
+            var visualLineNumber = 1
+            var currentY: CGFloat? = nil
+            var found = false
+
+            // Iterate over line fragments and calculate visual line position
+            layoutManager.enumerateLineFragments(forGlyphRange: NSRange(location: 0, length: glyphRange.location + 1)) { (_, usedRect, _, glyphRangeFragment, _) in
+
+                if glyphRangeFragment.contains(glyphRange.location) {
+                    found = true // We've reached the target glyph range
+                    return
+                }
+
+                // Track changes in Y-coordinate to detect new visual lines
+                if currentY == nil || usedRect.origin.y > currentY! {
+                    visualLineNumber += 1
+                    currentY = usedRect.origin.y
+                }
+            }
+
+            return found ? visualLineNumber : nil
+        }
+
     private func rangeOfLine(at logicalLineIndex: Int) -> NSRange? {
         guard let text = self.text, !text.isEmpty else { return nil }
 
@@ -448,7 +491,8 @@ class CustomTextView: UITextView {
     }
     
     func highlightLine(at lineNumber: Int, with color: UIColor, with text: String, with symbol: String) {
-        if let range = rangeOfLine(at: lineNumber) {
+        guard let realline = visualLineStart(forLogicalLine: lineNumber) else { return }
+        if let range = rangeOfLine(at: realline) {
             addPath(for: range, color: color.withAlphaComponent(0.3))
             
             let button = ClosureButton(title: "") {
