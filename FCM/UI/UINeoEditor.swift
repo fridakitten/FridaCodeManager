@@ -414,26 +414,63 @@ class CustomTextView: UITextView {
             highlightLayer.path = nil
             return
         }
-        
+
         let path = UIBezierPath()
-        
-        layoutManager.enumerateLineFragments(forGlyphRange: currentLineRange) { (rect, _, _, _, _) in
-            let adjustedRect = rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
-            path.append(UIBezierPath(rect: adjustedRect))
+
+        layoutManager.enumerateLineFragments(forGlyphRange: currentLineRange) { (rect, usedRect, _, glyphRange, _) in
+            let textRect = usedRect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
+            path.append(UIBezierPath(roundedRect: textRect, cornerRadius: 4.0))
         }
-        
+
+        animateHighlightLayer(from: highlightLayer.path, to: path.cgPath)
+
         highlightLayer.path = path.cgPath
     }
-    
+
+    private var wempty: Bool = false
+    private func animateHighlightLayer(from oldPath: CGPath?, to newPath: CGPath) {
+        let oldBounds = oldPath?.boundingBox ?? .zero
+        let newBounds = newPath.boundingBox
+
+        let animation = CABasicAnimation(keyPath: "path")
+        animation.duration = 0.25
+
+        animation.toValue = newPath
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
+        animation.fillMode = CAMediaTimingFillMode.forwards
+        animation.isRemovedOnCompletion = false
+
+        if newPath.boundingBox.isEmpty && !wempty {
+            animation.keyPath = "opacity"
+            animation.fromValue = 1.0
+            animation.toValue = 0.0
+            animation.duration = 0.50
+            wempty = true
+            highlightLayer.add(animation, forKey: nil)
+        } else if wempty && !newPath.boundingBox.isEmpty {
+            animation.keyPath = "opacity"
+            animation.fromValue = 0.0
+            animation.toValue = 1.0
+            animation.duration = 0.50
+            wempty = false
+        }
+
+        if wempty {
+            return
+        }
+
+        highlightLayer.add(animation, forKey: nil)
+    }
+
     func enableHighlightLayer() {
         if hightlight_setuped {
-            updateHighlightLayer()
+            setupHighlightLayer()
         }
     }
     
     func disableHighlightLayer() {
         if hightlight_setuped {
-            highlightLayer.path = nil
+            highlightLayer.removeFromSuperlayer()
         }
     }
 
