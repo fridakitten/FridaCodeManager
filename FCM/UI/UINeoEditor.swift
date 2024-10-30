@@ -409,7 +409,7 @@ class CustomTextView: UITextView {
         }
     }
 
-func visualLineStart(forLogicalLine logicalLineNumber: Int) -> Int? {
+func visualLineStart(forLogicalLine logicalLineNumber: Int) -> (visualLine: Int, range: NSRange)? {
             guard logicalLineNumber > 0 else { return nil }
 
             // Split text by logical lines (preserving empty lines from multiple breaks)
@@ -418,7 +418,7 @@ func visualLineStart(forLogicalLine logicalLineNumber: Int) -> Int? {
             // Check if the logical line number is valid
             guard logicalLineNumber <= logicalLines.count else { return nil }
 
-            // Calculate character index of the start of the specified logical line
+            // Calculate the character index of the start of the specified logical line
             var characterIndex = 0
             for i in 0..<logicalLineNumber - 1 {
                 characterIndex += logicalLines[i].count + 1 // Include newline
@@ -429,27 +429,29 @@ func visualLineStart(forLogicalLine logicalLineNumber: Int) -> Int? {
             let targetRange = NSRange(location: characterIndex, length: targetLineText.count)
             let glyphRange = layoutManager.glyphRange(forCharacterRange: targetRange, actualCharacterRange: nil)
 
-            // Track visual line position and Y-coordinate to account for different line spacings
+            // Track visual line position and Y-coordinate to account for line spacing variations
             var visualLineNumber = 1
             var currentY: CGFloat? = nil
-            var found = false
+            var foundRange: NSRange? = nil
 
             // Iterate over line fragments and calculate visual line position
             layoutManager.enumerateLineFragments(forGlyphRange: NSRange(location: 0, length: glyphRange.location + 1)) { (_, usedRect, _, glyphRangeFragment, _) in
 
+                // Check if we reached the glyph range start for the target logical line
                 if glyphRangeFragment.contains(glyphRange.location) {
-                    found = true // We've reached the target glyph range
+                    foundRange = glyphRangeFragment
                     return
                 }
 
-                // Track changes in Y-coordinate to detect new visual lines
+                // Track new visual lines by changes in the Y-coordinate
                 if currentY == nil || usedRect.origin.y > currentY! {
                     visualLineNumber += 1
                     currentY = usedRect.origin.y
                 }
             }
 
-            return found ? visualLineNumber : nil
+            // Return both the visual line and the NSRange for the start of this line
+            return foundRange != nil ? (visualLineNumber, foundRange!) : nil
         }
 
     private func rangeOfLine(at logicalLineIndex: Int) -> NSRange? {
@@ -491,8 +493,7 @@ func visualLineStart(forLogicalLine logicalLineNumber: Int) -> Int? {
     }
     
     func highlightLine(at lineNumber: Int, with color: UIColor, with text: String, with symbol: String) {
-        guard let realline = visualLineStart(forLogicalLine: lineNumber) else { return }
-        if let range = rangeOfLine(at: realline) {
+        guard let (visualLine, range) = visualLineStart(forLogicalLine: lineNumber) else { return }
             addPath(for: range, color: color.withAlphaComponent(0.3))
             
             let button = ClosureButton(title: "") {
@@ -520,7 +521,6 @@ func visualLineStart(forLogicalLine logicalLineNumber: Int) -> Int? {
 
             self.addSubview(button)
             bringSubviewToFront(button)
-        }
     }
 }
 

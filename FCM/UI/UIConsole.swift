@@ -25,6 +25,19 @@ import SwiftUI
 let LogPipe = Pipe()
 var errorcache: [logstruct] = []
 
+private func getlevelback(_ level: Int) -> Color {
+    switch level {
+        case 0:
+            return Color(UIColor.systemBlue.withAlphaComponent(0.2))
+        case 1:
+            return Color(UIColor.systemYellow.withAlphaComponent(0.2))
+        case 2:
+            return Color(UIColor.systemRed.withAlphaComponent(0.2))
+        default:
+            return Color(UIColor.clear)
+    }
+}
+
 struct NeoLog: View {
    @State var LogItems: [LogItem] = []
     @State var LogViews: [logstruct] = []
@@ -34,6 +47,7 @@ struct NeoLog: View {
             List {
                 ForEach(LogViews) { item in
                     LevelItem(logstruct: item)
+                        .listRowBackground(getlevelback(item.level))
                 }
             }
             .onChange(of: LogItems) { _ in
