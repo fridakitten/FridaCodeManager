@@ -225,7 +225,7 @@ private func messenger(_ status: Binding<String>?,_ progress: Binding<Double>?,_
     }
 }
 
-private func splitAndTrim(_ inputString: String) -> [String] {
+func splitAndTrim(_ inputString: String) -> [String] {
     let parts = inputString.split(separator: ";")
     
     let trimmedParts = parts.map { $0.trimmingCharacters(in: .whitespaces) }
