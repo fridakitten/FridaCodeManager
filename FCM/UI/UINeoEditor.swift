@@ -253,6 +253,8 @@ struct NeoEditor: UIViewRepresentable {
         var parent: NeoEditor
         var currentRange: NSRange?
         var updatingUIView = false
+        private var debounceWorkItem: DispatchWorkItem?
+        private let debounceDelay: TimeInterval = 2
         private var highlightCache: [NSRange: [NSAttributedString.Key: Any]] = [:]
 
         init(_ markdownEditorView: NeoEditor) {
@@ -279,6 +281,50 @@ struct NeoEditor: UIViewRepresentable {
                 // applying single-line highlighting
                 self.applyHighlighting(to: textView, with: textView.cachedLineRange ?? NSRange(location: 0, length: 0))
             }
+
+            debounceWorkItem?.cancel()
+            debounceWorkItem = DispatchWorkItem { [weak self] in
+                for item in textView.highlightTMPLayer {
+                    item.removeFromSuperlayer()
+                }
+                for item in textView.buttonTMPLayer {
+                    item.removeFromSuperview()
+                }
+                guard let project = self?.parent.project else { return }
+                guard let filepath = self?.parent.filepath else { return }
+                let fileURL = URL(fileURLWithPath: filepath)
+                do {
+                    try textView.text.write(to: fileURL, atomically: true, encoding: .utf8)
+                } catch {
+                }
+                DispatchQueue.global(qos: .userInitiated).async {
+                    let neolog = neolog_extern()
+                    neolog.start()
+                    typecheck(project, true, nil, nil)
+                    DispatchQueue.main.sync {
+                        neolog.reflushcache()
+                        for item in errorcache {
+                            if item.file == filepath {
+                                switch item.level {
+                                    case 0:
+                                        textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
+                                        break
+                                    case 1:
+                                        textView.highlightLine(at: item.line - 1, with: UIColor.systemYellow, with: item.description, with: "exclamationmark.triangle.fill")
+                                        break
+                                    case 2:
+                                        textView.highlightLine(at: item.line - 1, with: UIColor.systemRed, with: item.description, with: "xmark.circle.fill")
+                                        break
+                                    default:
+                                        break
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + debounceDelay, execute: debounceWorkItem!)
         }
         
         func applyHighlighting(to textView: UITextView, with visibleRange: NSRange) {
@@ -354,6 +400,8 @@ class CustomTextView: UITextView {
     private(set) var hightlight_setuped: Bool = false
     private(set) var cachedLineRange: NSRange?
     private let highlightLayer = CAShapeLayer()
+    var highlightTMPLayer: [CAShapeLayer] = []
+    var buttonTMPLayer: [UIButton] = []
     
     override func paste(_ sender: Any?) {
         didPasted = true
@@ -497,6 +545,8 @@ class CustomTextView: UITextView {
         path.append(UIBezierPath(rect: newRect))
 
         newHighlightLayer.path = path.cgPath
+
+        highlightTMPLayer.append(newHighlightLayer)
     }
     
     func highlightLine(at lineNumber: Int, with color: UIColor, with text: String, with symbol: String) {
@@ -530,6 +580,7 @@ class CustomTextView: UITextView {
 
             self.addSubview(button)
             bringSubviewToFront(button)
+            buttonTMPLayer.append(button)
     }
     
     var onLayoutCompletion: (() -> Void)?
