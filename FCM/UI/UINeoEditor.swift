@@ -192,21 +192,25 @@ struct NeoEditor: UIViewRepresentable {
         textView.layer.shouldRasterize = true
         textView.layer.rasterizationScale = UIScreen.main.scale * CGFloat(render)
         textView.isUserInteractionEnabled = true
+        textView.layoutManager.addTextContainer(textView.textContainer)
+        textView.layoutManager.ensureLayout(for: textView.textContainer)
 
-        for item in errorcache {
-            if item.file == filepath {
-                switch item.level {
-                    case 0:
-                        textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
-                        break
-                    case 1:
-                        textView.highlightLine(at: item.line - 1, with: UIColor.systemYellow, with: item.description, with: "exclamationmark.triangle.fill")
-                        break
-                    case 2:
-                        textView.highlightLine(at: item.line - 1, with: UIColor.systemRed, with: item.description, with: "xmark.circle.fill")
-                        break
-                    default:
-                        break
+        textView.setLayoutCompletionHandler {
+            for item in errorcache {
+                if item.file == filepath {
+                    switch item.level {
+                        case 0:
+                            textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
+                            break
+                        case 1:
+                            textView.highlightLine(at: item.line - 1, with: UIColor.systemYellow, with: item.description, with: "exclamationmark.triangle.fill")
+                            break
+                        case 2:
+                            textView.highlightLine(at: item.line - 1, with: UIColor.systemRed, with: item.description, with: "xmark.circle.fill")
+                            break
+                        default:
+                            break
+                    }
                 }
             }
         }
@@ -339,34 +343,6 @@ struct NeoEditor: UIViewRepresentable {
     }
 }
 
-func visualRangeRect(in textView: UITextView, for textRange: NSRange) -> CGRect? {
-    guard textRange.location != NSNotFound,
-          textRange.location + textRange.length <= textView.textStorage.length else {
-        return nil
-    }
-
-    let nsText = textView.text as NSString
-    let paragraphRange = nsText.paragraphRange(for: textRange)
-    
-    let layoutManager = textView.layoutManager
-    let textContainer = textView.textContainer
-
-    layoutManager.addTextContainer(textContainer)
-    var paragraphRect = layoutManager.boundingRect(forGlyphRange: paragraphRange, in: textContainer)
-    
-    paragraphRect.origin.x += textView.textContainerInset.left
-    paragraphRect.origin.y += textView.textContainerInset.top
-    paragraphRect.origin.x -= textView.contentOffset.x
-    paragraphRect.origin.y -= textView.contentOffset.y
-
-    paragraphRect.origin.x = round(paragraphRect.origin.x)
-    paragraphRect.origin.y = round(paragraphRect.origin.y)
-    paragraphRect.size.width = round(paragraphRect.size.width)
-    paragraphRect.size.height = round(paragraphRect.size.height)
-    
-    return paragraphRect.isEmpty ? nil : paragraphRect
-}
-
 class CustomTextView: UITextView {
     var didPasted: Bool = false
     var lineLight: CGColor = UIColor.clear.cgColor
@@ -474,22 +450,34 @@ class CustomTextView: UITextView {
         }
     }
 
+    func visualRangeRect(in textView: UITextView, for textRange: NSRange) -> CGRect? {
+        guard textRange.location != NSNotFound,
+              textRange.location + textRange.length <= textView.textStorage.length else {
+            return nil
+        }
+
+        // methode 2
+        let beginning: UITextPosition = textView.beginningOfDocument;
+        guard let start: UITextPosition = textView.position(from: beginning, offset: textRange.location) else { return nil }
+        guard let end: UITextPosition = textView.position(from: start, offset: textRange.length) else { return nil }
+        guard let textRange: UITextRange = textView.textRange(from: start, to: end) else { return nil }
+        
+        let rect: CGRect = textView.firstRect(for: textRange)
+
+        return rect
+    }
+
     func rangeOfLine(in string: String, lineNumber: Int) -> NSRange? {
         let nsString = string as NSString
-        
         let lines = nsString.components(separatedBy: .newlines)
-        
         guard lineNumber >= 0 && lineNumber < lines.count else {
             return nil
         }
-        
         var location = 0
         for i in 0..<lineNumber {
             location += (lines[i] as NSString).length + 1
         }
-        
         let length = (lines[lineNumber] as NSString).length
-        
         return NSRange(location: location, length: length)
     }
     
@@ -499,23 +487,21 @@ class CustomTextView: UITextView {
         layer.insertSublayer(newHighlightLayer, at: 0)
 
         let path = UIBezierPath()
-
-        path.append(UIBezierPath(rect: rect))
+        
+        var newRect: CGRect = rect
+        newRect.size.width = UIScreen.main.bounds.size.width
+        path.append(UIBezierPath(rect: newRect))
 
         newHighlightLayer.path = path.cgPath
     }
     
     func highlightLine(at lineNumber: Int, with color: UIColor, with text: String, with symbol: String) {
         guard let range = rangeOfLine(in: self.text, lineNumber: lineNumber) else { return }
-        //guard let rect = visualRangeRect(in: self, for: range) else { return }
-        
-        textStorage.beginEditing()
-        textStorage.addAttribute(.backgroundColor, value: color.withAlphaComponent(0.3), range: range)
-        textStorage.endEditing()
+        guard let rect = visualRangeRect(in: self, for: range) else { return }
 
-        //addPath(for: range, color: color.withAlphaComponent(0.3), rect: rect)
+        addPath(for: range, color: color.withAlphaComponent(0.3), rect: rect)
             
-/*            let button = ClosureButton(title: "") {
+            let button = ClosureButton(title: "") {
                 showAlert(with: text)
             }
             let symbolConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .regular)
@@ -539,7 +525,19 @@ class CustomTextView: UITextView {
             print("Button frame: \(button.frame)")
 
             self.addSubview(button)
-            bringSubviewToFront(button)*/
+            bringSubviewToFront(button)
+    }
+    
+    var onLayoutCompletion: (() -> Void)?
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        onLayoutCompletion?()
+        onLayoutCompletion = nil
+    }
+
+    func setLayoutCompletionHandler(_ handler: @escaping () -> Void) {
+        self.onLayoutCompletion = handler
     }
 }
 
