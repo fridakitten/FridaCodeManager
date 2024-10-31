@@ -82,8 +82,8 @@ struct ProjectView: View {
                                         }
                                     }
                                 }
-                            }
-                        }
+                           }
+                       }
                     }
                 }
             }
@@ -194,7 +194,7 @@ struct CodeSpace: View {
     @Binding var pathstate: String
     @Binding var action: Int
     var body: some View {
-        FileList(title: ProjectInfo.Executable, directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, actpath: $pathstate, action: $action)
+        FileList(title: ProjectInfo.Executable, directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, actpath: $pathstate, action: $action, project: ProjectInfo)
             .fullScreenCover(isPresented: $buildv) {
                 switch ProjectInfo.TYPE {
                     case "Applications":

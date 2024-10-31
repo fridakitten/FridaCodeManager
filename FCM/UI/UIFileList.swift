@@ -79,13 +79,15 @@ struct FileList: View {
     @State private var poheader: String = ""
     @State private var potextfield: String = ""
     @State private var type: Int = 0
+
+    var project: Project
     var body: some View {
         List {
             Section {
                 ForEach(files, id: \.self) { item in
                     HStack {
                         if isDirectory(item) {
-                            NavigationLink(destination: FileList(title: nil, directoryPath: item, actpath: $actpath, action: $action)) {
+                            NavigationLink(destination: FileList(title: nil, directoryPath: item, actpath: $actpath, action: $action, project: project)) {
                                 HStack {
                                     Image(systemName: "folder.fill")
                                         .foregroundColor(.primary)
@@ -215,7 +217,7 @@ struct FileList: View {
             }
         }
         .fullScreenCover(isPresented: $quar) {
-            NeoEditorHelper(isPresented: $quar, filepath: $selpath)
+            NeoEditorHelper(isPresented: $quar, filepath: $selpath, project: project)
         }
         .fullScreenCover(isPresented: $fbool) {
             ImageView(imagePath: $selpath, fbool: $fbool)

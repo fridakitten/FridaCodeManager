@@ -25,10 +25,11 @@ struct NeoEditorHelper: View {
     @Binding var filepath: String
     @State var ready: Bool = false
 
+    var project: Project
     var body: some View {
         VStack {
             if ready {
-                NeoEditor(isPresented: $isPresented, filepath: filepath)
+                NeoEditor(isPresented: $isPresented, filepath: filepath, project: project)
             }
         }
         .onAppear {
@@ -93,10 +94,12 @@ struct NeoEditor: UIViewRepresentable {
     private var render: Double
     private var toolbar: Bool
     private var current_line_highlighting: Bool
-    
+    private var project: Project
+
     init(
         isPresented: Binding<Bool>,
-        filepath: String
+        filepath: String,
+        project: Project
     ) {
         _sheet = isPresented
         
@@ -120,6 +123,7 @@ struct NeoEditor: UIViewRepresentable {
         }()
         self.containerView = UIView()
         self.textView = CustomTextView()
+        self.project = project
     }
     
     func makeCoordinator() -> Coordinator {
