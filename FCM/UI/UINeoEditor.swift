@@ -253,6 +253,7 @@ struct NeoEditor: UIViewRepresentable {
         var parent: NeoEditor
         var currentRange: NSRange?
         var updatingUIView = false
+        var doesTypecheck = false
         private var debounceWorkItem: DispatchWorkItem?
         private let debounceDelay: TimeInterval = 2
         private var highlightCache: [NSRange: [NSAttributedString.Key: Any]] = [:]
@@ -284,6 +285,10 @@ struct NeoEditor: UIViewRepresentable {
 
             debounceWorkItem?.cancel()
             debounceWorkItem = DispatchWorkItem { [weak self] in
+                guard let strongSelf = self else { return }
+                if strongSelf.doesTypecheck {
+                    return
+                }
                 for item in textView.highlightTMPLayer {
                     item.removeFromSuperlayer()
                 }
@@ -297,11 +302,12 @@ struct NeoEditor: UIViewRepresentable {
                     try textView.text.write(to: fileURL, atomically: true, encoding: .utf8)
                 } catch {
                 }
+
                 DispatchQueue.global(qos: .userInitiated).async {
                     let neolog = neolog_extern()
                     neolog.start()
                     typecheck(project, true, nil, nil)
-                    DispatchQueue.main.sync {
+                    DispatchQueue.main.async {
                         neolog.reflushcache()
                         for item in errorcache {
                             if item.file == filepath {
