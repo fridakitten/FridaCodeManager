@@ -450,19 +450,14 @@ struct NeoEditor: UIViewRepresentable {
                 self.applyHighlighting(to: textView, with: textView.cachedLineRange ?? NSRange(location: 0, length: 0))
             }
 
+            for item in textView.highlightTMPLayer {
+                item.fillColor = UIColor.darkGray.cgColor
+            }
+
             debounceWorkItem?.cancel()
             debounceWorkItem = DispatchWorkItem { [self] in
                 guard !doesTypecheck else { return }
                 doesTypecheck = true
-
-                for item in textView.highlightTMPLayer {
-                    item.removeFromSuperlayer()
-                }
-                for item in textView.buttonTMPLayer {
-                    item.removeFromSuperview()
-                }
-                textView.highlightTMPLayer.removeAll()
-                textView.buttonTMPLayer.removeAll()
 
                 let fileURL = URL(fileURLWithPath: self.parent.filepath)
 
@@ -477,6 +472,14 @@ struct NeoEditor: UIViewRepresentable {
                     _ = typecheck(self.parent.project, true, nil, nil)
                     neolog.reflushcache()
                     DispatchQueue.main.async { [self] in
+                        for item in textView.highlightTMPLayer {
+                            item.removeFromSuperlayer()
+                        }
+                        for item in textView.buttonTMPLayer {
+                            item.removeFromSuperview()
+                        }
+                        textView.highlightTMPLayer.removeAll()
+                        textView.buttonTMPLayer.removeAll()
                         for item in errorcache {
                             if item.file == self.parent.filepath {
                                 switch item.level {
