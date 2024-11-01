@@ -421,6 +421,7 @@ struct NeoEditor: UIViewRepresentable {
         var currentRange: NSRange?
         var updatingUIView = false
         var doesTypecheck = false
+        var isInvalidated = false
         private var debounceWorkItem: DispatchWorkItem?
         private let debounceDelay: TimeInterval = 2
         private var highlightCache: [NSRange: [NSAttributedString.Key: Any]] = [:]
@@ -450,10 +451,14 @@ struct NeoEditor: UIViewRepresentable {
                 self.applyHighlighting(to: textView, with: textView.cachedLineRange ?? NSRange(location: 0, length: 0))
             }
 
-            for item in textView.highlightTMPLayer {
-                item.fillColor = UIColor.darkGray.cgColor
+            // invalidation
+            if !isInvalidated {
+                for item in textView.highlightTMPLayer {
+                    item.fillColor = UIColor.darkGray.cgColor
+                }
             }
 
+            // typecheck
             debounceWorkItem?.cancel()
             debounceWorkItem = DispatchWorkItem { [self] in
                 guard !doesTypecheck else { return }
@@ -508,6 +513,7 @@ struct NeoEditor: UIViewRepresentable {
                             }
                         }
                         doesTypecheck = false
+                        isInvalidated = false
                     }
                 }
             }
@@ -772,23 +778,21 @@ class CustomTextView: UITextView {
         
         _ = addAnimatedPath(color: color.withAlphaComponent(0.3), rect: rect)
         
-        var lineRect: CGRect = .zero
-        layoutManager.enumerateLineFragments(forGlyphRange: range) { (rect, _, _, _, _) in
-            lineRect = rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
-        }
+        let lineRect: CGRect = rect
         
-        let button: UIButton = ClosureButton(title: "") {
+        var button: UIButton = UIButton()
+        button = ClosureButton(title: "") {
             // create UIView as a Box for the issue
             let uiView: UIView = UIView()
             uiView.backgroundColor = UIColor.systemGray6
-            uiView.frame = CGRect(x: (UIScreen.main.bounds.width - 100) - (self.font?.pointSize ?? 0.0), y: lineRect.midY - ((self.font?.pointSize ?? 0.0) / 2), width: 100 + (self.font?.pointSize ?? 0.0), height: 200)
+            uiView.frame = CGRect(x: (UIScreen.main.bounds.width - (UIScreen.main.bounds.width / 2.25)) - (self.font?.pointSize ?? 0.0), y: lineRect.midY - ((self.font?.pointSize ?? 0.0) / 2), width: (UIScreen.main.bounds.width / 2.25) + (self.font?.pointSize ?? 0.0), height: 100)
             uiView.layer.cornerRadius = 15
             uiView.layer.borderWidth = 1
-            uiView.layer.borderColor = UIColor.gray.cgColor
+            uiView.layer.borderColor = color.cgColor
             uiView.clipsToBounds = true
             
             // create a dissmisal Button
-            let dissmissButton: UIButton = ClosureButton(title: "dissmiss") {
+            let dissmissButton: UIButton = ClosureButton(title: "") {
                 // animating its dissapeareance
                 UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
                     uiView.alpha = 0.0
@@ -799,15 +803,28 @@ class CustomTextView: UITextView {
                     }
                 })
             }
-            dissmissButton.frame = CGRect(x: 10 , y: 10, width: 100, height: 20)
+            dissmissButton.frame = CGRect(x: /*10*/ uiView.bounds.width - 30 , y: 10, width: 15, height: 15)
             
-            // label for error
-            let label: UILabel = UILabel()
-            label.frame = CGRect(x: (UIScreen.main.bounds.width - 100) - (self.font?.pointSize ?? 0.0), y: lineRect.midY - ((self.font?.pointSize ?? 0.0) / 2), width: (UIScreen.main.bounds.width - 100), height: (UIScreen.main.bounds.width - 100))
-            label.text = text
+            let symbolConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
+            let image = UIImage(systemName: "xmark.circle", withConfiguration: symbolConfig)
+            dissmissButton.setImage(image, for: .normal)
+            dissmissButton.tintColor = UIColor.label
+            
+            // create label as a Way to display the issue
+            let issueLabel: UILabel = PaddedLabel()
+            issueLabel.frame = CGRect(x: 10, y: dissmissButton.frame.maxY + 10, width: uiView.bounds.width - 20, height: (uiView.bounds.height - dissmissButton.bounds.height) - 30)
+            issueLabel.backgroundColor = UIColor.systemBackground
+            issueLabel.layer.cornerRadius = 10
+            issueLabel.layer.borderWidth = 1
+            issueLabel.layer.borderColor = color.withAlphaComponent(0.5).cgColor
+            issueLabel.clipsToBounds = true
+            issueLabel.numberOfLines = 0
+            issueLabel.font = self.font?.withSize(CGFloat((self.font?.pointSize ?? 0.0) / 1.5))
+            issueLabel.text = text
             
             // building uiView hierachie
             uiView.addSubview(dissmissButton)
+            uiView.addSubview(issueLabel)
             
             // adding uiView to parent
             uiView.alpha = 0.0
@@ -824,10 +841,8 @@ class CustomTextView: UITextView {
         button.setImage(image, for: .normal)
         button.tintColor = color
         button.backgroundColor = .clear
-            
-        button.frame = CGRect(x: (UIScreen.main.bounds.width - 5) - (font?.pointSize ?? 0.0), y: lineRect.midY - ((font?.pointSize ?? 0.0) / 2), width: font?.pointSize ?? 0.0, height: font?.pointSize ?? 0.0)
 
-        print("Button frame: \(button.frame)")
+        button.frame = CGRect(x: (UIScreen.main.bounds.width - 5) - (font?.pointSize ?? 0.0), y: lineRect.midY - ((font?.pointSize ?? 0.0) / 2), width: font?.pointSize ?? 0.0, height: font?.pointSize ?? 0.0)
 
         self.addSubview(button)
         bringSubviewToFront(button)
@@ -844,6 +859,20 @@ class CustomTextView: UITextView {
 
     func setLayoutCompletionHandler(_ handler: @escaping () -> Void) {
         self.onLayoutCompletion = handler
+    }
+}
+
+class PaddedLabel: UILabel {
+    var textInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16) // Set your insets here
+
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: textInsets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(width: size.width + textInsets.left + textInsets.right,
+                      height: size.height + textInsets.top + textInsets.bottom)
     }
 }
 
