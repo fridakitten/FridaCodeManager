@@ -461,6 +461,8 @@ struct NeoEditor: UIViewRepresentable {
                 for item in textView.buttonTMPLayer {
                     item.removeFromSuperview()
                 }
+                textView.highlightTMPLayer.removeAll()
+                textView.buttonTMPLayer.removeAll()
 
                 let fileURL = URL(fileURLWithPath: self.parent.filepath)
 
@@ -473,8 +475,8 @@ struct NeoEditor: UIViewRepresentable {
                     let neolog = neolog_extern()
                     neolog.start()
                     _ = typecheck(self.parent.project, true, nil, nil)
+                    neolog.reflushcache()
                     DispatchQueue.main.async { [self] in
-                        neolog.reflushcache()
                         for item in errorcache {
                             if item.file == self.parent.filepath {
                                 switch item.level {
