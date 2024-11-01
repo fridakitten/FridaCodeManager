@@ -46,7 +46,6 @@ class neolog_extern: NSObject {
 
     func reflushcache() {
         errorcache = getlog(logitems: LogItems)
-        LogItems = []
     }
 }
 
