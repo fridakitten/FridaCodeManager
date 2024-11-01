@@ -48,6 +48,12 @@ import SwiftUI
 import UIKit
 import Foundation
 
+// caches for toolbar v2
+var tectField: String = ""
+var highlightLayerCache: [CAShapeLayer] = []
+var toolbarItemCache: [UIBarButtonItem] = []
+var numcache: Int = 0
+
 // configuration for NeoEditor
 struct NeoEditorConfig {
     var background: UIColor
@@ -66,6 +72,7 @@ struct NeoEditor: UIViewRepresentable {
     private let highlightRules: [HighlightRule]
     private let filepath: String
     private let filename: String
+    private let toolbar: UIToolbar
 
     // not checking over and over again, please no, we dont wanna do the yandere dev!
     private let config: NeoEditorConfig = {
@@ -92,7 +99,7 @@ struct NeoEditor: UIViewRepresentable {
     
     @Binding private var sheet: Bool
     private var render: Double
-    private var toolbar: Bool
+    private var enableToolbar: Bool
     private var current_line_highlighting: Bool
     private var project: Project
 
@@ -115,7 +122,7 @@ struct NeoEditor: UIViewRepresentable {
         self.render = {
             return UserDefaults.standard.double(forKey: "CERender")
         }()
-        self.toolbar = {
+        self.enableToolbar = {
             return UserDefaults.standard.bool(forKey: "CEToolbar")
         }()
         self.current_line_highlighting = {
@@ -124,6 +131,7 @@ struct NeoEditor: UIViewRepresentable {
         self.containerView = UIView()
         self.textView = CustomTextView()
         self.project = project
+        self.toolbar = UIToolbar()
     }
     
     func makeCoordinator() -> Coordinator {
@@ -219,28 +227,187 @@ struct NeoEditor: UIViewRepresentable {
             }
         }
 
-        if toolbar {
+        if enableToolbar {
             setupToolbar(textView: textView)
         }
 
         return containerView
     }
 
-    // basically the toolbar
     func setupToolbar(textView: UITextView) {
-        let toolbar = UIToolbar()
         toolbar.sizeToFit()
-        let tabButton = ClosureBarButtonItem(title: "Tab", style: .plain) {
+        let tabButton = ClosureButton(title: "Tab") {
             insertTextAtCurrentPosition(textView: textView, newText: "\t")
         }
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.items = [tabButton, flexibleSpace]
-        textView.inputAccessoryView = toolbar
-        //lineNumberLabel.setContentHuggingPriority(.required, for: .horizontal)
-        //lineNumberLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-    }
         
-    // function to insert content to the textView
+        let action1 = UIAction(title: "Go To Line", image: UIImage(systemName: "arrow.right")) { _ in
+            // backup the toolbar items in cache
+            toolbarItemCache = toolbar.items ?? []
+            
+            self.animateToolbarItemsDisappearance {
+                // new tabbar hierachie
+                
+                // item setup
+                let textField = UITextField()
+                textField.text = ""
+                textField.placeholder = "Line number to jump to"
+                textField.borderStyle = .roundedRect
+                textField.keyboardType = .asciiCapable
+                let doneButton = ClosureButton(title: "Cancel") {
+                    self.animateToolbarItemsDisappearance {
+                        self.restoreToolbarItems()
+                    }
+                }
+                let gotoButton = ClosureButton(title: "Goto") {
+                    guard let lineNumber = Int(textField.text ?? "n/a") else { return }
+                    guard let textView = textView as? CustomTextView else { return }
+                    guard let askedRange: NSRange = textView.rangeOfLine(lineNumber: lineNumber - 1) else { return }
+                    guard let rect: CGRect = visualRangeRect(in: textView, for: askedRange) else { return }
+                    
+                    setSelectedTextRange(for: textView, with: askedRange)
+                    textView.scrollRangeToVisible(askedRange)
+                    
+                    guard let highlight: CAShapeLayer = textView.addPath(color: UIColor.yellow.withAlphaComponent(0.3), rect: rect, entirePath: false, radius: 4.0) else { return }
+                    
+                    let animation = CABasicAnimation(keyPath: "opacity")
+                    animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
+                    animation.fillMode = CAMediaTimingFillMode.forwards
+                    animation.isRemovedOnCompletion = false
+                    animation.fromValue = 1.0
+                    animation.toValue = 0.0
+                    animation.duration = 1.5
+                    
+                    highlight.add(animation, forKey: nil)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + animation.duration) {
+                        highlight.removeFromSuperlayer()
+                    }
+                    
+                    self.animateToolbarItemsDisappearance {
+                        self.restoreToolbarItems()
+                    }
+                }
+                
+                let doneBarButtonItem = UIBarButtonItem(customView: doneButton)
+                let gotoBarButtonItem = UIBarButtonItem(customView: gotoButton)
+                let textBarButtonItem = UIBarButtonItem(customView: textField)
+                let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+                
+                restoreToolbarItems(with: [doneBarButtonItem, flexibleSpace, textBarButtonItem, flexibleSpace, gotoBarButtonItem])
+                
+            }
+        }
+        
+        let action2 = UIAction(title: "Search String", image: UIImage(systemName: "magnifyingglass")) { _ in
+            // backup the toolbar items in cache
+            toolbarItemCache = toolbar.items ?? []
+            
+            self.animateToolbarItemsDisappearance {
+                // new tabbar hierachie
+                
+                // item setup
+                let textField = UITextField()
+                textField.text = ""
+                textField.placeholder = "String to search"
+                textField.borderStyle = .roundedRect
+                let doneButton = ClosureButton(title: "Close") {
+                    if !highlightLayerCache.isEmpty {
+                        for item in highlightLayerCache {
+                            item.removeFromSuperlayer()
+                        }
+                    }
+                    
+                    self.animateToolbarItemsDisappearance {
+                        self.restoreToolbarItems()
+                    }
+                }
+                let searchButton = ClosureButton(title: "Search") {
+                    guard let string = textField.text else { return }
+                    guard let textView = textView as? CustomTextView else { return }
+                    
+                    if !highlightLayerCache.isEmpty {
+                        for item in highlightLayerCache {
+                            item.removeFromSuperlayer()
+                        }
+                    }
+                    
+                    let nsranges: [NSRange] = findRanges(of: string, in: textView.text)
+                    
+                    for item in nsranges {
+                        if let rect = visualRangeRect(in: textView, for: item) {
+                            let layer = textView.addPath(color: UIColor.yellow.withAlphaComponent(0.3), rect: rect, entirePath: false, radius: 4.0)
+                            
+                            if let layer = layer {
+                                highlightLayerCache.append(layer)
+                            }
+                        }
+                    }
+                }
+                
+                let doneBarButtonItem = UIBarButtonItem(customView: doneButton)
+                let gotoBarButtonItem = UIBarButtonItem(customView: searchButton)
+                let textBarButtonItem = UIBarButtonItem(customView: textField)
+                let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+                
+                restoreToolbarItems(with: [doneBarButtonItem, flexibleSpace, textBarButtonItem, flexibleSpace, gotoBarButtonItem])
+                
+            }
+        }
+
+        let menu = UIMenu(title: "Tools", children: [action2, action1])
+        
+        let menuButton = UIButton(type: .system)
+        menuButton.tintColor = UIColor.label
+        menuButton.setTitle("Tools", for: .normal)
+        menuButton.menu = menu
+        menuButton.showsMenuAsPrimaryAction = true
+                
+        // Create a UIBarButtonItem from the button
+        let menuBarButtonItem = UIBarButtonItem(customView: menuButton)
+        let TabBarButtonItem = UIBarButtonItem(customView: tabButton)
+        
+        // adding toolbar stuff
+        toolbar.items = [TabBarButtonItem, flexibleSpace, menuBarButtonItem]
+        textView.inputAccessoryView = toolbar
+    }
+
+    func animateToolbarItemsDisappearance(completion: @escaping () -> Void) {
+        guard let items = toolbar.items else { return }
+        
+        // Create a group animation to fade out all custom views (if any)
+        let fadeOutDuration: TimeInterval = 0.3
+        
+        UIView.animate(withDuration: fadeOutDuration, animations: {
+            for item in items {
+                item.customView?.alpha = 0.0 // Fade out custom views
+            }
+        }) { _ in
+            // Clear the toolbar items after the fade-out animation completes
+            self.toolbar.items = []
+            completion() // Call the completion closure after items are cleared
+        }
+    }
+    
+    func restoreToolbarItems(with cache: [UIBarButtonItem] = toolbarItemCache) {
+        toolbar.items = cache
+            
+        // Animate the reappearance of items
+        guard let items = toolbar.items else { return }
+            
+        let fadeInDuration: TimeInterval = 0.3
+            
+        for item in items {
+            item.customView?.alpha = 0.0 // Ensure alpha is reset for fade-in
+        }
+            
+        UIView.animate(withDuration: fadeInDuration) {
+            for item in items {
+                item.customView?.alpha = 1.0 // Fade in custom views
+            }
+        }
+    }
+
     func insertTextAtCurrentPosition(textView: UITextView, newText: String) {
         if let selectedRange = textView.selectedTextRange {
             textView.replace(selectedRange, withText: newText)
@@ -284,20 +451,19 @@ struct NeoEditor: UIViewRepresentable {
             }
 
             debounceWorkItem?.cancel()
-            debounceWorkItem = DispatchWorkItem { [weak self] in
-                guard let strongSelf = self else { return }
-                if strongSelf.doesTypecheck {
-                    return
-                }
+            debounceWorkItem = DispatchWorkItem { [self] in
+                guard !doesTypecheck else { return }
+                doesTypecheck = true
+
                 for item in textView.highlightTMPLayer {
                     item.removeFromSuperlayer()
                 }
                 for item in textView.buttonTMPLayer {
                     item.removeFromSuperview()
                 }
-                guard let project = self?.parent.project else { return }
-                guard let filepath = self?.parent.filepath else { return }
-                let fileURL = URL(fileURLWithPath: filepath)
+
+                let fileURL = URL(fileURLWithPath: self.parent.filepath)
+
                 do {
                     try textView.text.write(to: fileURL, atomically: true, encoding: .utf8)
                 } catch {
@@ -306,11 +472,11 @@ struct NeoEditor: UIViewRepresentable {
                 DispatchQueue.global(qos: .userInitiated).async {
                     let neolog = neolog_extern()
                     neolog.start()
-                    typecheck(project, true, nil, nil)
-                    DispatchQueue.main.async {
+                    _ = typecheck(self.parent.project, true, nil, nil)
+                    DispatchQueue.main.async { [self] in
                         neolog.reflushcache()
                         for item in errorcache {
-                            if item.file == filepath {
+                            if item.file == self.parent.filepath {
                                 switch item.level {
                                     case 0:
                                         textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
@@ -326,6 +492,7 @@ struct NeoEditor: UIViewRepresentable {
                                 }
                             }
                         }
+                        doesTypecheck = false
                     }
                 }
             }
@@ -508,25 +675,8 @@ class CustomTextView: UITextView {
         }
     }
 
-    func visualRangeRect(in textView: UITextView, for textRange: NSRange) -> CGRect? {
-        guard textRange.location != NSNotFound,
-              textRange.location + textRange.length <= textView.textStorage.length else {
-            return nil
-        }
-
-        // methode 2
-        let beginning: UITextPosition = textView.beginningOfDocument;
-        guard let start: UITextPosition = textView.position(from: beginning, offset: textRange.location) else { return nil }
-        guard let end: UITextPosition = textView.position(from: start, offset: textRange.length) else { return nil }
-        guard let textRange: UITextRange = textView.textRange(from: start, to: end) else { return nil }
-        
-        let rect: CGRect = textView.firstRect(for: textRange)
-
-        return rect
-    }
-
-    func rangeOfLine(in string: String, lineNumber: Int) -> NSRange? {
-        let nsString = string as NSString
+    func rangeOfLine(lineNumber: Int) -> NSRange? {
+        let nsString = self.text as NSString
         let lines = nsString.components(separatedBy: .newlines)
         guard lineNumber >= 0 && lineNumber < lines.count else {
             return nil
@@ -539,56 +689,100 @@ class CustomTextView: UITextView {
         return NSRange(location: location, length: length)
     }
     
-    private func addPath(for range: NSRange, color: UIColor, rect: CGRect) {
+    func addPath(color: UIColor, rect: CGRect, entirePath: Bool? = nil, radius: CGFloat? = 0.0) -> CAShapeLayer? {
         let newHighlightLayer = CAShapeLayer()
         newHighlightLayer.fillColor = color.cgColor
-        layer.insertSublayer(newHighlightLayer, at: 0)
+        layer.insertSublayer(newHighlightLayer, at: 1)
 
         let path = UIBezierPath()
-        
         var newRect: CGRect = rect
-        newRect.size.width = UIScreen.main.bounds.size.width
-        path.append(UIBezierPath(rect: newRect))
+        
+        if let entirePath = entirePath {
+            if entirePath {
+                newRect.size.width = UIScreen.main.bounds.size.width
+            }
+        } else {
+            newRect.size.width = UIScreen.main.bounds.size.width
+        }
+        
+        
+        path.append(UIBezierPath(roundedRect: newRect, cornerRadius: radius ?? 0.0))
 
         newHighlightLayer.path = path.cgPath
-
         highlightTMPLayer.append(newHighlightLayer)
+        
+        return newHighlightLayer
     }
     
+    // MARK: XCode Error handling on iOS
     func highlightLine(at lineNumber: Int, with color: UIColor, with text: String, with symbol: String) {
-        guard let range = rangeOfLine(in: self.text, lineNumber: lineNumber) else { return }
+        guard let range = rangeOfLine(lineNumber: lineNumber) else { return }
         guard let rect = visualRangeRect(in: self, for: range) else { return }
-
-        addPath(for: range, color: color.withAlphaComponent(0.3), rect: rect)
+        
+        _ = addPath(color: color.withAlphaComponent(0.3), rect: rect)
+        
+        var lineRect: CGRect = .zero
+        layoutManager.enumerateLineFragments(forGlyphRange: range) { (rect, _, _, _, _) in
+            lineRect = rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
+        }
+        
+        let button: UIButton = ClosureButton(title: "") {
+            // create UIView as a Box for the issue
+            let uiView: UIView = UIView()
+            uiView.backgroundColor = UIColor.systemGray6
+            uiView.frame = CGRect(x: (UIScreen.main.bounds.width - 100) - (self.font?.pointSize ?? 0.0), y: lineRect.midY - ((self.font?.pointSize ?? 0.0) / 2), width: 100 + (self.font?.pointSize ?? 0.0), height: 200)
+            uiView.layer.cornerRadius = 15
+            uiView.layer.borderWidth = 1
+            uiView.layer.borderColor = UIColor.gray.cgColor
+            uiView.clipsToBounds = true
             
-            let button = ClosureButton(title: "") {
-                showAlert(with: text)
+            // create a dissmisal Button
+            let dissmissButton: UIButton = ClosureButton(title: "dissmiss") {
+                // animating its dissapeareance
+                UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
+                    uiView.alpha = 0.0
+                }, completion: { finished in
+                    if finished {
+                        // removing uiView from parent
+                        uiView.removeFromSuperview()
+                    }
+                })
             }
-            let symbolConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .regular)
-            let image = UIImage(systemName: symbol, withConfiguration: symbolConfig)
-            button.setImage(image, for: .normal)
-            button.tintColor = color
-            button.backgroundColor = .clear
+            dissmissButton.frame = CGRect(x: 10 , y: 10, width: 100, height: 20)
             
-            var lineRect: CGRect = .zero
-            layoutManager.enumerateLineFragments(forGlyphRange: range) { (rect, _, _, _, _) in
-                lineRect = rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
-            }
+            // label for error
+            let label: UILabel = UILabel()
+            label.frame = CGRect(x: (UIScreen.main.bounds.width - 100) - (self.font?.pointSize ?? 0.0), y: lineRect.midY - ((self.font?.pointSize ?? 0.0) / 2), width: (UIScreen.main.bounds.width - 100), height: (UIScreen.main.bounds.width - 100))
+            label.text = text
             
-            let buttonWidth: CGFloat = font?.pointSize ?? 0.0
-            let buttonHeight: CGFloat = font?.pointSize ?? 0.0
-            let buttonX = (UIScreen.main.bounds.width - 5) - (font?.pointSize ?? 0.0)
-            let buttonY = lineRect.midY - (buttonHeight / 2)
+            // building uiView hierachie
+            uiView.addSubview(dissmissButton)
             
-            button.frame = CGRect(x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight)
+            // adding uiView to parent
+            uiView.alpha = 0.0
+            self.addSubview(uiView)
+            
+            // appeareance animation
+            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
+                uiView.alpha = 1.0
+            }, completion: nil)
+        }
+        
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .regular)
+        let image = UIImage(systemName: symbol, withConfiguration: symbolConfig)
+        button.setImage(image, for: .normal)
+        button.tintColor = color
+        button.backgroundColor = .clear
+            
+        button.frame = CGRect(x: (UIScreen.main.bounds.width - 5) - (font?.pointSize ?? 0.0), y: lineRect.midY - ((font?.pointSize ?? 0.0) / 2), width: font?.pointSize ?? 0.0, height: font?.pointSize ?? 0.0)
 
-            print("Button frame: \(button.frame)")
+        print("Button frame: \(button.frame)")
 
-            self.addSubview(button)
-            bringSubviewToFront(button)
-            buttonTMPLayer.append(button)
+        self.addSubview(button)
+        bringSubviewToFront(button)
+        buttonTMPLayer.append(button)
     }
-    
+
     var onLayoutCompletion: (() -> Void)?
 
     override func layoutSubviews() {
