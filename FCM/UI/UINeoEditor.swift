@@ -473,7 +473,17 @@ struct NeoEditor: UIViewRepresentable {
                     neolog.reflushcache()
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
-                            item.removeFromSuperlayer()
+                            let animation = CABasicAnimation(keyPath: "opacity")
+                            animation.duration = 0.10
+                            animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
+                            animation.fillMode = CAMediaTimingFillMode.forwards
+                            animation.isRemovedOnCompletion = false
+                            animation.fromValue = 1.0
+                            animation.toValue = 0.0
+                            item.add(animation, forKey: nil)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + animation.duration) {
+                                item.removeFromSuperlayer()
+                            }
                         }
                         for item in textView.buttonTMPLayer {
                             item.removeFromSuperview()
@@ -719,12 +729,48 @@ class CustomTextView: UITextView {
         return newHighlightLayer
     }
     
+    func addAnimatedPath(color: UIColor, rect: CGRect, entirePath: Bool? = nil, radius: CGFloat? = 0.0) -> CAShapeLayer? {
+        let newHighlightLayer = CAShapeLayer()
+        newHighlightLayer.fillColor = color.cgColor
+        layer.insertSublayer(newHighlightLayer, at: 1)
+
+        let path = UIBezierPath()
+        var newRect: CGRect = rect
+        
+        if let entirePath = entirePath {
+            if entirePath {
+                newRect.size.width = UIScreen.main.bounds.size.width
+            }
+        } else {
+            newRect.size.width = UIScreen.main.bounds.size.width
+        }
+        
+        
+        path.append(UIBezierPath(roundedRect: newRect, cornerRadius: radius ?? 0.0))
+
+        newHighlightLayer.path = path.cgPath
+        newHighlightLayer.opacity = 0.1
+        highlightTMPLayer.append(newHighlightLayer)
+
+        // animation
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.duration = 0.25
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
+        animation.fillMode = CAMediaTimingFillMode.forwards
+        animation.isRemovedOnCompletion = false
+        animation.fromValue = 0.0
+        animation.toValue = 1.0
+        newHighlightLayer.add(animation, forKey: nil)
+
+        return newHighlightLayer
+    }
+
     // MARK: XCode Error handling on iOS
     func highlightLine(at lineNumber: Int, with color: UIColor, with text: String, with symbol: String) {
         guard let range = rangeOfLine(lineNumber: lineNumber) else { return }
         guard let rect = visualRangeRect(in: self, for: range) else { return }
         
-        _ = addPath(color: color.withAlphaComponent(0.3), rect: rect)
+        _ = addAnimatedPath(color: color.withAlphaComponent(0.3), rect: rect)
         
         var lineRect: CGRect = .zero
         layoutManager.enumerateLineFragments(forGlyphRange: range) { (rect, _, _, _, _) in
