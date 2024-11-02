@@ -64,7 +64,7 @@ func typecheck(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_
             }.joined()
         }
         EXEC += """
-        swiftc -typecheck \(SwiftFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(MFiles.isEmpty ? "" : "clang/*.o") \
+        swiftc -typecheck \(SwiftFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
         \(FileManager.default.fileExists(atPath: info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG)
         """
     } else {
