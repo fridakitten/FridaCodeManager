@@ -219,32 +219,30 @@ struct buildView: View {
     @State private var Log: [String] = []
     var body: some View {
         VStack {
-            NeoLog(buildv: $buildv)
-        }
-        .disabled(compiling)
-        .onAppear {
-            DispatchQueue.global(qos: .utility).async {
-                compiling = true
-                #if !stock
-                let status = build(ProjectInfo, true, $status, $progress)
-                #else
-                let status = build(ProjectInfo, false, $status, $progress)
-                #endif
-                DispatchQueue.main.async {
-                    if status == 0 {
-                        #if !stock
-                        if ProjectInfo.TYPE == "Applications" {
-                            OpenApp(ProjectInfo.BundleID)
+            NeoLog(buildv: $buildv) {
+                DispatchQueue.global(qos: .utility).async {
+                    compiling = true
+                    #if !stock
+                    let status = build(ProjectInfo, true, $status, $progress)
+                    #else
+                    let status = build(ProjectInfo, false, $status, $progress)
+                    #endif
+                    DispatchQueue.main.async {
+                        if status == 0 {
+                            #if !stock
+                            if ProjectInfo.TYPE == "Applications" {
+                                OpenApp(ProjectInfo.BundleID)
+                            }
+                            #else
+                            print("[*] you have to export the app!\n")
+                            #endif
                         }
-                        #else
-                        print("[*] you have to export the app!\n")
-                        #endif
-                    }
-                    withAnimation {
-                        compiling = false
+                        withAnimation {
+                            compiling = false
+                        }
                     }
                 }
-            }
+            }
         }
     }
 }

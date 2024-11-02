@@ -41,13 +41,16 @@ struct NeoLog: View {
    @Binding var buildv: Bool
    @State var LogViews: [logstruct] = []
    @State var type: Int = 0
+   let action: () -> Void
 
    init(
-       buildv: Binding<Bool>
+       buildv: Binding<Bool>,
+       action: @escaping () -> Void
    ) {
        UIInit(type: 1)
        _buildv = buildv
        errorcache = []
+       self.action = action
    }
 
    var body: some View {
@@ -65,7 +68,7 @@ struct NeoLog: View {
                         Spacer().frame(height: 10)
                         ForEach(LogCache) { item in
                             HStack {
-                                Text(highlightMessage(item.Message))
+                                Text(highlightMessage(item.Message.lineFix()))
                                     .font(.system(size: 10, design: .monospaced))
                                 Spacer()
                             }
@@ -86,6 +89,8 @@ struct NeoLog: View {
 
                 dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
                 dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
+
+                action()
             }
             .onChange(of: LogItems) { _ in
                 LogCache += LogItems
