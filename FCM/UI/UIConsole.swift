@@ -206,7 +206,7 @@ func getlog(logitems: [LogItem]) -> [logstruct] {
         for substring in substrings {
             let subitems: [String] = splitStringByColon(input: substring)
             
-            if subitems.count == 5 && subitems[4] != " no such module found" && FileManager.default.fileExists(atPath: subitems[0])  {
+            if subitems.count > 4 && subitems[4] != " no such module found" && FileManager.default.fileExists(atPath: subitems[0])  {
                 let finalitem: logstruct = logstruct(file: subitems[0], line: Int(subitems[1]) ?? -1, level: getlevel(subitems[3]), description: subitems[4], detail: extractLine(from: subitems[0], lineNumber: Int(subitems[1]) ?? -1) ?? "Error: File couldnt be opened")
                 logstructs.append(finalitem)
             }
