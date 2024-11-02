@@ -214,8 +214,8 @@ struct buildView: View {
     @State var ProjectInfo: Project
     @Binding var buildv: Bool
     @State private var compiling: Bool = true
-    @State private var status: String = ""
-    @State private var progress = 0.0
+    @State private var BVstatus: String = ""
+    @State private var BVprogress = 0.0
     @State private var Log: [String] = []
     var body: some View {
         VStack {
@@ -223,9 +223,9 @@ struct buildView: View {
                 DispatchQueue.global(qos: .utility).async {
                     compiling = true
                     #if !stock
-                    let status = build(ProjectInfo, true, $status, $progress)
+                    let status = build(ProjectInfo, true, $BVstatus, $BVprogress)
                     #else
-                    let status = build(ProjectInfo, false, $status, $progress)
+                    let status = build(ProjectInfo, false, $BVstatus, $BVprogress)
                     #endif
                     DispatchQueue.main.async {
                         if status == 0 {
@@ -238,11 +238,31 @@ struct buildView: View {
                             #endif
                         }
                         withAnimation {
+                            BVstatus = "Done :3"
+                            BVprogress = 1.0
                             compiling = false
                         }
                     }
                 }
             }
+            ZStack {
+                Rectangle()
+                    .foregroundColor(Color(UIColor.systemGray6))
+                    .cornerRadius(15)
+                VStack {
+                    ProgressView(value: BVprogress, total: 1.0)
+                        .progressViewStyle(LinearProgressViewStyle())
+                        .frame(width: UIScreen.main.bounds.width / 1.4)
+                        .accentColor(.primary)
+                    Spacer().frame(height: 10)
+                    Text("\(BVstatus)")
+                        .font(.system(size: 11, weight: .semibold))
+                }
+            }
+            .frame(width: UIScreen.main.bounds.width / 1.2, height: 65)
+            if !UIDevice.current.hasNotch {
+                Spacer().frame(height: 25)
+            }
         }
     }
 }
