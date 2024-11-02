@@ -250,6 +250,7 @@ struct buildView: View {
                     #endif
                     DispatchQueue.main.async {
                         if status == 0 {
+                            Cache.append(logstruct(file: " ", line: 0, level: -1, description: "Success", detail: "successfully build app"))
                             #if !stock
                             if ProjectInfo.TYPE == "Applications" {
                                 OpenApp(ProjectInfo.BundleID)
@@ -257,6 +258,10 @@ struct buildView: View {
                             #else
                             print("[*] you have to export the app!\n")
                             #endif
+                        } else {
+                            if Cache.isEmpty {
+                                Cache.append(logstruct(file: " ", line: 0, level: 2, description: "Fatal Error", detail: "none-zero compiler return, for more details switch to log mode"))
+                            }
                         }
                         withAnimation {
                             BVstatus = "Done :3"

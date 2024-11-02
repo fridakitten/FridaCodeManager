@@ -24,6 +24,8 @@ import SwiftUI
 
 private func getlevelback(_ level: Int) -> Color {
     switch level {
+        case -1:
+            return Color(UIColor.systemGreen.withAlphaComponent(0.2))
         case 0:
             return Color(UIColor.systemBlue.withAlphaComponent(0.2))
         case 1:
@@ -241,6 +243,8 @@ func extractLine(from filePath: String, lineNumber: Int) -> String? {
 
 func getlevel(_ messageParty: String) -> Int {
     switch messageParty {
+    case " succeed":
+        return -1
     case " note":
         return 0
     case " warning":
@@ -277,6 +281,9 @@ struct LevelItem: View {
                 case 0:
                     Image(systemName: "info.circle.fill")
                         .foregroundColor(Color.blue)
+                case -1:
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(Color.green)
                 default:
                     Spacer().frame(width: 0, height: 0)
                 }
@@ -295,15 +302,17 @@ struct LevelItem: View {
             Rectangle()
                 .frame(height: 0.5)
                 .foregroundColor(.secondary)
-            HStack {
-                Text("file: \(logstruct.file)")
-                    .font(.system(size: 10.0))
-                Spacer()
-            }
-            HStack {
-                Text("line: \(logstruct.line)")
-                    .font(.system(size: 10.0))
-                Spacer()
+            if logstruct.file != " " {
+                HStack {
+                    Text("file: \(logstruct.file)")
+                        .font(.system(size: 10.0))
+                    Spacer()
+                }
+                HStack {
+                    Text("line: \(logstruct.line)")
+                        .font(.system(size: 10.0))
+                    Spacer()
+                }
             }
         }
     }
