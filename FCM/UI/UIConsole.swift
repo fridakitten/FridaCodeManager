@@ -122,7 +122,6 @@ struct NeoLog: View {
                     Button("Close") {
                         UIInit(type: 0)
                         buildv = false
-                        externlog.stop()
                         errorcache = LogViews
                     }
                     .foregroundColor(.primary)

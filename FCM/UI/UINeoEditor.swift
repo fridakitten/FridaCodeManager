@@ -456,6 +456,7 @@ struct NeoEditor: UIViewRepresentable {
                 for item in textView.highlightTMPLayer {
                     item.fillColor = UIColor.darkGray.cgColor
                 }
+                isInvalidated = true
             }
 
             // typecheck
@@ -472,11 +473,10 @@ struct NeoEditor: UIViewRepresentable {
                 }
 
                 DispatchQueue.global(qos: .userInitiated).async {
+                    let externlog = neolog_extern()
                     externlog.start()
                     _ = typecheck(self.parent.project, true, nil, nil)
-                    externlog.stop()
                     externlog.reflushcache()
-                    externlog.reset()
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
                             let animation = CABasicAnimation(keyPath: "opacity")

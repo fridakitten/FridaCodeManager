@@ -1,9 +1,6 @@
 import SwiftUI
 import Foundation
 
-// self initialise
-let externlog = neolog_extern()
-
 // caches
 let LogPipe = Pipe()
 var errorcache: [logstruct] = []
@@ -56,37 +53,8 @@ class neolog_extern: NSObject {
         setvbuf(stderr, nil, _IOLBF, 0)
     }
 
-    func reset() {
-        LogItems = []
-    }
-
     // utilities
     func reflushcache() {
-        // interrupt handler
-        stop()
-
-        // cacheing it
         errorcache = getlog(logitems: LogItems)
-
-        // restarting it
-        start()
     }
-
-    func provideLog() -> Binding<[LogItem]> {
-        return withUnsafeMutablePointer(to: &LogItems) { pointer in
-            bindingFromLogPointer(pointer)
-        }
-    }
-}
-
-// building a @Binding :3
-func bindingFromLogPointer(_ pointer: UnsafeMutablePointer<[LogItem]>) -> Binding<[LogItem]> {
-    return Binding<[LogItem]>(
-        get: {
-            return pointer.pointee
-        },
-        set: { newValue in
-            pointer.pointee = newValue
-        }
-    )
 }
