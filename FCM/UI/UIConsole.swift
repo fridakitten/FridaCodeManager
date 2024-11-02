@@ -36,20 +36,26 @@ private func getlevelback(_ level: Int) -> Color {
 }
 
 struct NeoLog: View {
-   @State var LogItems: [LogItem] = []
-   @State var LogCache: [LogItem] = []
+   @Binding var LogItems: [LogItem]
+   @Binding var LogCache: [LogItem]
    @Binding var buildv: Bool
-   @State var LogViews: [logstruct] = []
+   @Binding var LogViews: [logstruct]
    @State var type: Int = 0
    let action: () -> Void
 
    init(
        buildv: Binding<Bool>,
+       LogItems: Binding<[LogItem]>,
+       LogCache: Binding<[LogItem]>,
+       LogViews: Binding<[logstruct]>,
        action: @escaping () -> Void
    ) {
        UIInit(type: 1)
        _buildv = buildv
        errorcache = []
+       _LogItems = LogItems
+       _LogViews = LogViews
+       _LogCache = LogCache
        self.action = action
    }
 

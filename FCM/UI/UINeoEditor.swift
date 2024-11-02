@@ -420,7 +420,6 @@ struct NeoEditor: UIViewRepresentable {
         var parent: NeoEditor
         var currentRange: NSRange?
         var updatingUIView = false
-        var doesTypecheck = false
         var isInvalidated = false
         private var debounceWorkItem: DispatchWorkItem?
         private let debounceDelay: TimeInterval = 2
@@ -462,8 +461,7 @@ struct NeoEditor: UIViewRepresentable {
             // typecheck
             debounceWorkItem?.cancel()
             debounceWorkItem = DispatchWorkItem { [self] in
-                guard !doesTypecheck else { return }
-                doesTypecheck = true
+                guard !typechecking else { return }
 
                 let fileURL = URL(fileURLWithPath: self.parent.filepath)
 
@@ -513,7 +511,6 @@ struct NeoEditor: UIViewRepresentable {
                                 }
                             }
                         }
-                        doesTypecheck = false
                         isInvalidated = false
                     }
                 }
@@ -652,9 +649,6 @@ class CustomTextView: UITextView {
 
     private var wempty: Bool = false
     private func animateHighlightLayer(from oldPath: CGPath?, to newPath: CGPath) {
-        let oldBounds = oldPath?.boundingBox ?? .zero
-        let newBounds = newPath.boundingBox
-
         let animation = CABasicAnimation(keyPath: "path")
         animation.duration = 0.25
 

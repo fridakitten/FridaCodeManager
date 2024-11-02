@@ -216,11 +216,32 @@ struct buildView: View {
     @State private var compiling: Bool = true
     @State private var BVstatus: String = ""
     @State private var BVprogress = 0.0
-    @State private var Log: [String] = []
+
+    @State private var Log: [LogItem] = []
+    @State private var LogCache: [LogItem] = []
+    @State private var Cache: [logstruct] = []
     var body: some View {
         VStack {
-            NeoLog(buildv: $buildv) {
+            NeoLog(buildv: $buildv, LogItems: $Log, LogCache: $LogCache, LogViews: $Cache) {
                 DispatchQueue.global(qos: .utility).async {
+                    if typechecking {
+                        DispatchQueue.main.sync {
+                            BVstatus = "waiting on unfinished typechecking to finish"
+                            withAnimation {
+                                BVprogress = 0.1
+                            }
+                        }
+                    }
+
+                    while typechecking {
+                        sleep(1)
+                        DispatchQueue.main.sync {
+                            Log = []
+                            LogCache = []
+                            Cache = []
+                        }
+                    }
+
                     compiling = true
                     #if !stock
                     let status = build(ProjectInfo, true, $BVstatus, $BVprogress)
