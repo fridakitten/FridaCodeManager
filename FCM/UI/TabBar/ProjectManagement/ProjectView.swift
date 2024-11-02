@@ -219,38 +219,7 @@ struct buildView: View {
     @State private var Log: [String] = []
     var body: some View {
         VStack {
-            NeoLog()
-            Spacer().frame(height: 25)
-            if !compiling {
-                Button( action: {
-                    buildv = false
-                }){
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(compiling ? .gray : .blue)
-                            .cornerRadius(15)
-                        Text("Close")
-                            .foregroundColor(.white)
-                    }
-                }
-                .frame(width: UIScreen.main.bounds.width / 1.2, height: 50)
-            } else {
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(Color(UIColor.systemGray6))
-                            .cornerRadius(15)
-                VStack {
-                    ProgressView(value: progress, total: 1.0)
-                        .progressViewStyle(LinearProgressViewStyle())
-                        .frame(width: UIScreen.main.bounds.width / 1.4)
-                        .accentColor(.primary)
-                    Spacer().frame(height: 10)
-                    Text("\(status)")
-                        .font(.system(size: 11, weight: .semibold))
-                    }
-                }
-                .frame(width: UIScreen.main.bounds.width / 1.2, height: 65)
-            }
+            NeoLog(buildv: $buildv)
         }
         .disabled(compiling)
         .onAppear {

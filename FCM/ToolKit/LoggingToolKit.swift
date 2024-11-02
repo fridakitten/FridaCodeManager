@@ -56,6 +56,10 @@ class neolog_extern: NSObject {
         setvbuf(stderr, nil, _IOLBF, 0)
     }
 
+    func reset() {
+        LogItems = []
+    }
+
     // utilities
     func reflushcache() {
         // interrupt handler
@@ -69,7 +73,9 @@ class neolog_extern: NSObject {
     }
 
     func provideLog() -> Binding<[LogItem]> {
-        return bindingFromLogPointer(UnsafeMutablePointer(&LogItems))
+        return withUnsafeMutablePointer(to: &LogItems) { pointer in
+            bindingFromLogPointer(pointer)
+        }
     }
 }
 

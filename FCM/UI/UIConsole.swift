@@ -37,17 +37,58 @@ private func getlevelback(_ level: Int) -> Color {
 
 struct NeoLog: View {
    @State var LogItems: [LogItem] = []
-    @State var LogViews: [logstruct] = []
+   @State var LogCache: [LogItem] = []
+   @Binding var buildv: Bool
+   @State var LogViews: [logstruct] = []
+   @State var type: Int = 0
+
+   init(
+       buildv: Binding<Bool>
+   ) {
+       UIInit(type: 1)
+       _buildv = buildv
+       errorcache = []
+   }
 
    var body: some View {
        NavigationView {
-            List {
-                ForEach(LogViews) { item in
-                    LevelItem(logstruct: item)
-                        .listRowBackground(getlevelback(item.level))
+            Group {
+                if type == 0 {
+                    List {
+                        ForEach(LogViews) { item in
+                            LevelItem(logstruct: item)
+                                .listRowBackground(getlevelback(item.level))
+                        }
+                    }
+                } else {
+                    ScrollView {
+                        Spacer().frame(height: 10)
+                        ForEach(LogCache) { item in
+                            HStack {
+                                Text(highlightMessage(item.Message))
+                                    .font(.system(size: 10, design: .monospaced))
+                                Spacer()
+                            }
+                        }
+                    }
                 }
             }
+            .onAppear {
+                LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
+                    let logData = fileHandle.availableData
+                    if !logData.isEmpty, let logString = String(data: logData, encoding: .utf8) {
+                        LogItems.append(LogItem(Message: logString))
+                    }
+                }
+
+                setvbuf(stdout, nil, _IOLBF, 0)
+                setvbuf(stderr, nil, _IOLBF, 0)
+
+                dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
+                dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
+            }
             .onChange(of: LogItems) { _ in
+                LogCache += LogItems
                 let tmpcache = getlog(logitems: LogItems)
                 LogItems = []
                 withAnimation {
@@ -57,22 +98,33 @@ struct NeoLog: View {
             }
             .navigationTitle("Log")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                        Button("Issue Navigator") {
+                            type = 0
+                        }
+                        Button("Log") {
+                            type = 1
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .imageScale(.large)
+                            .foregroundColor(.primary)
+                    }
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Close") {
+                        UIInit(type: 0)
+                        buildv = false
+                        externlog.stop()
+                        errorcache = LogViews
+                    }
+                    .foregroundColor(.primary)
+                }
+            }
        }
        .navigationViewStyle(.stack)
-       .onAppear {
-           LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
-               let logData = fileHandle.availableData
-               if !logData.isEmpty, let logString = String(data: logData, encoding: .utf8) {
-                   LogItems.append(LogItem(Message: logString))
-               }
-           }
-
-           setvbuf(stdout, nil, _IOLBF, 0)
-           setvbuf(stderr, nil, _IOLBF, 0)
-
-           dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
-           dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
-       }
    }
 
    private func highlightMessage(_ message: String) -> AttributedString {

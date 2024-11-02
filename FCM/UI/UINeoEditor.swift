@@ -472,10 +472,11 @@ struct NeoEditor: UIViewRepresentable {
                 }
 
                 DispatchQueue.global(qos: .userInitiated).async {
-                    let neolog = neolog_extern()
-                    neolog.start()
+                    externlog.start()
                     _ = typecheck(self.parent.project, true, nil, nil)
-                    neolog.reflushcache()
+                    externlog.stop()
+                    externlog.reflushcache()
+                    externlog.reset()
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
                             let animation = CABasicAnimation(keyPath: "opacity")
