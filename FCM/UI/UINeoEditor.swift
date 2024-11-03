@@ -254,6 +254,12 @@ struct NeoEditor: UIViewRepresentable {
                 textField.placeholder = "Line number to jump to"
                 textField.borderStyle = .roundedRect
                 textField.keyboardType = .asciiCapable
+                textField.textContentType = .none
+                textField.smartQuotesType = .no
+                textField.smartDashesType = .no
+                textField.smartInsertDeleteType = .no
+                textField.autocorrectionType = .no
+                textField.autocapitalizationType = .none
                 let doneButton = ClosureButton(title: "Cancel") {
                     self.animateToolbarItemsDisappearance {
                         self.restoreToolbarItems()
@@ -311,6 +317,13 @@ struct NeoEditor: UIViewRepresentable {
                 textField.text = ""
                 textField.placeholder = "String to search"
                 textField.borderStyle = .roundedRect
+                textField.keyboardType = .asciiCapable
+                textField.textContentType = .none
+                textField.smartQuotesType = .no
+                textField.smartDashesType = .no
+                textField.smartInsertDeleteType = .no
+                textField.autocorrectionType = .no
+                textField.autocapitalizationType = .none
                 let doneButton = ClosureButton(title: "Close") {
                     if !highlightLayerCache.isEmpty {
                         for item in highlightLayerCache {
