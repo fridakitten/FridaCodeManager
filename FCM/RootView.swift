@@ -54,7 +54,7 @@ struct RootView: View {
             GetProjectsBind(Projects: $projects)
         }
         .onAppear {
-            projects = GetProjects()
+            GetProjectsBind(Projects: $projects)
         }
     }
 }
