@@ -434,7 +434,6 @@ struct NeoEditor: UIViewRepresentable {
         var currentRange: NSRange?
         var updatingUIView = false
         var isInvalidated = false
-        var isQueued = false
         private var debounceWorkItem: DispatchWorkItem?
         private let debounceDelay: TimeInterval = 2
         private var highlightCache: [NSRange: [NSAttributedString.Key: Any]] = [:]
@@ -488,13 +487,6 @@ struct NeoEditor: UIViewRepresentable {
                     let result = typecheck(self.parent.project, true, nil, nil)
                     if result == 0 {
                         externlog.reflushcache()
-                    } else {
-                        DispatchQueue.main.sync {
-                            self.isQueued = true
-                        }
-                        while(typechecking) {
-                            sleep(1)
-                        }
                     }
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
