@@ -27,8 +27,14 @@ import Darwin
 var typechecking: Bool = false
 
 func typecheck(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ progress: Binding<Double>?) -> Int {
+    if typechecking {
+        return -1
+    }
+
     DispatchQueue.main.sync {
-        typechecking = true
+        if !typechecking {
+            typechecking = true
+        }
     }
 
     let info: [String] = ["\(ProjectInfo.ProjectPath)/Payload","\(ProjectInfo.ProjectPath)/Payload/\(ProjectInfo.Executable).app","\(ProjectInfo.ProjectPath)/Resources","\(global_sdkpath)/\(ProjectInfo.SDK)","\(ProjectInfo.ProjectPath)/clang","\(ProjectInfo.ProjectPath)/bridge.h","\(ProjectInfo.ProjectPath)/entitlements.plist"]
