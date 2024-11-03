@@ -132,6 +132,13 @@ struct FileList: View {
                             }
                         }
                         Section {
+                            Button( action: {
+                                share(url: item)
+                            }) {
+                                Label("Share", systemImage: "square.and.arrow.up")
+                            }
+                        }
+                        Section {
                             Button(role: .destructive, action: {
                                 selpath = item.path
                                 activeSheet = .remove

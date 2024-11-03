@@ -431,13 +431,9 @@ struct NeoEditor: UIViewRepresentable {
 
     final class Coordinator: NSObject, UITextViewDelegate {
         var parent: NeoEditor
-        //var currentRange: NSRange?
-        //var updatingUIView = false
         private var isInvalidated = false
-        private var shouldQueue = false
-        private var queueBlocked = false
         private var debounceWorkItem: DispatchWorkItem?
-        private let debounceDelay: TimeInterval = 2
+        private let debounceDelay: TimeInterval = 3
         private var highlightCache: [NSRange: [NSAttributedString.Key: Any]] = [:]
 
         init(_ markdownEditorView: NeoEditor) {
@@ -484,15 +480,6 @@ struct NeoEditor: UIViewRepresentable {
                 }
 
                 DispatchQueue.global(qos: .userInitiated).async {
-                    if shouldQueue {
-                        guard queueBlocked else { return }
-                        queueBlocked = true
-                        while(typechecking) {
-                            sleep(1)
-                        }
-                        queueBlocked = false
-                    }
-                    shouldQueue = true
                     let externlog = neolog_extern()
                     externlog.start()
                     let result = typecheck(self.parent.project, true, nil, nil)
@@ -534,7 +521,6 @@ struct NeoEditor: UIViewRepresentable {
                             }
                         }
                         isInvalidated = false
-                        shouldQueue = false
                         return
                     }
                 }
@@ -542,7 +528,7 @@ struct NeoEditor: UIViewRepresentable {
 
             DispatchQueue.main.asyncAfter(deadline: .now() + debounceDelay, execute: debounceWorkItem!)
         }
-        
+
         func applyHighlighting(to textView: UITextView, with visibleRange: NSRange) {
             // Getting text for background thread processing
             let text = textView.text ?? ""

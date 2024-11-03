@@ -192,6 +192,8 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
             killTaskWithBundleID(ProjectInfo.BundleID)
             result = shell("\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa' > /dev/null 2>&1", uid: 0)
             _ = climessenger("install--stage","TrollStore Helper returned \(String(result))")
+            messenger(status,progress,"cooldown", 0.7)
+            sleep(1)
         }
         #endif
         _ = rm(info[0])
