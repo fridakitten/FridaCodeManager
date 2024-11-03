@@ -27,10 +27,6 @@ import Darwin
 var typechecking: Bool = false
 
 func typecheck(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ progress: Binding<Double>?) -> Int {
-    if typechecking {
-        return -1
-    }
-
     DispatchQueue.main.sync {
         if !typechecking {
             typechecking = true
