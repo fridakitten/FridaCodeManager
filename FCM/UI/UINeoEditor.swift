@@ -619,6 +619,8 @@ class CustomTextView: UITextView {
         }
 
         animateHighlightLayer(from: highlightLayer.path, to: path.cgPath)
+
+        highlightLayer.path = path.cgPath
     }
 
     private func animateHighlightLayer(from oldPath: CGPath?, to newPath: CGPath) {
