@@ -107,7 +107,7 @@ struct NeoLog: View {
                 withAnimation {
                     LogViews += tmpcache
                 }
-                errorcache = LogViews
+                errorcache += tmpcache
             }
             .navigationTitle("Log")
             .navigationBarTitleDisplayMode(.inline)
@@ -130,7 +130,6 @@ struct NeoLog: View {
                     Button("Close") {
                         UIInit(type: 0)
                         buildv = false
-                        errorcache = LogViews
                     }
                     .foregroundColor(.primary)
                 }

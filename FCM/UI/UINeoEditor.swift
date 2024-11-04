@@ -63,6 +63,12 @@ struct NeoEditorConfig {
     var font: UIFont
 }
 
+// restore class
+class restoreeditor {
+    var text: String = ""
+    var restorecache: [logstruct] = []
+}
+
 struct NeoEditor: UIViewRepresentable {
     private let navigationBar: UINavigationBar
     private let navigationItem: UINavigationItem
@@ -100,6 +106,7 @@ struct NeoEditor: UIViewRepresentable {
     private var enableToolbar: Bool
     private var current_line_highlighting: Bool
     private var project: Project
+    private var restore = restoreeditor()
 
     init(
         isPresented: Binding<Bool>,
@@ -139,14 +146,19 @@ struct NeoEditor: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let saveButton = ClosureBarButtonItem(title: "Save", style: .plain) {
             textView.endEditing(true)
-            let fileURL = URL(fileURLWithPath: filepath)
-            do {
-                try textView.text.write(to: fileURL, atomically: true, encoding: .utf8)
-            } catch {
-            }
+            restore.text = textView.text
+            restore.restorecache = errorcache
         }
 
+        restore.restorecache = errorcache
         let closeButton = ClosureBarButtonItem(title: "Close", style: .plain) {
+            textView.endEditing(true)
+            let fileURL = URL(fileURLWithPath: filepath)
+            do {
+                errorcache = restore.restorecache
+                try restore.text.write(to: fileURL, atomically: true, encoding: .utf8)
+            } catch {
+            }
             sheet = false
         }
 
@@ -165,6 +177,7 @@ struct NeoEditor: UIViewRepresentable {
                 return ""
             }
         }()
+        restore.text = textView.text
         textView.delegate = context.coordinator
         context.coordinator.applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
         context.coordinator.runIntrospect(textView)
@@ -209,7 +222,7 @@ struct NeoEditor: UIViewRepresentable {
 
         textView.setLayoutCompletionHandler {
             for item in errorcache {
-                if claimed.contains(item.line) {
+                if !claimed.contains(item.line) {
                     if item.file == filepath {
                         switch item.level {
                             case 0:
