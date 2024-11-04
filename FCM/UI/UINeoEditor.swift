@@ -227,15 +227,15 @@ struct NeoEditor: UIViewRepresentable {
                         switch item.level {
                             case 0:
                                 textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
-                                claimed.append(item.line - 1)
+                                claimed.append(item.line)
                                 break
                             case 1:
                                 textView.highlightLine(at: item.line - 1, with: UIColor.systemYellow, with: item.description, with: "exclamationmark.triangle.fill")
-                                claimed.append(item.line - 1)
+                                claimed.append(item.line)
                                 break
                             case 2:
                                 textView.highlightLine(at: item.line - 1, with: UIColor.systemRed, with: item.description, with: "xmark.circle.fill")
-                                claimed.append(item.line - 1)
+                                claimed.append(item.line)
                                 break
                             default:
                                 break

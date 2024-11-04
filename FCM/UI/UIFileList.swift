@@ -22,11 +22,12 @@
 
 import SwiftUI
 import Foundation
+import UniformTypeIdentifiers
 
 private let invalidFS: Set<Character> = ["/", "\\", ":", "*", "?", "\"", "<", ">", "|"]
 
 private enum ActiveSheet: Identifiable {
-    case create, rename, remove
+    case create, rename, remove, impSheet
 
     var id: Int {
         hashValue
@@ -193,26 +194,41 @@ struct FileList: View {
                             }
                         }
                     }
+                    Section {
+                        Button(action: {
+                            activeSheet = .impSheet
+                        }) {
+                            Label("Import", systemImage: "square.and.arrow.down.fill")
+                        }
+                    }
                 } label: {
                     Label("", systemImage: "ellipsis.circle")
                 }
             }
         }
         .sheet(item: $activeSheet) { sheet in
-            BottomPopupView {
-                switch sheet {
-                    case .create:
-                        POHeader(title: "Create")
-                        POTextField(title: "Filename", content: $potextfield)
-                        POPicker(function: create_selected, title: "Type", arrays: [PickerArrays(title: "Type", items: [PickerItems(id: 0, name: "File"), PickerItems(id: 1, name: "Folder")])], type: $type)
-                    case .rename:
-                        POHeader(title: "Rename")
-                        POTextField(title: "Filename", content: $potextfield)
-                        POButtonBar(cancel: dissmiss_sheet, confirm: rename_selected)
-                    case .remove:
-                        POBHeader(title: $poheader)
-                        Spacer().frame(height: 10)
-                        POButtonBar(cancel: dissmiss_sheet, confirm: remove_selected)
+            Group {
+                if sheet != .impSheet {
+                     BottomPopupView {
+                         switch sheet {
+                            case .create:
+                                POHeader(title: "Create")
+                                POTextField(title: "Filename", content: $potextfield)
+                                POPicker(function: create_selected, title: "Type", arrays: [PickerArrays(title: "Type", items: [PickerItems(id: 0, name: "File"), PickerItems(id: 1, name: "Folder")])], type: $type)
+                            case .rename:
+                                POHeader(title: "Rename")
+                                POTextField(title: "Filename", content: $potextfield)
+                                POButtonBar(cancel: dissmiss_sheet, confirm: rename_selected)
+                            case .remove:
+                                POBHeader(title: $poheader)
+                                Spacer().frame(height: 10)
+                                POButtonBar(cancel: dissmiss_sheet, confirm: remove_selected)
+                            default:
+                                Spacer()
+                        }
+                    }
+                } else {
+                    DocumentPicker(pathURL: directoryPath)
                 }
             }
             .background(BackgroundClearView())
@@ -489,6 +505,43 @@ private func bindLoadFiles(directoryPath: URL, files: Binding<[URL]>) -> Void {
             DispatchQueue.main.async {
                 print("Error loading files: \(error.localizedDescription)")
             }
+        }
+    }
+}
+
+struct DocumentPicker: UIViewControllerRepresentable {
+    @State var pathURL: URL
+    @Environment(\.presentationMode) private var presentationMode
+
+    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.item], asCopy: true)
+        documentPicker.allowsMultipleSelection = true
+        documentPicker.delegate = context.coordinator
+        return documentPicker
+    }
+
+    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(self)
+    }
+
+    class Coordinator: NSObject, UIDocumentPickerDelegate {
+        let parent: DocumentPicker
+
+        init(_ parent: DocumentPicker) {
+            self.parent = parent
+        }
+
+        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+            for item in urls {
+                _ = mv(item.path, "\(parent.pathURL.path)/\(item.lastPathComponent)")
+            }
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+
+        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+            parent.presentationMode.wrappedValue.dismiss()
         }
     }
 }
