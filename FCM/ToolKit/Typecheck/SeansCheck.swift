@@ -33,7 +33,7 @@ func typecheck(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_
         }
     }
 
-    let info: [String] = ["\(ProjectInfo.ProjectPath)/Payload","\(ProjectInfo.ProjectPath)/Payload/\(ProjectInfo.Executable).app","\(ProjectInfo.ProjectPath)/Resources","\(global_sdkpath)/\(ProjectInfo.SDK)","\(ProjectInfo.ProjectPath)/clang","\(ProjectInfo.ProjectPath)/bridge.h","\(ProjectInfo.ProjectPath)/entitlements.plist"]
+    let info: [String] = ["\(ProjectInfo.ProjectPath)/Payload","\(ProjectInfo.ProjectPath)/Payload/\(ProjectInfo.Executable).app","\(ProjectInfo.ProjectPath)/Resources","\(global_sdkpath)/\(ProjectInfo.SDK)","\(ProjectInfo.ProjectPath)/clang","\(ProjectInfo.ProjectPath)/bridge.h","\(ProjectInfo.ProjectPath)/entitlements.plist","\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
     //PayloadPath  info[0]
     //AppPath      info[1]
     //Resources    info[2]
@@ -41,6 +41,7 @@ func typecheck(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_
     //ClangPath    info[4]
     //ClangBridge  info[5]
     //Entitlements info[6]
+    //API          info[7]
 
     let fileManager = FileManager.default
 
@@ -51,26 +52,27 @@ func typecheck(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_
     //define build bash environment
     let bashenv: [String] = ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks","HOME=\(global_container)/.cache/.\(ProjectInfo.SDK)"]
 
-    //finding code files
-    let (MFiles, AFiles, SwiftFiles) = (FindFilesStack(ProjectInfo.ProjectPath, [".m", ".c", ".mm", ".cpp"], []), FindFilesStack(ProjectInfo.ProjectPath, [".a"], []), FindFilesStack(ProjectInfo.ProjectPath, [".swift"], []))
+    var apiextension: ext = ext(build:"",build_sub: "",bef: "", aft:"", ign: "")
+    if !info[7].isEmpty {
+        apiextension = api(info[7], ProjectInfo)
+    }
 
-    //finding frameworks
-    let frameworks = !MFiles.isEmpty && FileManager.default.fileExists(atPath: info[3]) ? findFrameworks(in: URL(fileURLWithPath: ProjectInfo.ProjectPath), SDKPath: info[3], ignorePaths: []) : []
-    let frameflags = frameworks.map { "-framework \($0)" }.joined(separator: " ")
+    //finding code files
+    let (MFiles, AFiles, SwiftFiles) = (FindFilesStack(ProjectInfo.ProjectPath, [".m", ".c", ".mm", ".cpp"], splitAndTrim(apiextension.ign) + ["Resources"]), FindFilesStack(ProjectInfo.ProjectPath, [".a"], splitAndTrim(apiextension.ign) + ["Resources"]), FindFilesStack(ProjectInfo.ProjectPath, [".swift"], splitAndTrim(apiextension.ign) + ["Resources"]))
 
     var EXEC = ""
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             EXEC += MFiles.map { mFile in
-                "clang -fmodules -fsyntax-only -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) ; "
+                "clang -fmodules -fsyntax-only \(apiextension.build_sub) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) ; "
             }.joined()
         }
         EXEC += """
-        swiftc -typecheck \(SwiftFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
+        swiftc -typecheck \(apiextension.build) \(SwiftFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
         \(FileManager.default.fileExists(atPath: info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG)
         """
     } else {
-        EXEC += "clang \(frameflags) -fmodules -fsyntax-only -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " "))"
+        EXEC += "clang -fmodules -fsyntax-only \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " "))"
     }
 
     let (CDEXEC) = ("cd '\(ProjectInfo.ProjectPath)'")
