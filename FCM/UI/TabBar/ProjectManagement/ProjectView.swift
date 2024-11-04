@@ -316,26 +316,26 @@ func copyToClipboard(text: String, alert: Bool? = true) {
     if (alert ?? true) {DismissAlert()}
 }
 
-    func share(url: URL) -> Void {
-        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+func share(url: URL) -> Void {
+    let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+    activityViewController.modalPresentationStyle = .popover
 
-        DispatchQueue.main.async {
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                if let rootViewController = windowScene.windows.first?.rootViewController {
-                    // For iPad, configure the popoverPresentationController
-                    if let popoverController = activityViewController.popoverPresentationController {
-                        popoverController.sourceView = rootViewController.view
-                        popoverController.sourceRect = CGRect(x: rootViewController.view.bounds.midX,
-                                                          y: rootViewController.view.bounds.midY,
-                                                          width: 0, height: 0)
-                        popoverController.permittedArrowDirections = []
-                    }
-                    rootViewController.present(activityViewController, animated: true, completion: nil)
-                } else {
-                    print("No root view controller found.")
+    DispatchQueue.main.async {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            if let rootViewController = windowScene.windows.first?.rootViewController {
+                if let popoverController = activityViewController.popoverPresentationController {
+                    popoverController.sourceView = rootViewController.view
+                    popoverController.sourceRect = CGRect(x: rootViewController.view.bounds.midX,
+                                                      y: rootViewController.view.bounds.midY,
+                                                      width: 0, height: 0)
+                    popoverController.permittedArrowDirections = []
                 }
+                rootViewController.present(activityViewController, animated: true, completion: nil)
             } else {
-                print("No window scene found.")
+                print("No root view controller found.")
             }
+        } else {
+            print("No window scene found.")
         }
     }
+}
