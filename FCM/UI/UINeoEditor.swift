@@ -221,6 +221,7 @@ struct NeoEditor: UIViewRepresentable {
         var claimed: [Int] = []
 
         textView.setLayoutCompletionHandler {
+            let errorcache = errorcache
             for item in errorcache {
                 if !claimed.contains(item.line) {
                     if item.file == filepath {
@@ -452,7 +453,8 @@ struct NeoEditor: UIViewRepresentable {
                 DispatchQueue.global(qos: .userInitiated).async {
                     let externlog = neolog_extern()
                     externlog.start()
-                    let result = typecheck(self.parent.project, true, nil, nil)
+                    let project = self.parent.project
+                    let result = typecheck(project, true, nil, nil)
                     externlog.reflushcache()
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
@@ -474,6 +476,7 @@ struct NeoEditor: UIViewRepresentable {
                         textView.highlightTMPLayer.removeAll()
                         textView.buttonTMPLayer.removeAll()
                         var claimed: [Int] = []
+                        let errorcache = errorcache
                         for item in errorcache {
                             if !claimed.contains(item.line) {
                             if item.file == self.parent.filepath {
