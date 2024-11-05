@@ -442,7 +442,11 @@ struct NeoEditor: UIViewRepresentable {
 
             if !isInvalidated {
                 for item in textView.highlightTMPLayer {
-                    item.fillColor = UIColor.darkGray.cgColor
+                    if  UIScreen.main.traitCollection.userInterfaceStyle == .light {
+                        item.fillColor = UIColor.lightGray.cgColor
+                    } else {
+                        item.fillColor = UIColor.darkGray.cgColor
+                    }
                 }
                 isInvalidated = true
             }
@@ -729,9 +733,11 @@ class CustomTextView: UITextView {
         if let entirePath = entirePath {
             if entirePath {
                 newRect.size.width = UIScreen.main.bounds.size.width
+                newRect.origin.x = 0
             }
         } else {
             newRect.size.width = UIScreen.main.bounds.size.width
+            newRect.origin.x = 0
         }
 
         path.append(UIBezierPath(roundedRect: newRect, cornerRadius: radius ?? 0.0))
