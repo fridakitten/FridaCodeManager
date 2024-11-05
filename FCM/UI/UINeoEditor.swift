@@ -477,7 +477,9 @@ struct NeoEditor: UIViewRepresentable {
                             }
                         }
                         if changedBroken {
+                            changedBroken = false
                             DispatchQueue.main.asyncAfter(deadline: .now(), execute: debounceWorkItem!)
+                            return
                         }
                         for item in textView.buttonTMPLayer {
                             item.removeFromSuperview()
@@ -509,7 +511,6 @@ struct NeoEditor: UIViewRepresentable {
                             }
                         }
                         isInvalidated = false
-                        changedBroken = false
                         return
                     }
                 }
