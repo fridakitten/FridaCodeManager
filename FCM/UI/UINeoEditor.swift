@@ -415,6 +415,7 @@ struct NeoEditor: UIViewRepresentable {
         private var debounceWorkItem: DispatchWorkItem?
         private let debounceDelay: TimeInterval = 2.0
         private var highlightCache: [NSRange: [NSAttributedString.Key: Any]] = [:]
+        private var changedBroken: Bool = false
 
         init(_ markdownEditorView: NeoEditor) {
             self.parent = markdownEditorView
@@ -432,6 +433,11 @@ struct NeoEditor: UIViewRepresentable {
                 textView.didPasted = false
             } else {
                 self.applyHighlighting(to: textView, with: textView.cachedLineRange ?? NSRange(location: 0, length: 0))
+            }
+
+            if typechecking {
+                changedBroken
+= true
             }
 
             if !isInvalidated {
@@ -469,6 +475,9 @@ struct NeoEditor: UIViewRepresentable {
                             DispatchQueue.main.asyncAfter(deadline: .now() + animation.duration) {
                                 item.removeFromSuperlayer()
                             }
+                        }
+                        if changedBroken {
+                            DispatchQueue.main.asyncAfter(deadline: .now(), execute: debounceWorkItem!)
                         }
                         for item in textView.buttonTMPLayer {
                             item.removeFromSuperview()
