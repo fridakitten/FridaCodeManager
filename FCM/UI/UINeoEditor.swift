@@ -509,6 +509,7 @@ struct NeoEditor: UIViewRepresentable {
                             }
                         }
                         isInvalidated = false
+                        changedBroken = false
                         return
                     }
                 }
