@@ -52,12 +52,14 @@ func visualRangeRect(in textView: UITextView, for textRange: NSRange) -> CGRect?
           return nil
     }
 
-    let beginning: UITextPosition = textView.beginningOfDocument;
-    guard let start: UITextPosition = textView.position(from: beginning, offset: textRange.location) else { return nil }
-    guard let end: UITextPosition = textView.position(from: start, offset: textRange.length) else { return nil }
-    guard let textRange: UITextRange = textView.textRange(from: start, to: end) else { return nil }
-    
-    let rect: CGRect = textView.firstRect(for: textRange)
+    let layoutManager = textView.layoutManager
+    let textContainer = textView.textContainer
+    let glyphRange = layoutManager.glyphRange(forCharacterRange: textRange, actualCharacterRange: nil)
+
+    var rect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
+
+    rect.origin.x += textView.textContainerInset.left
+    rect.origin.y += textView.textContainerInset.top
 
     return rect
 }
