@@ -29,7 +29,8 @@ struct NeoEditorHelper: View {
     var body: some View {
         Group {
             if ready {
-                NeoEditor(isPresented: $isPresented, filepath: filepath, project: project)
+                NavigationBarViewControllerRepresentable(isPresented: $isPresented, filepath: filepath, project: project)
+                    .edgesIgnoringSafeArea(.all)
             }
         }
         .onAppear {
@@ -67,18 +68,23 @@ struct NeoEditorConfig {
 class restoreeditor {
     var text: String = ""
     var restorecache: [logstruct] = []
+    var filepath: String = ""
 }
 
-struct NeoEditor: UIViewRepresentable {
-    private let navigationBar: UINavigationBar
-    private let navigationItem: UINavigationItem
-    private let containerView: UIView
-    private let textView: CustomTextView
-    private let highlightRules: [HighlightRule]
-    private let filepath: String
-    private let filename: String
-    private let toolbar: UIToolbar
+var restore = restoreeditor()
 
+struct NavigationBarViewControllerRepresentable: UIViewControllerRepresentable {
+    @Binding var isPresented: Bool
+    var filepath: String
+    var project: Project
+
+    var title: String
+    var backgroundColor: UIColor = UIColor.systemGray6
+    var tintColor: UIColor = UIColor.label
+
+    let textView: CustomTextView = CustomTextView()
+
+    private var filename: String
     private let config: NeoEditorConfig = {
         let userInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
 
@@ -101,17 +107,94 @@ struct NeoEditor: UIViewRepresentable {
         return meow
     }()
 
+    init(
+        isPresented: Binding<Bool>,
+        filepath: String,
+        project: Project
+    ) {
+        _isPresented = isPresented
+        self.filepath = filepath
+        self.project = project
+        self.filename = {
+            let fileURL = URL(fileURLWithPath: filepath)
+            return fileURL.lastPathComponent
+        }()
+        self.title = filename
+    }
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+        let hostingController = UIHostingController(rootView: NeoEditor(isPresented: $isPresented, filepath: filepath, project: project, textView: textView, config: config))
+        hostingController.view.backgroundColor = config.background
+        let navigationController = UINavigationController(rootViewController: hostingController)
+        let navigationBar = navigationController.navigationBar
+        navigationBar.prefersLargeTitles = false
+        navigationBar.backgroundColor = backgroundColor
+        navigationBar.tintColor = tintColor
+
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = backgroundColor
+        appearance.titleTextAttributes = [.foregroundColor: tintColor]
+        appearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
+
+        navigationBar.standardAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
+
+        let saveButton = ClosureBarButtonItem(title: "Save", style: .plain) {
+            textView.endEditing(true)
+            restore.text = textView.text
+            restore.restorecache = errorcache
+        }
+
+        let closeButton = ClosureBarButtonItem(title: "Close", style: .plain) {
+            textView.endEditing(true)
+            let fileURL = URL(fileURLWithPath: filepath)
+            do {
+                errorcache = restore.restorecache
+                try restore.text.write(to: fileURL, atomically: true, encoding: .utf8)
+            } catch {
+            }
+            restore.text = ""
+            restore.restorecache = []
+            restore.filepath = ""
+            isPresented = false
+        }
+
+        hostingController.navigationItem.rightBarButtonItem = saveButton
+        hostingController.navigationItem.leftBarButtonItem = closeButton
+
+        return navigationController
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
+        uiViewController.navigationBar.topItem?.title = title
+        uiViewController.navigationBar.backgroundColor = backgroundColor
+        uiViewController.navigationBar.tintColor = tintColor
+    }
+}
+
+struct NeoEditor: UIViewRepresentable {
+    private let containerView: UIView
+    private let textView: CustomTextView
+    private let highlightRules: [HighlightRule]
+    private let filepath: String
+    private let filename: String
+    private let toolbar: UIToolbar
+
+    private let config: NeoEditorConfig
+
     @Binding private var sheet: Bool
     private var render: Double
     private var enableToolbar: Bool
     private var current_line_highlighting: Bool
     private var project: Project
-    private var restore = restoreeditor()
 
     init(
         isPresented: Binding<Bool>,
         filepath: String,
-        project: Project
+        project: Project,
+        textView: CustomTextView,
+        config: NeoEditorConfig
     ) {
         _sheet = isPresented
 
@@ -122,8 +205,6 @@ struct NeoEditor: UIViewRepresentable {
         }()
 
         self.highlightRules = grule(gsuffix(from: filename))
-        navigationBar = UINavigationBar()
-        navigationItem = UINavigationItem(title: filename)
         self.render = {
             return UserDefaults.standard.double(forKey: "CERender")
         }()
@@ -134,9 +215,10 @@ struct NeoEditor: UIViewRepresentable {
             return UserDefaults.standard.bool(forKey: "CECurrentLineHighlighting")
         }()
         self.containerView = UIView()
-        self.textView = CustomTextView()
+        self.textView = textView
         self.project = project
         self.toolbar = UIToolbar()
+        self.config = config
     }
 
     func makeCoordinator() -> Coordinator {
@@ -144,31 +226,7 @@ struct NeoEditor: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> UIView {
-        let saveButton = ClosureBarButtonItem(title: "Save", style: .plain) {
-            textView.endEditing(true)
-            restore.text = textView.text
-            restore.restorecache = errorcache
-        }
-
-        restore.restorecache = errorcache
-        let closeButton = ClosureBarButtonItem(title: "Close", style: .plain) {
-            textView.endEditing(true)
-            let fileURL = URL(fileURLWithPath: filepath)
-            do {
-                errorcache = restore.restorecache
-                try restore.text.write(to: fileURL, atomically: true, encoding: .utf8)
-            } catch {
-            }
-            sheet = false
-        }
-
-        navigationItem.rightBarButtonItem = saveButton
-        navigationItem.leftBarButtonItem = closeButton
-
-        navigationBar.setItems([navigationItem], animated: false)
-        navigationBar.translatesAutoresizingMaskIntoConstraints = false
-
-        textView.text = {
+       textView.text = {
             do {
                 return try String(contentsOfFile: filepath)
             } catch {
@@ -184,14 +242,10 @@ struct NeoEditor: UIViewRepresentable {
 
         textView.translatesAutoresizingMaskIntoConstraints = false
 
-        containerView.addSubview(navigationBar)
         containerView.addSubview(textView)
 
         NSLayoutConstraint.activate([
-            navigationBar.topAnchor.constraint(equalTo: containerView.topAnchor),
-            navigationBar.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            navigationBar.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            textView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor),
+            textView.topAnchor.constraint(equalTo: containerView.topAnchor),
             textView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             textView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             textView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
