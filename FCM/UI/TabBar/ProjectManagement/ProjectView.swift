@@ -40,7 +40,7 @@ struct ProjectView: View {
                         ForEach(projects) { Project in
                             NavigationLink(destination: CodeSpace(ProjectInfo: Project, pathstate: $pathstate, action: $action)) {
                                 HStack {
-                                    if (Project.Executable == "Corrupted") {
+                                    if (Project.BundleID == "Corrupted") {
                                         VStack {
                                             Image(systemName: "questionmark.folder")
                                         }.frame(width: 40, height: 40)
