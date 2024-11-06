@@ -70,7 +70,6 @@ struct Settings: View {
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
-        }
         .navigationViewStyle(.stack)
     }
 }
