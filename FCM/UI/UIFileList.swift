@@ -424,10 +424,11 @@ private func gProperty(_ fileURL: URL) -> FileProperty {
         case "hpp":
             property.symbol = "hpp"
             property.color = Color.secondary
-            property.size = 4
+            property.size = 4*/
         case "swift":
+            property.symbol = "swift"
             property.color = Color.red
-        case "h":
+        /*case "h":
             property.symbol = "h"
             property.color = Color.secondary
             property.size = 8
@@ -436,7 +437,7 @@ private func gProperty(_ fileURL: URL) -> FileProperty {
             property.color = Color.purple
             property.size = 4*/
         default:
-            property.symbol = "doc.fill"
+            property.symbol = "questionmark"//"doc.fill"
             property.color = Color.primary
     }
 
