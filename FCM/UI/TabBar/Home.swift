@@ -48,7 +48,7 @@ struct Home: View {
                 CreditsView()
             }
             .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Home")
+            .navigationTitle("FridaCodeManager")
             .fileImporter(isPresented: $fileImporter, allowedContentTypes: [.project], onCompletion: handleFileImport)
             .sheet(isPresented: $showProj) {
                 BottomPopupView {

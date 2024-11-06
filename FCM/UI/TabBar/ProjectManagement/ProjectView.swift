@@ -40,7 +40,13 @@ struct ProjectView: View {
                         ForEach(projects) { Project in
                             NavigationLink(destination: CodeSpace(ProjectInfo: Project, pathstate: $pathstate, action: $action)) {
                                 HStack {
-                                    PubImg(projpath: "\(global_documents)/\(Project.Name)")
+                                    if (Project.Executable == "Corrupted") {
+                                        VStack {
+                                            Image(systemName: "questionmark.folder")
+                                        }.frame(width: 40, height: 40)
+                                    } else {
+                                        PubImg(projpath: "\(global_documents)/\(Project.Name)")
+                                    }
                                     Spacer().frame(width: 15)
                                     VStack(alignment: .leading) {
                                         Text(Project.Executable)
