@@ -404,7 +404,8 @@ private func gProperty(_ fileURL: URL) -> FileProperty {
 
     let suffix = gsuffix(from: fileURL.path)
     switch(suffix) {
-        case "m":
+    // TODO: proper symbols here
+        /*case "m":
             property.symbol = "m"
             property.color = Color.orange
             property.size = 8
@@ -431,10 +432,11 @@ private func gProperty(_ fileURL: URL) -> FileProperty {
             property.color = Color.secondary
             property.size = 8
         case "api":
-            property.symbol = "api"
+            property.symbol = "doc.fill"
             property.color = Color.purple
-            property.size = 4
+            property.size = 4*/
         default:
+            property.symbol = "doc.fill"
             property.color = Color.primary
     }
 
