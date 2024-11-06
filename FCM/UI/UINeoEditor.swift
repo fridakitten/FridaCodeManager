@@ -34,11 +34,7 @@ struct NeoEditorHelper: View {
             }
         }
         .onAppear {
-            UIInit(type: 1)
             ready = true
-        }
-        .onDisappear {
-            UIInit(type: 0)
         }
     }
 }
