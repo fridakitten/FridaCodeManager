@@ -236,7 +236,6 @@ struct NeoEditor: UIViewRepresentable {
             }
         }()
         restore.text = textView.text
-        restore.restorecache = errorcache
         textView.delegate = context.coordinator
         context.coordinator.applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
         context.coordinator.runIntrospect(textView)
@@ -644,6 +643,7 @@ class CustomTextView: UITextView {
     private let highlightLayer = CAShapeLayer()
     var highlightTMPLayer: [CAShapeLayer] = []
     var buttonTMPLayer: [UIButton] = []
+    var uiviewTMPLayer: [UIView] = []
 
     override func paste(_ sender: Any?) {
         didPasted = true
@@ -829,13 +829,20 @@ class CustomTextView: UITextView {
             uiView.layer.cornerRadius = 15
             uiView.layer.borderWidth = 1
             uiView.layer.borderColor = color.cgColor
-            uiView.clipsToBounds = true
+            uiView.layer.shadowColor = UIColor.black.cgColor
+            uiView.layer.shadowOpacity = 0.1
+            uiView.layer.shadowRadius = 5
+            uiView.layer.shadowOffset = CGSize(width: 0, height: 4)
+            uiView.clipsToBounds = false
             let dissmissButton: UIButton = ClosureButton(title: "") {
                 UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
                     uiView.alpha = 0.0
                 }, completion: { finished in
                     if finished {
                         uiView.removeFromSuperview()
+                        if let index = uiviewTMPLayer.firstIndex(of: uiView) {
+                            self.uiviewTMPLayer.remove(at: index)
+                        }
                     }
                 })
             }
@@ -857,6 +864,7 @@ class CustomTextView: UITextView {
             uiView.addSubview(dissmissButton)
             uiView.addSubview(issueLabel)
             uiView.alpha = 0.0
+            uiviewTMPLayer.append(uiView)
             self.addSubview(uiView)
             UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseIn, animations: {
                 uiView.alpha = 1.0
@@ -867,7 +875,7 @@ class CustomTextView: UITextView {
         button.setImage(image, for: .normal)
         button.tintColor = color
         button.backgroundColor = .clear
-        button.frame = CGRect(x: (UIScreen.main.bounds.width - 5) - (font?.pointSize ?? 0.0), y: lineRect.midY - ((font?.pointSize ?? 0.0) / 2), width: font?.pointSize ?? 0.0, height: font?.pointSize ?? 0.0)
+        button.frame = CGRect(x: (UIScreen.main.bounds.width - 10) - (font?.pointSize ?? 0.0), y: lineRect.midY - ((font?.pointSize ?? 0.0) / 2), width: font?.pointSize ?? 0.0, height: font?.pointSize ?? 0.0)
         self.addSubview(button)
         bringSubviewToFront(button)
         buttonTMPLayer.append(button)
