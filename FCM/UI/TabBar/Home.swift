@@ -48,8 +48,7 @@ struct Home: View {
                 CreditsView()
             }
             .listStyle(InsetGroupedListStyle())
-            .navigationTitle("FridaCodeManager")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Home")
             .fileImporter(isPresented: $fileImporter, allowedContentTypes: [.project], onCompletion: handleFileImport)
             .sheet(isPresented: $showProj) {
                 BottomPopupView {
@@ -132,10 +131,9 @@ struct Home: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 30, height: 30)
                     .cornerRadius(4)
-                Text(systemImageName)
+                Image(systemName: systemImageName)
                     .foregroundColor(Color(.systemBackground))
                     .frame(width: 20, height: 20)
-                    .font(Font.custom("Menlo", size: 16).bold())
             }
         }
     }
