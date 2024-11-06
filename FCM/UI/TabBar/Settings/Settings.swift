@@ -40,14 +40,14 @@ struct Settings: View {
                         Text(sdk)
                     }
                 } header: {
-                    Label("Default SDK", systemImage: "hammer.circle.fill")
+                    Label("Default SDK", systemImage: "hammer.circle")
                 }
                 Section {
                     NavigationLink(destination: NeoEditorSettings()) {
-                        Label("Code Editor", systemImage: "doc.plaintext.fill")
+                        Label("Code Editor", systemImage: "chevron.left.forwardslash.chevron.right")
                     }
                     NavigationLink(destination: AuthorSettings()) {
-                        Label("Author", systemImage: "person.fill")
+                        Label("Code Author", systemImage: "person.fill")
                     }
                     NavigationLink(destination: Cleaner()) {
                         Label("Cleaner", systemImage: "trash.fill")

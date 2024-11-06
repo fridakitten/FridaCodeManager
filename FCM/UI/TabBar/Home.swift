@@ -79,7 +79,7 @@ struct Home: View {
         Section {
 
         } header: {
-            Label("FridaCodeManager \(global_version)", systemImage: "info.circle")
+            Label("Version \(global_version)", systemImage: "info.circle")
         }
     }
 

@@ -1236,7 +1236,7 @@ struct NeoEditorSettings: View {
     @AppStorage("CECurrentLineHighlighting") var current_line_highlighting: Bool = true
     var body: some View {
         List {
-            Section(header: Text("Themes")) {
+            Section {
                 Button("Default") {
                     setTheme(0)
                     storeTheme()
@@ -1249,11 +1249,13 @@ struct NeoEditorSettings: View {
                     setTheme(2)
                     storeTheme()
                 }
+            } header: {
+                Label("Themes", systemImage: "paintbrush")
             }
             Section {
                 HStack {
                     Text("Render: \(NumberFormatter.localizedString(from: NSNumber(value: render), number: .percent))")
-                        .frame(width: 150)
+                        //.frame(width: 150)
                     Slider(value: $render, in: 0...1)
                 }
                 Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
