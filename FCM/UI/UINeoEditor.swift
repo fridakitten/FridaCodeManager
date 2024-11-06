@@ -39,17 +39,14 @@ struct NeoEditorHelper: View {
     }
 }
 
-
 // MARK: Code Editor
 import SwiftUI
 import UIKit
 import Foundation
 
 // caches for toolbar v2
-var tectField: String = ""
 var highlightLayerCache: [CAShapeLayer] = []
 var toolbarItemCache: [UIBarButtonItem] = []
-var numcache: Int = 0
 
 // configuration for NeoEditor
 struct NeoEditorConfig {
@@ -183,6 +180,7 @@ struct NeoEditor: UIViewRepresentable {
     private var render: Double
     private var enableToolbar: Bool
     private var current_line_highlighting: Bool
+    private var cachehighlightings: Bool
     private var project: Project
 
     init(
@@ -209,6 +207,9 @@ struct NeoEditor: UIViewRepresentable {
         }()
         self.current_line_highlighting = {
             return UserDefaults.standard.bool(forKey: "CECurrentLineHighlighting")
+        }()
+        self.cachehighlightings = {
+            return UserDefaults.standard.bool(forKey: "CEHighlightCache")
         }()
         self.containerView = UIView()
         self.textView = textView
@@ -466,7 +467,6 @@ struct NeoEditor: UIViewRepresentable {
         private var debounceWorkItem: DispatchWorkItem?
         private let debounceDelay: TimeInterval = 2.0
         private var highlightCache: [NSRange: [NSAttributedString.Key: Any]] = [:]
-        private var changedBroken: Bool = false
 
         init(_ markdownEditorView: NeoEditor) {
             self.parent = markdownEditorView
@@ -486,10 +486,6 @@ struct NeoEditor: UIViewRepresentable {
                 self.applyHighlighting(to: textView, with: textView.cachedLineRange ?? NSRange(location: 0, length: 0))
             }
 
-            if typechecking {
-                changedBroken
-= true
-            }
 
             if !isInvalidated {
                 for item in textView.highlightTMPLayer {
@@ -504,6 +500,7 @@ struct NeoEditor: UIViewRepresentable {
 
             debounceWorkItem?.cancel()
             debounceWorkItem = DispatchWorkItem { [self] in
+                killallchilds()
                 let fileURL = URL(fileURLWithPath: self.parent.filepath)
 
                 do {
@@ -515,7 +512,7 @@ struct NeoEditor: UIViewRepresentable {
                     let externlog = neolog_extern()
                     externlog.start()
                     let project = self.parent.project
-                    let result = typecheck(project, true, nil, nil)
+                    _ = typecheck(project, true, nil, nil)
                     externlog.reflushcache()
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
@@ -530,11 +527,6 @@ struct NeoEditor: UIViewRepresentable {
                             DispatchQueue.main.asyncAfter(deadline: .now() + animation.duration) {
                                 item.removeFromSuperlayer()
                             }
-                        }
-                        if changedBroken {
-                            changedBroken = false
-                            DispatchQueue.main.asyncAfter(deadline: .now(), execute: debounceWorkItem!)
-                            return
                         }
                         for item in textView.buttonTMPLayer {
                             item.removeFromSuperview()
@@ -571,9 +563,7 @@ struct NeoEditor: UIViewRepresentable {
                 }
             }
 
-            if !typechecking {
-                DispatchQueue.main.asyncAfter(deadline: .now() + debounceDelay, execute: debounceWorkItem!)
-            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + debounceDelay, execute: debounceWorkItem!)
         }
 
         func applyHighlighting(to textView: UITextView, with visibleRange: NSRange) {
@@ -601,7 +591,9 @@ struct NeoEditor: UIViewRepresentable {
                             if let matchRangeStr = Range(match.range, in: text) {
                                 let matchContent = String(text[matchRangeStr])
                                 let value = calculateValue(matchContent, matchRangeStr)
-                                self.highlightCache[matchRange] = [key: value]
+                                if self.parent.cachehighlightings {
+                                    self.highlightCache[matchRange] = [key: value]
+                                }
                                 attributesToApply.append((match.range, key, value))
                             }
                         }
@@ -1016,8 +1008,8 @@ func grule(_ isaythis: String) -> [HighlightRule] {
             ]
         case "c", "h", "m",  "mm", "cpp":
             return [
-                HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<!\\/\\/)(\"(.*?)\")", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color6)
-                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<!\\/\\/)(<(.*?)>)", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color6)
+                HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<!\\/\\/)(<(.*?)>)", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color6)
+                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<!\\/\\/)(\"(.*?)\")", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color6)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(//.*|\\/\\*[\\s\\S]*?\\*\\/)", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color5)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b\\w+(?=(\\())", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color8)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(#\\w+)", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color10)
@@ -1229,7 +1221,8 @@ struct NeoEditorSettings: View {
     @AppStorage("CERender") var render: Double = 1.0
     @AppStorage("CEFontSize") var font: Double = 13.0
     @AppStorage("CEToolbar") var toolbar: Bool = true
-    @AppStorage("CECurrentLineHighlighting") var current_line_highlighting: Bool = true
+    @AppStorage("CECurrentLineHighlighting") var current_line_highlighting: Bool = false
+    @AppStorage("CEHighlightCache") var cachehighlightings: Bool = false
     var body: some View {
         List {
             Section(header: Text("Themes")) {
@@ -1254,7 +1247,10 @@ struct NeoEditorSettings: View {
                 }
                 Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
                 Toggle("Toolbar", isOn: $toolbar)
-                Toggle("Current Line Highlighting", isOn: $current_line_highlighting)
+            }
+            Section(header: Text("Experimental")) {
+                Toggle("Caret Line Highlighting", isOn: $current_line_highlighting)
+                Toggle("Cache Highlightings", isOn: $cachehighlightings)
             }
         }
         .navigationTitle("Code Editor")

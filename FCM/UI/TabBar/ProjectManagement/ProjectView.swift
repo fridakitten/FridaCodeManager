@@ -208,23 +208,7 @@ struct buildView: View {
         VStack {
             NeoLog(buildv: $buildv, LogItems: $Log, LogCache: $LogCache, LogViews: $Cache) {
                 DispatchQueue.global(qos: .utility).async {
-                    if typechecking {
-                        DispatchQueue.main.sync {
-                            BVstatus = "waiting on unfinished typechecking to finish"
-                            withAnimation {
-                                BVprogress = 0.1
-                            }
-                        }
-                    }
-
-                    while typechecking {
-                        sleep(1)
-                        DispatchQueue.main.sync {
-                            Log = []
-                            LogCache = []
-                            Cache = []
-                        }
-                    }
+                    killallchilds()
 
                     compiling = true
                     #if !stock

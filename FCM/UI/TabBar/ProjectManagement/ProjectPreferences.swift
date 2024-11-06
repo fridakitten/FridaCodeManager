@@ -33,7 +33,7 @@ struct ProjPreferences: View {
                     Label("App Information", systemImage: "list.bullet.rectangle.fill")
                 }
                 NavigationLink(destination: Appeareance(projname: ProjectName,projpath: "\(global_documents)/\(ProjectName)")) {
-                    Label("Appeareance", systemImage: "paintbrush.fill")
+                    Label("Appearance", systemImage: "paintbrush.fill")
                 }
                 NavigationLink(destination: asksdk(projpath: "\(global_documents)/\(ProjectName)")) {
                     Label("SDK", systemImage: "sdcard.fill")

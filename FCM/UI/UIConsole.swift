@@ -130,6 +130,7 @@ struct NeoLog: View {
                         UIInit(type: 0)
                         buildv = false
                         errorcache = LogViews
+                        killallchilds()
                     }
                     .foregroundColor(.primary)
                 }
