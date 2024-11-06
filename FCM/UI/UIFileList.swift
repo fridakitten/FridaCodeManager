@@ -54,6 +54,7 @@ struct FileObject: View {
                 Spacer()
                     Text("\(gfilesize(atPath: item.path))")
                         .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(Color.secondary)
             }
         }
     }
