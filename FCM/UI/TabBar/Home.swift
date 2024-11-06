@@ -27,7 +27,6 @@ struct Home: View {
     @State private var fileImporter = false
     @State private var showProj = false
     @State private var about = false
-    @State private var hello = UUID()
     @Binding var hellnah: UUID
     @Environment(\.presentationMode) private var presentationMode
 
@@ -117,19 +116,6 @@ struct Home: View {
             .frame(height: 200)
         } header: {
             Label("Changelog", systemImage: "checklist")
-        }
-    }
-
-
-    private var aboutButton: some View {
-        Button(action: {
-            hello = UUID()
-            about = true
-        }) {
-            listItem(label: "About", systemImageName: "i", text: "Shows Information about this App")
-        }
-        .sheet(isPresented: $about) {
-            Frida(hello: $hello)
         }
     }
 
