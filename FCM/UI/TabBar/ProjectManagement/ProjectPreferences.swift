@@ -32,8 +32,8 @@ struct ProjPreferences: View {
                 NavigationLink(destination: PrefsInfo(ProjectName: $ProjectName, hello: $hello)) {
                     Label("App Information", systemImage: "list.bullet.rectangle.fill")
                 }
-                NavigationLink(destination: Appeareance(projname: ProjectName,projpath: "\(global_documents)/\(ProjectName)")) {
-                    Label("Appeareance", systemImage: "paintbrush.fill")
+                NavigationLink(destination: Appearance(projname: ProjectName,projpath: "\(global_documents)/\(ProjectName)")) {
+                    Label("Appearance", systemImage: "paintbrush.fill")
                 }
                 NavigationLink(destination: asksdk(projpath: "\(global_documents)/\(ProjectName)")) {
                     Label("SDK", systemImage: "sdcard.fill")
@@ -43,7 +43,6 @@ struct ProjPreferences: View {
             .navigationTitle("\(rname)")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .accentColor(.primary)
     }
 }
 
@@ -113,7 +112,7 @@ struct PrefsInfo: View {
     }
 }
 
-struct Appeareance: View {
+struct Appearance: View {
     @State var projname: String
     @State var projpath: String
     @State var restrict: Bool = false
@@ -146,7 +145,7 @@ struct Appeareance: View {
          .onChange(of: landscape) { _ in
              update()
          }
-         .navigationTitle("Appeareance")
+         .navigationTitle("Appearance")
          .navigationBarTitleDisplayMode(.inline)
     }
 

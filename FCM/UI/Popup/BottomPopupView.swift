@@ -43,14 +43,14 @@ struct BottomPopupView<Content: View>: View {
                 }
                 .padding(20)
                     .padding(.bottom, geometry.safeAreaInsets.bottom + addition)
-                    .background {
+                    /*.background {
                         FluidGradient(blobs: [.purple, .primary, .pink],
                                  highlights: [.purple, .primary, .pink],
                                                             speed: 0.25,
                                                             blur: 0.75)
                             .ignoresSafeArea()
                             .background(.quaternary)
-                    }
+                    }*/
                     .background(Color(.systemBackground))
                     .cornerRadius(isPad ? 16 : corner_addition)
                     .frame(width: isPad ? UIScreen.main.bounds.width / 2 : UIScreen.main.bounds.width - corner_addition * 2)

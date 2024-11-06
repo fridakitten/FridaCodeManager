@@ -263,7 +263,6 @@ struct buildView: View {
                     ProgressView(value: BVprogress, total: 1.0)
                         .progressViewStyle(LinearProgressViewStyle())
                         .frame(width: UIScreen.main.bounds.width / 1.4)
-                        .accentColor(.primary)
                     Spacer().frame(height: 10)
                     Text("\(BVstatus)")
                         .font(.system(size: 11, weight: .semibold))

@@ -43,9 +43,10 @@ struct Home: View {
     var body: some View {
         NavigationView {
             List {
-                changelogSection
+                versionSection
                 projectButtonsSection
-                aboutButton
+                changelogSection
+                CreditsView()
             }
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("FridaCodeManager")
@@ -76,17 +77,11 @@ struct Home: View {
         }
     }
 
-    private var changelogSection: some View {
-        Section(header: Text("Changelog")) {
-            VStack {
-                Spacer().frame(height: 10)
-                ScrollView {
-                    Text(changelog)
-                        .font(.system(size: 11))
-                }
-                Spacer()
-            }
-            .frame(height: 200)
+    private var versionSection: some View {
+        Section {
+
+        } header: {
+            Label("FridaCodeManager \(global_version)", systemImage: "info.circle")
         }
     }
 
@@ -97,15 +92,34 @@ struct Home: View {
                 BundleID = ""
                 showProj = true
             }) {
-                listItem(label: "Create Project", systemImageName: "+", text: "Creates a FCM Project")
+                listItem(label: "Create Project", systemImageName: "folder.fill.badge.plus", text: "Create a FCM project")
             }
             Button(action: {
                 fileImporter = true
             }) {
-                listItem(label: "Import Project", systemImageName: "↑", text: "Imports a FCM Project")
+                listItem(label: "Import Project", systemImageName: "square.and.arrow.down.fill", text: "Import a FCM project")
             }
+        } header: {
+            Label("Options", systemImage: "hammer")
         }
     }
+    
+    private var changelogSection: some View {
+        Section {
+            VStack {
+                Spacer().frame(height: 10)
+                ScrollView {
+                    Text(changelog)
+                        .font(.system(size: 11))
+                }
+                Spacer()
+            }
+            .frame(height: 200)
+        } header: {
+            Label("Changelog", systemImage: "checklist")
+        }
+    }
+
 
     private var aboutButton: some View {
         Button(action: {

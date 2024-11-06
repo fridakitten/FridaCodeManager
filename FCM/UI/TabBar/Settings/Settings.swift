@@ -35,12 +35,14 @@ struct Settings: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("default sdk")) {
+                Section {
                     NavigationLink(destination: SDKList(directoryPath: URL(fileURLWithPath: global_sdkpath) ,sdk: $sdk, isActive: $isActive), isActive: $isActive) {
                         Text(sdk)
                     }
+                } header: {
+                    Label("Default SDK", systemImage: "hammer.circle.fill")
                 }
-                Section(header: Text("Advanced")) {
+                Section {
                     NavigationLink(destination: NeoEditorSettings()) {
                         Label("Code Editor", systemImage: "doc.plaintext.fill")
                     }
@@ -50,13 +52,17 @@ struct Settings: View {
                     NavigationLink(destination: Cleaner()) {
                         Label("Cleaner", systemImage: "trash.fill")
                     }
+                } header: {
+                    Label("Advanced", systemImage: "gearshape.2")
                 }
-                Section(header: Text("Additional Tools")) {
+                Section {
                     NavigationLink(destination: SDKDownload()) {
                         Label("SDK Hub", systemImage: "arrow.down")
                     }
                     NavigationLink(destination: SFSymbolView()) {
                     Label("SFSymbols", systemImage: "square.grid.3x3.fill")
+                } header: {
+                    Label("Additional Tools", systemImage: "sparkles")
                 }
             }
         }

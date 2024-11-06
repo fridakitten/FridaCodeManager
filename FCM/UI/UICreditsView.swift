@@ -1,5 +1,5 @@
  /*
- AboutView.swift
+ UICreditsView.swift
 
  Copyright (C) 2023, 2024 SparkleChan and SeanIsTethered
  Copyright (C) 2024 fridakitten
@@ -22,15 +22,14 @@
 
 import SwiftUI
 
-struct Frida: View {
-    @Binding var hello: UUID
-
+struct CreditsView: View {
     private let credits = [
         ("SeanIsNotAConstant", "Main Developer", "https://github.com/fridakitten.png"),
         ("AppInstaller iOS", "Developer", "https://github.com/AppInstalleriOSGH.png"),
         ("RoothideDev", "Contributor", "https://github.com/roothide.png"),
         ("Snoolie", "Contributor", "https://github.com/0xilis.png"),
         ("HAHALOSAH", "Contributor", "https://github.com/HAHALOSAH.png"),
+        ("darwinx64", "Contributor", "https://github.com/darwinx64.png"),
         ("Manuel Chakravarty", "Contributor", "https://github.com/mchakravarty.png"),
         ("Ayame Yumemi", "Icon Designer", "https://github.com/ayayame09.png"),
         ("meighler", "Licensor", "https://github.com/meighler.png")
@@ -46,42 +45,32 @@ struct Frida: View {
     ]
 
     var body: some View {
-        NavigationView {
-            List {
-                Section(header: Text("About")) {
-                    Text("FridaCodeManager \(global_version)")
-                }
-
-                ForEach([
-                    ("Credits", credits),
-                    ("Side Credits", sideCredits),
-                    ("Others", others)
-                ], id: \.0) { sectionTitle, sectionCredits in
-                    Section(header: Text(sectionTitle)) {
-                        ForEach(sectionCredits.indices, id: \.self) { index in
-                            HStack {
-                                AsyncImageLoaderView(urlString: sectionCredits[index].2, width: 50, height: 50)
-                                    .shadow(color: Color.black.opacity(0.5), radius: 2, x: 0, y: 2)
-                                Spacer()
-                                VStack {
-                                    Text(sectionCredits[index].0)
-                                        .foregroundColor(.primary)
-                                        .font(.system(size: 14, weight: .bold))
-                                    Text(sectionCredits[index].1)
-                                        .foregroundColor(.secondary)
-                                        .font(.system(size: 12, weight: .semibold))
-                                }
-                                .frame(width: 200)
-                                Spacer()
-                            }
+        ForEach([
+            ("Credits", "heart", credits),
+            ("Side Credits", "star", sideCredits),
+            ("Others", "sparkles", others)
+        ], id: \.0) { sectionTitle, sectionImage, sectionCredits in
+            Section {
+                ForEach(sectionCredits.indices, id: \.self) { index in
+                    HStack {
+                        AsyncImageLoaderView(urlString: sectionCredits[index].2, width: 50, height: 50)
+                            .shadow(color: Color.black.opacity(0.5), radius: 2, x: 0, y: 2)
+                        Spacer()
+                        VStack {
+                            Text(sectionCredits[index].0)
+                                .foregroundColor(.primary)
+                                .font(.system(size: 14, weight: .bold))
+                            Text(sectionCredits[index].1)
+                                .foregroundColor(.secondary)
+                                .font(.system(size: 12, weight: .semibold))
                         }
+                        .frame(width: 200)
+                        Spacer()
                     }
                 }
+            } header: {
+                Label(sectionTitle, systemImage: sectionImage)
             }
-            .id(hello)
-            .navigationTitle("About")
-            .navigationBarTitleDisplayMode(.inline)
-            .listStyle(InsetGroupedListStyle())
         }
     }
 }

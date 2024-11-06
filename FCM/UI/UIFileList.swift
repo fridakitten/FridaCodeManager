@@ -367,7 +367,6 @@ struct SDKList: View {
         .onAppear {
             bindLoadFiles(directoryPath: directoryPath, files: $files)
         }
-        .accentColor(.primary)
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("SDKs")
         .navigationBarTitleDisplayMode(.inline)

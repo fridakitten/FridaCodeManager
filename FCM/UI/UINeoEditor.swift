@@ -1250,7 +1250,7 @@ struct NeoEditorSettings: View {
                     storeTheme()
                 }
             }
-            Section(header: Text("Advanced Graphic Settings")) {
+            Section {
                 HStack {
                     Text("Render: \(NumberFormatter.localizedString(from: NSNumber(value: render), number: .percent))")
                         .frame(width: 150)
@@ -1258,7 +1258,9 @@ struct NeoEditorSettings: View {
                 }
                 Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
                 Toggle("Toolbar", isOn: $toolbar)
-                Toggle("Current Line Highlighting", isOn: $current_line_highlighting)
+                Toggle("Highlight current line", isOn: $current_line_highlighting)
+            } header: {
+                Label("Advanced", systemImage: "gearshape.2")
             }
         }
         .navigationTitle("Code Editor")
