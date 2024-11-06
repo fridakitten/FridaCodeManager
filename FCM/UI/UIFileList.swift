@@ -47,14 +47,8 @@ struct FileObject: View {
         HStack {
             HStack {
                 ZStack {
-                    Image(systemName: "doc.fill")
+                    Image(systemName: properties.symbol)
                         .foregroundColor(properties.color)
-                    VStack {
-                        Spacer().frame(height: 8)
-                        Text(properties.symbol)
-                            .font(.system(size: CGFloat(properties.size), weight: .bold))
-                            .foregroundColor(Color(.systemBackground))
-                    }
                 }
                 Text(item.lastPathComponent)
                 Spacer()
