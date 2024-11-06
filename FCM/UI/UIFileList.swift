@@ -436,8 +436,11 @@ private func gProperty(_ fileURL: URL) -> FileProperty {
             property.symbol = "doc.fill"
             property.color = Color.purple
             property.size = 4*/
+        case "plist":
+            property.symbol = "list.bullet.indent"
+            property.color = Color.accentColor
         default:
-            property.symbol = "questionmark"//"doc.fill"
+            property.symbol = "doc.fill"
             property.color = Color.primary
     }
 
