@@ -135,7 +135,7 @@ struct TextLabel: View {
     var body: some View {
         switch text.type {
         case 0:
-            Text(text.content)
+            Text(highlightMessage(text.content))
         case 1:
             Text(text.content)
                 .font(.system(size: 14, weight: .regular, design: .monospaced))
@@ -146,6 +146,61 @@ struct TextLabel: View {
             Spacer().frame(width: 0, height: 0)
         }
     }
+}
+
+private func highlightMessage(_ message: String) -> AttributedString {
+    var attributedString = AttributedString()
+
+    let patterns: [(String, Color)] = [
+        (#"\*\*(.*?)\*\*|\*(.*?)\*"#, .primary)
+    ]
+
+    var currentIndex = message.startIndex
+    var matches: [(range: NSRange, color: Color)] = []
+
+    for pattern in patterns {
+        guard let regex = try? NSRegularExpression(pattern: pattern.0) else { continue }
+        let patternMatches = regex.matches(in: message, options: [], range: NSRange(location: 0, length: message.utf16.count))
+        for match in patternMatches {
+            matches.append((match.range, pattern.1))
+        }
+    }
+
+    matches.sort { $0.range.location < $1.range.location }
+
+    for match in matches {
+        let range = Range(match.range, in: message)!
+
+        if currentIndex < range.lowerBound {
+            let preText = String(message[currentIndex..<range.lowerBound])
+            attributedString.append(AttributedString(preText))
+        }
+
+        // Extract only the content between ** or * symbols
+        let matchText = String(message[range])
+        let strippedText: String
+        if matchText.hasPrefix("**") && matchText.hasSuffix("**") {
+            strippedText = String(matchText.dropFirst(2).dropLast(2)) // Remove **
+        } else if matchText.hasPrefix("*") && matchText.hasSuffix("*") {
+            strippedText = String(matchText.dropFirst(1).dropLast(1)) // Remove *
+        } else {
+            strippedText = matchText // No special characters, use as is
+        }
+
+        var highlightedText = AttributedString(strippedText)
+        highlightedText.foregroundColor = match.color
+        highlightedText.font = .system(size: 17, weight: .bold)
+        attributedString.append(highlightedText)
+
+        currentIndex = range.upperBound
+    }
+
+    if currentIndex < message.endIndex {
+        let remainingText = String(message[currentIndex...])
+        attributedString.append(AttributedString(remainingText))
+    }
+
+    return attributedString
 }
 
 func replaceLiteralNewlines(in input: String) -> String {
