@@ -29,6 +29,7 @@ struct Project: Identifiable, Equatable {
     var Version: String
     var ProjectPath: String
     var Executable: String
+    var Macro: String
     var SDK: String
     var TG: String
     var TYPE: String
@@ -39,6 +40,7 @@ struct Project: Identifiable, Equatable {
                lhs.Version == rhs.Version &&
                lhs.ProjectPath == rhs.ProjectPath &&
                lhs.Executable == rhs.Executable &&
+               lhs.Macro == rhs.Macro &&
                lhs.SDK == rhs.SDK &&
                lhs.TG == rhs.TG &&
                lhs.TYPE == rhs.TYPE
@@ -61,6 +63,7 @@ func GetProjects() -> [Project] {
                 var BundleID = "Corrupted"
                 var Version = "Unknown"
                 var Executable = "Unknown"
+                var Macro = "Release"
                 var TG = "Unknown"
                 var SDK = "Unknown"
                 var TYPE = "Applications"
@@ -87,11 +90,14 @@ func GetProjects() -> [Project] {
                     if let extractedTYPE = Info2["TYPE"] as? String {
                         TYPE = extractedTYPE
                     }
+                    if let extractedMacro = Info2["CMacro"] as? String {
+                        Macro = extractedMacro
+                    }
                 }
-                Projects.append(Project(Name: Item, BundleID: BundleID, Version: Version, ProjectPath: "\(global_documents)/\(Item)", Executable: Executable, SDK: SDK, TG: TG, TYPE: TYPE))
+                Projects.append(Project(Name: Item, BundleID: BundleID, Version: Version, ProjectPath: "\(global_documents)/\(Item)", Executable: Executable, Macro: Macro, SDK: SDK, TG: TG, TYPE: TYPE))
             } catch {
                 print("Failed to process item: \(Item), error: \(error)")
-                Projects.append(Project(Name: "Corrupted", BundleID: "Corrupted", Version: "Unknown", ProjectPath: "\(global_documents)/\(Item)", Executable: "Unknown", SDK: "Unknown", TG: "Unknown", TYPE: "Unknown"))
+                Projects.append(Project(Name: "Corrupted", BundleID: "Corrupted", Version: "Unknown", ProjectPath: "\(global_documents)/\(Item)", Executable: "Unknown", Macro: "", SDK: "Unknown", TG: "Unknown", TYPE: "Unknown"))
             }
         }
         return Projects
@@ -128,9 +134,6 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
             "CFBundleShortVersionString": "1.0",
             "CFBundleVersion": "1.0",
             "MinimumOSVersion": gosver() ?? "15.0",
-            "UILaunchScreen": [
-                "UILaunchScreen": [:]
-            ]
         ]
 
         let infoPlistPath = "\(ResourcesPath)/Info.plist"
@@ -139,7 +142,12 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
 
         let dontTouchMePlistData: [String: Any] = [
             "SDK": SDK,
-            "TYPE": TYPE
+            "TYPE": TYPE,
+            "CMacro": "Release",
+            "Macro": [
+                "Release": [:],
+                "Debug": [:],
+            ]
         ]
 
         let dontTouchMePlistPath = "\(ResourcesPath)/DontTouchMe.plist"

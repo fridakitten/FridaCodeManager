@@ -81,7 +81,11 @@ struct FileList: View {
     @State private var potextfield: String = ""
     @State private var type: Int = 0
 
-    var project: Project
+    @State var project: Project
+
+    @State private var macros: [String] = []
+    @State private var cmacro: String = ""
+
     var body: some View {
         List {
             Section {
@@ -152,8 +156,28 @@ struct FileList: View {
                 }
             }
         }
+        .refreshable {
+            await DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
+                withAnimation {
+                    files = []
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                    bindLoadFiles(directoryPath: directoryPath, files: $files)
+                }
+            }
+        }
         .onAppear {
             bindLoadFiles(directoryPath: directoryPath, files: $files)
+
+            if let buildv = buildv {
+                if "\(project.ProjectPath)/Resources/DontTouchMe.plist" != MacroMGR.plistPath {
+                    MacroMGR.plistPath = "\(project.ProjectPath)/Resources/DontTouchMe.plist"
+                    MacroMGR.loadPlist()
+                }
+
+                macros = MacroMGR.getAllMacros()
+                cmacro = MacroMGR.getCurrentMacro() ?? ""
+            }
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(
@@ -169,6 +193,23 @@ struct FileList: View {
                                 buildv.wrappedValue = true
                             }) {
                                 Label("Build", systemImage: "play.fill")
+                            }
+                        }
+                        Section {
+                            ForEach(macros, id:\.self) { item in
+                                Button( action: {
+                                    cmacro = item
+                                    MacroMGR.setCurrentMacro(to: item)
+                                    MacroMGR.savePlist()
+                                    project.Macro = cmacro
+                                    //project = Project(Name: project.Name, BundleID: project.BundleID, Version: project.Version, ProjectPath: project.ProjectPath, Executable: project.Executable, Macro: cmacro, SDK: project.SDK, TG: project.TG, TYPE: project.TYPE)
+                                }) {
+                                    if cmacro == item {
+                                        Label(item, systemImage: "checkmark")
+                                    } else {
+                                        Text(item)
+                                    }
+                                }
                             }
                         }
                     }

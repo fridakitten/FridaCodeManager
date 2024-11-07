@@ -56,15 +56,15 @@ func typecheck(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_
     if !SwiftFiles.isEmpty {
         if !MFiles.isEmpty {
             EXEC += MFiles.map { mFile in
-                "clang -fmodules -fsyntax-only \(apiextension.build_sub) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) ; "
+                "clang -D\(ProjectInfo.Macro) -fmodules -fsyntax-only \(apiextension.build_sub) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) ; "
             }.joined()
         }
         EXEC += """
-        swiftc -typecheck \(apiextension.build) \(SwiftFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
+        swiftc -typecheck -D\(ProjectInfo.Macro) \(apiextension.build) \(SwiftFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
         \(FileManager.default.fileExists(atPath: info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG)
         """
     } else {
-        EXEC += "clang -fmodules -fsyntax-only \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " "))"
+        EXEC += "clang -D\(ProjectInfo.Macro) -fmodules -fsyntax-only \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " "))"
     }
 
     let (CDEXEC) = ("cd '\(ProjectInfo.ProjectPath)'")

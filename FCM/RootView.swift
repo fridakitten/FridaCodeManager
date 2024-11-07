@@ -79,6 +79,7 @@ func GetProjectsBind(Projects: Binding<[Project]>) -> Void {
                     var BundleID = "Corrupted"
                     var Version = "Unknown"
                     var Executable = "Unknown"
+                    var Macro = "Release"
                     var TG = "Unknown"
                     var SDK = "Unknown"
                     var TYPE = "Applications"
@@ -105,9 +106,12 @@ func GetProjectsBind(Projects: Binding<[Project]>) -> Void {
                         if let extractedTYPE = Info2["TYPE"] as? String {
                             TYPE = extractedTYPE
                         }
+                        if let extractedMacro = Info2["CMacro"] as? String {
+                            Macro = extractedMacro
+                        }
                     }
 
-                    let newProject = Project(Name: Item, BundleID: BundleID, Version: Version, ProjectPath: "\(global_documents)/\(Item)", Executable: Executable, SDK: SDK, TG: TG, TYPE: TYPE)
+                    let newProject = Project(Name: Item, BundleID: BundleID, Version: Version, ProjectPath: "\(global_documents)/\(Item)", Executable: Executable, Macro: Macro, SDK: SDK, TG: TG, TYPE: TYPE)
 
                     if let existingIndex = currentProjects.firstIndex(where: { $0.Name == Item }) {
                         let existingProject = currentProjects[existingIndex]
@@ -133,7 +137,7 @@ func GetProjectsBind(Projects: Binding<[Project]>) -> Void {
                     DispatchQueue.main.async {
                         withAnimation {
                             if !Projects.wrappedValue.contains(where: { $0.Name == Item }) {
-                                Projects.wrappedValue.append(Project(Name: "Corrupted", BundleID: "Corrupted", Version: "Unknown", ProjectPath: "\(global_documents)/\(Item)", Executable: "Unknown", SDK: "Unknown", TG: "Unknown", TYPE: "Unknown"))
+                                Projects.wrappedValue.append(Project(Name: "Corrupted", BundleID: "Corrupted", Version: "Unknown", ProjectPath: "\(global_documents)/\(Item)", Executable: "Unknown", Macro: "", SDK: "Unknown", TG: "Unknown", TYPE: "Unknown"))
                             }
                         }
                     }
