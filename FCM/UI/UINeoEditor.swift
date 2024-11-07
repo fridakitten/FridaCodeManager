@@ -177,11 +177,13 @@ struct NeoEditor: UIViewRepresentable {
     private let config: NeoEditorConfig
 
     @Binding private var sheet: Bool
-    private var render: Double
-    private var enableToolbar: Bool
-    private var current_line_highlighting: Bool
-    private var cachehighlightings: Bool
     private var project: Project
+
+    @AppStorage("CERender") var render: Double = 1.0
+    @AppStorage("CEFontSize") var font: Double = 13.0
+    @AppStorage("CEToolbar") var enableToolbar: Bool = true
+    @AppStorage("CECurrentLineHighlighting") var current_line_highlighting: Bool = false
+    @AppStorage("CEHighlightCache") var cachehighlightings: Bool = false
 
     init(
         isPresented: Binding<Bool>,
@@ -199,18 +201,6 @@ struct NeoEditor: UIViewRepresentable {
         }()
 
         self.highlightRules = grule(gsuffix(from: filename))
-        self.render = {
-            return UserDefaults.standard.double(forKey: "CERender")
-        }()
-        self.enableToolbar = {
-            return UserDefaults.standard.bool(forKey: "CEToolbar")
-        }()
-        self.current_line_highlighting = {
-            return UserDefaults.standard.bool(forKey: "CECurrentLineHighlighting")
-        }()
-        self.cachehighlightings = {
-            return UserDefaults.standard.bool(forKey: "CEHighlightCache")
-        }()
         self.containerView = UIView()
         self.textView = textView
         self.project = project
