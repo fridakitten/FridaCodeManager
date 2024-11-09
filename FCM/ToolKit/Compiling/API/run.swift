@@ -23,6 +23,7 @@
 func api(_ text: String,_ Project:Project) -> ext {
     //api class
     let apiclass: String = tags(text,"api")
+    let ovwclass: String = tags(apiclass,"overwrite")
 
     //version Definition
     //lets you choose what version of the api you wanna use
@@ -32,6 +33,9 @@ func api(_ text: String,_ Project:Project) -> ext {
     var (build, build_sub, before, after, ignore) = ("", "", "", "", "")
 
     //subclasses
+    if usever == "1.2" {
+        
+    }
     if usever == "1.1" {
         (build, build_sub, before, after, ignore) = (tags(apiclass,"build"), tags(apiclass,"build-object"),tags(apiclass,"exec-before"), tags(apiclass,"exec-after"), tags(apiclass,"compiler-ignore-content"))
     } else {

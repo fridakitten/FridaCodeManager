@@ -25,6 +25,7 @@ import Foundation
 import UniformTypeIdentifiers
 
 private let invalidFS: Set<Character> = ["/", "\\", ":", "*", "?", "\"", "<", ">", "|"]
+let MacroMGR = MacroManager()
 
 private enum ActiveSheet: Identifiable {
     case create, rename, remove, impSheet
@@ -81,7 +82,7 @@ struct FileList: View {
     @State private var potextfield: String = ""
     @State private var type: Int = 0
 
-    @State var project: Project
+    @Binding var project: Project
 
     @State private var macros: [String] = []
     @State private var cmacro: String = ""
@@ -92,7 +93,7 @@ struct FileList: View {
                 ForEach(files, id: \.self) { item in
                     HStack {
                         if isDirectory(item) {
-                            NavigationLink(destination: FileList(title: nil, directoryPath: item, actpath: $actpath, action: $action, project: project)) {
+                            NavigationLink(destination: FileList(title: nil, directoryPath: item, actpath: $actpath, action: $action, project: $project)) {
                                 HStack {
                                     Image(systemName: "folder.fill")
                                         .foregroundColor(.primary)
@@ -202,14 +203,32 @@ struct FileList: View {
                                     MacroMGR.setCurrentMacro(to: item)
                                     MacroMGR.savePlist()
                                     project.Macro = cmacro
-                                    //project = Project(Name: project.Name, BundleID: project.BundleID, Version: project.Version, ProjectPath: project.ProjectPath, Executable: project.Executable, Macro: cmacro, SDK: project.SDK, TG: project.TG, TYPE: project.TYPE)
                                 }) {
                                     if cmacro == item {
-                                        Label(item, systemImage: "checkmark")
+                                        Label {
+                                            Text(item)
+                                        } icon: {
+                                            Image(systemName: "checkmark")
+                                        }
                                     } else {
                                         Text(item)
                                     }
                                 }
+                                .contextMenu {
+                                    Button(role: .destructive, action: {
+                                        MacroMGR.removeMacro(item)
+                                        MacroMGR.savePlist()
+                                        if let index = macros.firstIndex(of: item) {
+                                            macros.remove(at: index)
+                                        }
+                                    }) {
+                                        Label("Remove", systemImage: "trash")
+                                    }
+                                }
+                            }
+                            Button(action: {
+                            }) {
+                                Label("New Macro", systemImage: "plus")
                             }
                         }
                     }

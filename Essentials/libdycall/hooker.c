@@ -1,105 +1,92 @@
 //
-// hooker.c
-// libdycall
+//  hooker.c
+//  memory
 //
-// Created by SeanIsNotAConstant on 15.10.24
+//  Created by fridakitten on 30.10.24.
 //
 
-#include <stdio.h>
 #include "fishhook.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <malloc/malloc.h>
 
-typedef void (*rexit)(int);
-typedef void (*ratexit)(void);
+static bool isSpying = false;
+static malloc_zone_t *zone;
+
+static void* (*original_malloc)(size_t size) = NULL;
+static void* (*original_calloc)(size_t num, size_t size) = NULL;
+static void* (*original_realloc)(void *pointer, size_t size) = NULL;
+static void (*original_free)(void *pointer) = NULL;
 
 static void (*original_exit)(int) = NULL;
-static void (*original_uexit)(void) = NULL;
 static int (*original_atexit)(void (*func)()) = NULL;
-static int (*original_uatexit)(void (*func)()) = NULL;
 
 extern void dy_exit(int status);
 extern int dy_atexit(void (*func)());
 
-/**
- * @brief Set up the hooks
- *
- * This function hooks certain symbols like exit and atexit to make a dylib behave like a binariy
- * For example instead of calling real exit it would call our own implementation of it
- */
-int hooker(void)
+int hookerhelper(const char *victim, void *function, void **bunkerfunc)
 {
-    struct rebinding rebind_exit = {
-        .name = "exit",
-        .replacement = dy_exit,
-        .replaced = (void**)&original_exit
+    struct rebinding rebound =
+    {
+        .name = victim,
+        .replacement = function,
+        .replaced = (void**)bunkerfunc
     };
 
-    struct rebinding rebind_uexit = {
-        .name = "_exit",
-        .replacement = dy_exit,
-        .replaced = (void**)&original_uexit
+    struct rebinding rebindings[] =
+    {
+            rebound,
     };
-
-    struct rebinding rebind_atexit = {
-        .name = "atexit",
-        .replacement = dy_atexit,
-        .replaced = (void**)&original_atexit
-    };
-
-    struct rebinding rebind_uatexit = {
-        .name = "_atexit",
-        .replacement = dy_atexit,
-        .replaced = (void**)&original_uatexit
-    };
-
-    struct rebinding rebindings[] = {
-        rebind_exit,
-        rebind_uexit,
-        rebind_atexit,
-        rebind_uatexit
-    };
-
+    
     return rebind_symbols(rebindings, sizeof(rebindings) / sizeof(rebindings[0]));
 }
 
-/**
- * @brief Remove the hooks.
- *
- * When your done with your actions id recommend you to call unhooker() in order to make your process
- * behave normally again
- *
- */
-int unhooker(void)
+void* malloc_bind(size_t size)
 {
-    struct rebinding unbind_exit = {
-        .name = "exit",
-        .replacement = original_exit,
-        .replaced = (void**)&original_exit
-    };
+    return malloc_zone_malloc(zone, size);
+}
 
-    struct rebinding unbind_uexit = {
-        .name = "_exit",
-        .replacement = original_uexit,
-        .replaced = (void**)&original_uexit
-    };
+void* calloc_bind(size_t num, size_t size)
+{
+    return malloc_zone_calloc(zone, num, size);
+}
 
-    struct rebinding unbind_atexit = {
-        .name = "atexit",
-        .replacement = original_atexit,
-        .replaced = (void**)&original_atexit
-    };
+void* realloc_bind(void *pointer, size_t size)
+{
+    return malloc_zone_realloc(zone, pointer, size);
+}
 
-    struct rebinding unbind_uatexit = {
-        .name = "_atexit",
-        .replacement = original_uatexit,
-        .replaced = (void**)&original_uatexit
-    };
+void free_bind(void *pointer)
+{
+    malloc_zone_free(zone, pointer);
+}
 
-    struct rebinding rebindings[] = {
-        unbind_exit,
-        unbind_uexit,
-        unbind_atexit,
-        unbind_uatexit
-    };
+void unhooker(void)
+{
+    if(!isSpying)
+    {
+        zone = malloc_create_zone(0, 0);
+        //hookerhelper("malloc", malloc_bind, (void**)&original_malloc);
+        //hookerhelper("calloc", calloc_bind, (void**)&original_calloc);
+        //hookerhelper("realloc", realloc_bind, (void**)&original_realloc);
+        //hookerhelper("free", free_bind, (void**)&original_free);
+        hookerhelper("exit", dy_exit, (void**)&original_exit);
+        hookerhelper("atexit", dy_atexit, (void**)&original_atexit);
+        isSpying = true;
+    }
+}
 
-    return rebind_symbols(rebindings, sizeof(rebindings) / sizeof(rebindings[0]));
+void hooker(void)
+{
+    if(isSpying)
+    {
+        isSpying = false;
+        //hookerhelper("malloc", original_malloc, NULL);
+        //hookerhelper("calloc", original_calloc, NULL);
+        //hookerhelper("realloc", original_realloc, NULL);
+        //hookerhelper("free", original_free, NULL);
+        hookerhelper("exit", original_exit, NULL);
+        hookerhelper("atexit", original_atexit, NULL);
+        malloc_destroy_zone(zone);
+    }
 }

@@ -53,5 +53,3 @@ class MacroManager {
         }
     }
 }
-
-let MacroMGR = MacroManager()

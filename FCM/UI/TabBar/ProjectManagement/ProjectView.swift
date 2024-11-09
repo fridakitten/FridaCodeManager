@@ -178,7 +178,7 @@ struct CodeSpace: View {
     @Binding var pathstate: String
     @Binding var action: Int
     var body: some View {
-        FileList(title: ProjectInfo.Executable, directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, actpath: $pathstate, action: $action, project: ProjectInfo)
+        FileList(title: ProjectInfo.Executable, directoryPath: URL(fileURLWithPath: ProjectInfo.ProjectPath), buildv: $buildv, actpath: $pathstate, action: $action, project: $ProjectInfo)
             .fullScreenCover(isPresented: $buildv) {
                 switch ProjectInfo.TYPE {
                     case "Applications":
@@ -208,7 +208,9 @@ struct buildView: View {
         VStack {
             NeoLog(buildv: $buildv, LogItems: $Log, LogCache: $LogCache, LogViews: $Cache) {
                 DispatchQueue.global(qos: .utility).async {
+                    #if !stock
                     killallchilds()
+                    #endif
 
                     compiling = true
                     #if !stock

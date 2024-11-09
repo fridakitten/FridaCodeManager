@@ -47,7 +47,7 @@ struct Project: Identifiable, Equatable {
     }
 }
 
-func GetProjects() -> [Project] {
+/*func GetProjects() -> [Project] {
     do {
         var Projects: [Project] = []
 
@@ -63,7 +63,7 @@ func GetProjects() -> [Project] {
                 var BundleID = "Corrupted"
                 var Version = "Unknown"
                 var Executable = "Unknown"
-                var Macro = "Release"
+                var Macro = "stable"
                 var TG = "Unknown"
                 var SDK = "Unknown"
                 var TYPE = "Applications"
@@ -105,7 +105,7 @@ func GetProjects() -> [Project] {
         print(error)
         return []
     }
-}
+}*/
 
 func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> Int {
     let v2uuid: UUID = UUID()
@@ -143,10 +143,10 @@ func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> In
         let dontTouchMePlistData: [String: Any] = [
             "SDK": SDK,
             "TYPE": TYPE,
-            "CMacro": "Release",
+            "CMacro": "stable",
             "Macro": [
-                "Release": [:],
-                "Debug": [:],
+                "stable": [:],
+                "debug": [:],
             ]
         ]
 
