@@ -239,17 +239,26 @@ struct FileList: View {
                             Section {
                                 if !FileManager.default.fileExists(atPath: "\(project.ProjectPath)/.git") {
                                     Button("Create Repo") {
-                                        let result = createGitHubRepository(repositoryName: project.Executable, isPrivate: true, githubToken: token)
-                                        if result == 0 {
-                                            let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
-                                            _ = shell("cd \(project.ProjectPath); git init; git branch -M main; git add .; git commit -m \"Initial Commit\"; git remote add origin \(remoteUrl); git push -u origin main", uid: 501, env: [])
-                                        } else {
-                                            print("Failed to create GitHub repository")
+                                        DispatchQueue.global(qos: .utility).async {
+                                            let result = createGitHubRepository(repositoryName: project.Executable, isPrivate: true, githubToken: token)
+                                            if result == 0 {
+                                                let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
+                                                let result = shell("cd \(project.ProjectPath); git init; git branch -M main; git add .; git commit -m \"Initial Commit\"; git remote add origin \(remoteUrl); git push -u origin main", uid: 501, env: [])
+                                                if result == 0 {
+                                                    DispatchQueue.main.sync {
+                                                        bindLoadFiles(directoryPath: directoryPath, files: $files)
+                                                    }
+                                                }
+                                            } else {
+                                                print("Failed to create GitHub repository")
+                                            }
                                         }
                                     }
                                 } else {
                                     Button("Commit") {
-                                        _ = shell("cd \(project.ProjectPath); git add .; git commit -m \"Update\"; git push", uid: 501, env: [])
+                                        DispatchQueue.global(qos: .utility).async {
+                                            _ = shell("cd \(project.ProjectPath); git add .; git commit -m \"Update\"; git push", uid: 501, env: [])
+                                        }
                                     }
                                 }
                             }
