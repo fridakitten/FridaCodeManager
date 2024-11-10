@@ -2,21 +2,12 @@ import UIKit
 
 let generator = UINotificationFeedbackGenerator()
 
-//Haptic Feedback
-func haptfeedback(_ type: Int) -> Void {
-    switch(type) {
-        case 1:
-            generator.notificationOccurred(.success)
-            return
-        case 2:
-            generator.notificationOccurred(.error)
-            return
-        default:
-            return
-    }
+// Haptic Feedback with enum for better readability
+func haptfeedback(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+    generator.notificationOccurred(type)
 }
 
-//Alert Feedback
+// Alert Feedback
 func ShowAlert(_ alert: UIAlertController) -> Void {
     DispatchQueue.main.async {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
