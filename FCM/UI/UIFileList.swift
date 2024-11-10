@@ -87,6 +87,10 @@ struct FileList: View {
     @State private var macros: [String] = []
     @State private var cmacro: String = ""
 
+    // GitHub
+    @AppStorage("GIT_ENABLED") var enabled: Bool = false
+    @AppStorage("GIT_TOKEN") var token: String = ""
+    @AppStorage("GIT_USERNAME") var username: String = ""
     var body: some View {
         List {
             Section {
@@ -170,7 +174,7 @@ struct FileList: View {
         .onAppear {
             bindLoadFiles(directoryPath: directoryPath, files: $files)
 
-            if let buildv = buildv {
+            if buildv != nil {
                 if "\(project.ProjectPath)/Resources/DontTouchMe.plist" != MacroMGR.plistPath {
                     MacroMGR.plistPath = "\(project.ProjectPath)/Resources/DontTouchMe.plist"
                     MacroMGR.loadPlist()
@@ -229,6 +233,34 @@ struct FileList: View {
                             Button(action: {
                             }) {
                                 Label("New Macro", systemImage: "plus")
+                            }
+                        }
+                        if enabled {
+                            Section {
+                                if !FileManager.default.fileExists(atPath: "\(project.ProjectPath)/.git") {
+                                    Button("Create Repo") {
+                                        let result = createGitHubRepository(repositoryName: project.Executable, isPrivate: true, githubToken: token)
+                                        if result == 0 {
+                                            _ = shell("cd \(project.ProjectPath) && git init", uid: 501, env: [])
+                                            _ = shell("cd \(project.ProjectPath) && git branch -M main", uid: 501, env: [])  // Ensure 'main' branch is created
+                                            _ = shell("cd \(project.ProjectPath) && git add .", uid: 501, env: [])
+                                            let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
+                                            _ = shell("cd \(project.ProjectPath) && git remote add origin \(remoteUrl)", uid: 501, env: [])
+                                            let pushResult = shell("cd \(project.ProjectPath) && git push -u origin main", uid: 501, env: [])
+                                            print("Push result: \(pushResult)")
+                                            _ = shell("cd \(project.ProjectPath) && git commit -m \"Initial Commit\"", uid: 501, env: [])
+                                            _ = shell("cd \(project.ProjectPath) && git push --set-upstream origin main", uid: 501, env: [])
+                                        } else {
+                                            print("Failed to create GitHub repository")
+                                        }
+                                    }
+                                } else {
+                                    Button("Commit") {
+                                         _ = shell("cd \(project.ProjectPath) && git add .", uid: 501, env: [])
+                                         _ = shell("cd \(project.ProjectPath) && git commit -m \"Update\"", uid: 501, env: [])
+                                         _ = shell("cd \(project.ProjectPath) && git push", uid: 501, env: [])
+                                    }
+                                }
                             }
                         }
                     }
