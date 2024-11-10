@@ -28,7 +28,7 @@ private let invalidFS: Set<Character> = ["/", "\\", ":", "*", "?", "\"", "<", ">
 let MacroMGR = MacroManager()
 
 private enum ActiveSheet: Identifiable {
-    case create, rename, remove, impSheet
+    case create, rename, remove, commit, impSheet
 
     var id: Int {
         hashValue
@@ -90,7 +90,6 @@ struct FileList: View {
     // GitHub
     @AppStorage("GIT_ENABLED") var enabled: Bool = false
     @AppStorage("GIT_TOKEN") var token: String = ""
-    @AppStorage("GIT_USERNAME") var username: String = ""
     var body: some View {
         List {
             Section {
@@ -239,15 +238,21 @@ struct FileList: View {
                             Section {
                                 if !FileManager.default.fileExists(atPath: "\(project.ProjectPath)/.git") {
                                     Button("Create Repo") {
+                                        ShowAlert(UIAlertController(title: "Creating Repository", message: "", preferredStyle: .alert))
                                         DispatchQueue.global(qos: .utility).async {
                                             let result = createGitHubRepository(repositoryName: project.Executable, isPrivate: true, githubToken: token)
                                             if result == 0 {
+                                                guard let username = getGithubUsername(fromToken: token) else { return }
                                                 let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
-                                                let result = shell("cd \(project.ProjectPath); git init; git branch -M main; git add .; git commit -m \"Initial Commit\"; git remote add origin \(remoteUrl); git push -u origin main", uid: 501, env: [])
+                                                let result = shell("cd \(project.ProjectPath); git init; git branch -M main; git add .; git commit -m \"Initial Commit\"; git remote add origin \(remoteUrl); git push -u origin main; git remote set-url origin https://github.com/\(username)/\(project.Executable).git", uid: 501, env: [])
                                                 if result == 0 {
                                                     DispatchQueue.main.sync {
-                                                        bindLoadFiles(directoryPath: directoryPath, files: $files)
+                                                        DismissAlert {
+                                                            bindLoadFiles(directoryPath: directoryPath, files: $files)
+                                                        }
                                                     }
+                                                } else {
+                                                    DismissAlert {}
                                                 }
                                             } else {
                                                 print("Failed to create GitHub repository")
@@ -255,10 +260,15 @@ struct FileList: View {
                                         }
                                     }
                                 } else {
-                                    Button("Commit") {
+                                    Button("Push") {
                                         DispatchQueue.global(qos: .utility).async {
-                                            _ = shell("cd \(project.ProjectPath); git add .; git commit -m \"Update\"; git push", uid: 501, env: [])
+                                            guard let username = getGithubUsername(fromToken: token) else { return }
+                                            let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
+                                            _ = shell("cd \(project.ProjectPath); git remote set-url origin \(remoteUrl); git push; git remote set-url origin https://github.com/\(username)/\(project.Executable).git", uid: 501, env: [])
                                         }
+                                    }
+                                    Button("Commit") {
+                                        activeSheet = .commit
                                     }
                                 }
                             }
@@ -313,6 +323,10 @@ struct FileList: View {
                                 POBHeader(title: $poheader)
                                 Spacer().frame(height: 10)
                                 POButtonBar(cancel: dissmiss_sheet, confirm: remove_selected)
+                            case .commit:
+                                POHeader(title: "Commit")
+                                POTextField(title: "Name", content: $potextfield)
+                                POButtonBar(cancel: dissmiss_sheet, confirm: github_commit)
                             default:
                                 Spacer()
                         }
@@ -335,6 +349,16 @@ struct FileList: View {
         .fullScreenCover(isPresented: $fbool) {
             ImageView(imagePath: $selpath, fbool: $fbool)
         }
+    }
+
+    private func github_commit() -> Void {
+        let result = shell("cd \(directoryPath.path); git add .; git commit -m \"\(potextfield)\"", uid: 501, env: [])
+        if result == 0 {
+            haptfeedback(1)
+        } else {
+            haptfeedback(2)
+        }
+        activeSheet = nil
     }
 
     private func create_selected() -> Void {

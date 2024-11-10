@@ -3,7 +3,6 @@ import SwiftUI
 struct GitHubLoginView: View {
     @AppStorage("GIT_ENABLED") var enabled: Bool = false
     @AppStorage("GIT_TOKEN") var token: String = ""
-    @AppStorage("GIT_USERNAME") var username: String = ""
 
     var body: some View {
         List {
@@ -11,9 +10,6 @@ struct GitHubLoginView: View {
                 Toggle("Enabled", isOn: $enabled)
             }
             if enabled {
-                Section {
-                    TextField("Username", text: $username)
-                }
                 Section {
                     TextField("Token", text: $token)
                 }
@@ -61,4 +57,36 @@ func createGitHubRepository(repositoryName: String, isPrivate: Bool, githubToken
     task.resume()
     semaphore.wait()
     return resultStatus
+}
+
+func getGithubUsername(fromToken token: String) -> String? {
+    let url = URL(string: "https://api.github.com/user")!
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+    request.setValue("token \(token)", forHTTPHeaderField: "Authorization")
+    let semaphore = DispatchSemaphore(value: 0)
+    var username: String? = nil
+    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        if let error = error {
+            print("Error: \(error.localizedDescription)")
+            semaphore.signal()
+            return
+        }
+        guard let data = data else {
+            print("No data received")
+            semaphore.signal()
+            return
+        }
+        if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+            if let extractedUsername = json["login"] as? String {
+                username = extractedUsername
+            } else {
+                print("Username not found in the response")
+            }
+        }
+        semaphore.signal()
+    }
+    task.resume()
+    semaphore.wait()
+    return username
 }

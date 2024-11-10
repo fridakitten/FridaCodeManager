@@ -25,13 +25,22 @@ import SwiftUI
 struct Frida: View {
     @Binding var hello: UUID
 
-    private let credits = [
-        ("SeanIsNotAConstant", "Main Developer", "https://github.com/fridakitten.png"),
-        ("AppInstaller iOS", "Developer", "https://github.com/AppInstalleriOSGH.png"),
-        ("RoothideDev", "Contributor", "https://github.com/roothide.png"),
-        ("Manuel Chakravarty", "Contributor", "https://github.com/mchakravarty.png"),
-        ("Ayame Yumemi", "Icon Designer", "https://github.com/ayayame09.png")
-    ]
+    var credits = {
+        var save = [
+            ("SeanIsNotAConstant", "Main Developer", "https://github.com/fridakitten.png"),
+            ("AppInstaller iOS", "Developer", "https://github.com/AppInstalleriOSGH.png"),
+            ("RoothideDev", "Contributor", "https://github.com/roothide.png"),
+            ("Manuel Chakravarty", "Contributor", "https://github.com/mchakravarty.png"),
+            ("Ayame Yumemi", "Icon Designer", "https://github.com/ayayame09.png")
+        ]
+        if UserDefaults.standard.bool(forKey: "GIT_ENABLED") {
+            if let gitToken = UserDefaults.standard.string(forKey: "GIT_TOKEN"),
+                let user = getGithubUsername(fromToken: gitToken) {
+                save.append((user, "User", "https://github.com/\(user).png"))
+            }
+        }
+        return save
+    }()
 
     private let sideCredits = [
         ("Opa334", "Trollstore Helper", "https://github.com/opa334.png"),
