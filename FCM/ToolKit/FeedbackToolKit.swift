@@ -57,6 +57,8 @@ func showAlert(with message: String) {
 
     // Present the alert
     ShowAlertAdv(alert)
+
+    haptfeedback(.success)
 }
 
 func ShowAlertAdv(_ alert: UIAlertController) {
