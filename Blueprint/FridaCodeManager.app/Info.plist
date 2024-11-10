@@ -175,18 +175,5 @@
 			</dict>
 		</dict>
 	</array>
-        <key>CFBundleURLType</key>
-        <array>
-            <dict>
-                <key>CFBundleTypeRole</key>
-                <string>Editor</string>
-                <key>CFBundleURLName</key>
-                <string>fcm</string>
-                <key>CFBundleURLSchemes</key>
-                <array>
-                    <string>fcm</string>
-                </array>
-            </dict>
-        </array>
 </dict>
 </plist>

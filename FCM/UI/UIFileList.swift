@@ -241,24 +241,15 @@ struct FileList: View {
                                     Button("Create Repo") {
                                         let result = createGitHubRepository(repositoryName: project.Executable, isPrivate: true, githubToken: token)
                                         if result == 0 {
-                                            _ = shell("cd \(project.ProjectPath) && git init", uid: 501, env: [])
-                                            _ = shell("cd \(project.ProjectPath) && git branch -M main", uid: 501, env: [])  // Ensure 'main' branch is created
-                                            _ = shell("cd \(project.ProjectPath) && git add .", uid: 501, env: [])
                                             let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
-                                            _ = shell("cd \(project.ProjectPath) && git remote add origin \(remoteUrl)", uid: 501, env: [])
-                                            let pushResult = shell("cd \(project.ProjectPath) && git push -u origin main", uid: 501, env: [])
-                                            print("Push result: \(pushResult)")
-                                            _ = shell("cd \(project.ProjectPath) && git commit -m \"Initial Commit\"", uid: 501, env: [])
-                                            _ = shell("cd \(project.ProjectPath) && git push --set-upstream origin main", uid: 501, env: [])
+                                            _ = shell("cd \(project.ProjectPath); git init; git branch -M main; git add .; git commit -m \"Initial Commit\"; git remote add origin \(remoteUrl); git push -u origin main", uid: 501, env: [])
                                         } else {
                                             print("Failed to create GitHub repository")
                                         }
                                     }
                                 } else {
                                     Button("Commit") {
-                                         _ = shell("cd \(project.ProjectPath) && git add .", uid: 501, env: [])
-                                         _ = shell("cd \(project.ProjectPath) && git commit -m \"Update\"", uid: 501, env: [])
-                                         _ = shell("cd \(project.ProjectPath) && git push", uid: 501, env: [])
+                                        _ = shell("cd \(project.ProjectPath); git add .; git commit -m \"Update\"; git push", uid: 501, env: [])
                                     }
                                 }
                             }
