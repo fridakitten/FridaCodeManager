@@ -457,9 +457,15 @@ struct NeoEditor: UIViewRepresentable {
         private var debounceWorkItem: DispatchWorkItem?
         private let debounceDelay: TimeInterval = 2.0
         private var highlightCache: [NSRange: [NSAttributedString.Key: Any]] = [:]
+        private var shouldCheck: Bool
 
         init(_ markdownEditorView: NeoEditor) {
             self.parent = markdownEditorView
+            self.shouldCheck = false
+
+            if gsuffix(from: self.parent.filepath) == "c" || gsuffix(from: self.parent.filepath) == "cpp" || gsuffix(from: self.parent.filepath) == "m" || gsuffix(from: self.parent.filepath) == "mm" {
+                shouldCheck = true
+            }
         }
 
         func runIntrospect(_ textView: UITextView) {
@@ -476,6 +482,9 @@ struct NeoEditor: UIViewRepresentable {
                 self.applyHighlighting(to: textView, with: textView.cachedLineRange ?? NSRange(location: 0, length: 0))
             }
 
+            if !shouldCheck {
+                return
+            }
 
             if !isInvalidated {
                 for item in textView.highlightTMPLayer {
@@ -505,7 +514,7 @@ struct NeoEditor: UIViewRepresentable {
                         items.append(LogItem(Message: item))
                     }
                     errorcache = getlog(logitems: items)
-                    
+
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
                             let animation = CABasicAnimation(keyPath: "opacity")
@@ -529,8 +538,8 @@ struct NeoEditor: UIViewRepresentable {
                         let errorcache = errorcache
                         for item in errorcache {
                             if !claimed.contains(item.line) {
-                            if item.file == self.parent.filepath {
-                                switch item.level {
+                               if item.file == self.parent.filepath {
+                                    switch item.level {
                                         case 0:
                                             textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
                                             claimed.append(item.line)
