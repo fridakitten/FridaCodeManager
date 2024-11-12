@@ -58,14 +58,6 @@ struct NeoEditorConfig {
 }
 
 // restore class
-class restoreeditor {
-    var text: String = ""
-    var restorecache: [logstruct] = []
-    var filepath: String = ""
-}
-
-var restore = restoreeditor()
-
 struct NavigationBarViewControllerRepresentable: UIViewControllerRepresentable {
     @Binding var isPresented: Bool
     var filepath: String
@@ -135,21 +127,15 @@ struct NavigationBarViewControllerRepresentable: UIViewControllerRepresentable {
 
         let saveButton = ClosureBarButtonItem(title: "Save", style: .plain) {
             textView.endEditing(true)
-            restore.text = textView.text
-            restore.restorecache = errorcache
+            let fileURL = URL(fileURLWithPath: filepath)
+            do {
+                try textView.text.write(to: fileURL, atomically: true, encoding: .utf8)
+            } catch {
+            }
         }
 
         let closeButton = ClosureBarButtonItem(title: "Close", style: .plain) {
             textView.endEditing(true)
-            let fileURL = URL(fileURLWithPath: filepath)
-            do {
-                errorcache = restore.restorecache
-                try restore.text.write(to: fileURL, atomically: true, encoding: .utf8)
-            } catch {
-            }
-            restore.text = ""
-            restore.restorecache = []
-            restore.filepath = ""
             isPresented = false
         }
 
@@ -217,13 +203,10 @@ struct NeoEditor: UIViewRepresentable {
             do {
                 return try String(contentsOfFile: filepath)
             } catch {
-                print("[*] illegal filepath, couldnt load content\n")
                 sheet = false
                 return ""
             }
         }()
-        restore.text = textView.text
-        restore.restorecache = errorcache
         textView.delegate = context.coordinator
         context.coordinator.applyHighlighting(to: textView, with: NSRange(location: 0, length: textView.text.utf16.count))
         context.coordinator.runIntrospect(textView)
@@ -499,16 +482,12 @@ struct NeoEditor: UIViewRepresentable {
 
             debounceWorkItem?.cancel()
             debounceWorkItem = DispatchWorkItem { [self] in
-                let fileURL = URL(fileURLWithPath: self.parent.filepath)
 
-                do {
-                    try textView.text.write(to: fileURL, atomically: true, encoding: .utf8)
-                } catch {
-                }
+                let text: String = textView.text
 
                 DispatchQueue.global(qos: .userInitiated).async {
                     let project = self.parent.project
-                    let lines = extractLines(from: typecheck(project, filePath: self.parent.filepath))
+                    let lines = extractLines(from: typecheck(project, filePath: self.parent.filepath, Content: text))
                     var items: [LogItem] = []
                     for item in lines {
                         items.append(LogItem(Message: item))

@@ -24,7 +24,7 @@ import Foundation
 import SwiftUI
 import Darwin
 
-@discardableResult func typecheck(_ ProjectInfo: Project, filePath: String) -> String {
+@discardableResult func typecheck(_ ProjectInfo: Project, filePath: String, Content: String) -> String {
     let info: [String] = ["\(global_sdkpath)/\(ProjectInfo.SDK)","\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
     //SDKPath      info[0]
     //API Text     info[1]
@@ -49,6 +49,6 @@ import Darwin
     args += splitAndTrim(apiextension.build)
     args.append(filePath)
 
-    return typecheckC(args);
+    return typecheckC(args, Content);
 }
 

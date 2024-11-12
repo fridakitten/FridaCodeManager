@@ -1,3 +1,3 @@
 #include <Foundation/Foundation.h>
 
-NSString* typecheckC(NSArray *stringArray);
+NSString* typecheckC(NSArray *stringArray, NSString *content);
