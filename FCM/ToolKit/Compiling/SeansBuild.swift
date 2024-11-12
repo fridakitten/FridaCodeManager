@@ -97,7 +97,6 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         """
         #endif
     }
-    print(EXEC)
 
     let (CDEXEC) = ("cd '\(ProjectInfo.ProjectPath)'")
 

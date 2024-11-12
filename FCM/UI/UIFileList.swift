@@ -28,7 +28,7 @@ private let invalidFS: Set<Character> = ["/", "\\", ":", "*", "?", "\"", "<", ">
 let MacroMGR = MacroManager()
 
 private enum ActiveSheet: Identifiable {
-    case create, rename, remove, commit, impSheet
+    case create, rename, remove, commit, macro, impSheet
 
     var id: Int {
         hashValue
@@ -161,7 +161,7 @@ struct FileList: View {
             }
         }
         .refreshable {
-            await DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
                 withAnimation {
                     files = []
                 }
@@ -221,7 +221,7 @@ struct FileList: View {
                                     Button(role: .destructive, action: {
                                         MacroMGR.removeMacro(item)
                                         MacroMGR.savePlist()
-                                        if let index = macros.firstIndex(of: item) {
+                                        if let index = macros.firstIndex(of: item) {
                                             macros.remove(at: index)
                                         }
                                     }) {
@@ -352,7 +352,7 @@ struct FileList: View {
     }
 
     private func github_commit() -> Void {
-        let result = shell("cd \(directoryPath.path); git add .; git commit -m \"\(potextfield)\"", uid: 501, env: [])
+        let result = shell("cd \(project.ProjectPath); git add .; git commit -m \"\(potextfield)\"", uid: 501, env: [])
         if result == 0 {
             haptfeedback(1)
         } else {
@@ -364,7 +364,7 @@ struct FileList: View {
     private func create_selected() -> Void {
         if !potextfield.isEmpty && potextfield.rangeOfCharacter(from: CharacterSet(charactersIn: String(invalidFS))) == nil {
             if type == 0 {
-                var content = ""
+            var content = ""
                 switch gsuffix(from: potextfield) {
                     case "swift", "c", "m", "mm", "cpp", "h", "hpp":
                         content = authorgen(file: potextfield)
@@ -373,7 +373,7 @@ struct FileList: View {
                         break
                 }
                 cfile(atPath: "\(directoryPath.path)/\(potextfield)", withContent: content)
-            } else {
+            } else {
                 cfolder(atPath: "\(directoryPath.path)/\(potextfield)")
             }
             haptfeedback(1)
@@ -602,7 +602,7 @@ private func bindLoadFiles(directoryPath: URL, files: Binding<[URL]>) -> Void {
                 }
             }
 
-            for (fileExtension, groupedFiles) in fileGroups.sorted(by: { $0.key < $1.key }) {
+            for (_, groupedFiles) in fileGroups.sorted(by: { $0.key < $1.key }) {
                 for file in groupedFiles {
                     DispatchQueue.main.async {
                         if !files.wrappedValue.contains(file) {

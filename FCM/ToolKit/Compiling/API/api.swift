@@ -24,7 +24,7 @@ import Foundation
 
 func apicall(_ text: String,_ proj:Project, _ shell: Bool) -> String {
     var ret = text
-    ret = rsc(repla(ret.replacingOccurrences(of: "<apiver>", with: "0.2")
+    ret = rsc(repla(ret.replacingOccurrences(of: "<apiver>", with: "1.2")
              .replacingOccurrences(of: "<fcmver>", with: "\(global_version)")
              .replacingOccurrences(of: "<bundle>", with: "\(proj.BundleID)")
              .replacingOccurrences(of: "<app>", with: "\(proj.Executable)")
@@ -37,6 +37,7 @@ func apicall(_ text: String,_ proj:Project, _ shell: Bool) -> String {
              .replacingOccurrences(of: "<project-path>", with: "\(proj.ProjectPath)")
              .replacingOccurrences(of: "<theos-path>", with: "\(Bundle.main.bundlePath)/include")
              .replacingOccurrences(of: "<container-path>", with: "\(global_documents)/../")))
+
     return ret
 }
 

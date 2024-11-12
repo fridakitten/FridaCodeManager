@@ -240,7 +240,7 @@ struct buildView: View {
                         }
                     }
                 }
-            }
+            }
             ZStack {
                 Rectangle()
                     .foregroundColor(Color(UIColor.systemGray6))

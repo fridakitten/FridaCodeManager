@@ -499,11 +499,14 @@ struct NeoEditor: UIViewRepresentable {
                 }
 
                 DispatchQueue.global(qos: .userInitiated).async {
-                    let externlog = neolog_extern()
-                    externlog.start()
                     let project = self.parent.project
-                    _ = typecheck(project, true, nil, nil)
-                    externlog.reflushcache()
+                    let lines = extractLines(from: typecheck(project, filePath: self.parent.filepath))
+                    var items: [LogItem] = []
+                    for item in lines {
+                        items.append(LogItem(Message: item))
+                    }
+                    errorcache = getlog(logitems: items)
+                    
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
                             let animation = CABasicAnimation(keyPath: "opacity")

@@ -131,7 +131,7 @@ func GetProjectsBind(Projects: Binding<[Project]>) -> Void {
                             }
                         }
                     }
-                } catch {
+                } /*catch {
                     usleep(500)
                     print("Failed to process item: \(Item), error: \(error)")
                     DispatchQueue.main.async {
@@ -141,7 +141,7 @@ func GetProjectsBind(Projects: Binding<[Project]>) -> Void {
                             }
                         }
                     }
-                }
+                }*/
             }
 
             usleep(500)

@@ -90,7 +90,10 @@ struct BottomPopupView<Content: View>: View {
 
 extension UIDevice {
     var hasNotch: Bool {
-        let bottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
-        return bottom > 0
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
+            return false
+        }
+        let bottomInset = windowScene.windows.first?.safeAreaInsets.bottom ?? 0
+        return bottomInset > 0
     }
 }

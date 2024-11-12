@@ -23,7 +23,6 @@
 func api(_ text: String,_ Project:Project) -> ext {
     //api class
     let apiclass: String = tags(text,"api")
-    let ovwclass: String = tags(apiclass,"overwrite")
 
     //version Definition
     //lets you choose what version of the api you wanna use

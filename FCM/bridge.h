@@ -14,6 +14,7 @@
 #import <libfcm/proc.h>
 #import <libzip/libzip.h>
 #import <libdycall/dyexec.h>
+#import <libcheck/check.h>
 
 //sean16 architecture
 #import <libsean/ios.h>

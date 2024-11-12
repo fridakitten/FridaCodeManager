@@ -15,27 +15,27 @@ else
 SHELL := /bin/sh
 endif
 
-PLF := -LEssentials/lib/prebuild -LEssentials/lib/build
+PLF := -LEssentials/lib/prebuild -LEssentials/lib/build -L/var/jb/usr/lib/llvm-16/lib -lclang -lcheck -lzip -lsean
 
 # Targets
-all: LF := -lroot -lfcm  -lzip -lsean
+all: LF := -lroot -lfcm
 all: ARCH := iphoneos-arm64
 all: JB_PATH := /var/jb/
 all: TARGET := jailbreak
 all: greet compile_swift sign package_fs clean done
 
-roothide: LF := -lroot -lfcm  -lzip -lsean
+roothide: LF := -lroot -lfcm
 roothide: ARCH := iphoneos-arm64e
 roothide: JB_PATH := /
 roothide: TARGET := jailbreak
 roothide: greet compile_swift sign  package_fs clean done
 
-trollstore: LF := -lfcm -lzip -lsean
+trollstore: LF := -lfcm
 trollstore: TARGET := trollstore
 trollstore: greet compile_swift sign makechain ipa clean done
 
 # under construction!!!
-stock: LF := -lfcm -lzip -ldycall -lsean
+stock: LF := -lfcm -ldycall
 stock: TARGET := stock
 stock: greet compile_swift makechain_jailed ipa clean done
 
@@ -50,16 +50,17 @@ compile_swift:
 	@echo "\033[32mcompiling Essentials\033[0m"
 	@$(MAKE) -C Essentials all
 	@echo "\033[32mcompiling FridaCodeManager\033[0m"
-	@output=$$(swiftc -wmo -Xlinker -lswiftCore -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) $(PLF) $(LF) -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
+	@output=$$(swiftc -warnings-as-errors -wmo -Xlinker -lswiftCore -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) $(PLF) $(LF) -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo "$$output" | grep -v "remark:"; \
 		exit 1; \
 	fi
 	@$(MAKE) -C Essentials clean
 
+sign: linkfix
 sign:
 	@echo "\033[32msigning FridaCodeManager $(Version)\033[0m"
-	@ldid -S./FCM/debug.xml $(OUTPUT_DIR)/swifty
+	@ldid -S./FCM/ent.xml $(OUTPUT_DIR)/swifty
 
 package_fs:
 	@echo "\033[32mpackaging FridaCodeManager\033[0m"
@@ -92,8 +93,21 @@ ipa:
 	@cd Product && zip -rq FridaCodeManager.tipa ./Payload/*
 	@rm -rf Product/Payload
 
+linkfix:
+	# bypassing this stupid adhoc issue
+	cp /var/jb/usr/lib/llvm-16/lib/libclang.dylib $(OUTPUT_DIR)
+	cp /var/jb/usr/lib/llvm-16/lib/libLLVM.dylib $(OUTPUT_DIR)
+	# patch their rpath
+	@install_name_tool -add_rpath @loader_path $(OUTPUT_DIR)/libclang.dylib
+	@install_name_tool -add_rpath @loader_path $(OUTPUT_DIR)/libLLVM.dylib
+	@ldid -S./FCM/ent.xml $(OUTPUT_DIR)/libclang.dylib
+	@ldid -S./FCM/ent.xml $(OUTPUT_DIR)/libLLVM.dylib
+	# fixing link
+	@install_name_tool -add_rpath @loader_path $(OUTPUT_DIR)/swifty
+
 clean:
 	@rm -rf $(OUTPUT_DIR)/swifty .package
 
 done:
 	@echo "\033[32mall done! :)\033[0m"
+
