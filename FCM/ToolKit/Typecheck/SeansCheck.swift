@@ -47,7 +47,8 @@ import Darwin
     args.append("-target")
     args.append("arm64-apple-ios\(ProjectInfo.TG)")
     args += splitAndTrim(apiextension.build)
+    args.append(filePath)
 
-    return typecheckC(load(filePath), args, filepath);
+    return typecheckC(args);
 }
 
