@@ -8,6 +8,7 @@
 #ifndef BRIDGE_H
 #define BRIDGE_H
 
+#import <Foundation/Foundation.h>
 #import <libroot/libroot.h>
 #import <libfcm/fcm.h>
 #import <libfcm/fload.h>

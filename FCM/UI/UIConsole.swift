@@ -22,6 +22,9 @@ along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>.
 
 import SwiftUI
 
+let LogPipe = Pipe()
+var errorcache: [logstruct] = []
+
 private func getlevelback(_ level: Int) -> Color {
     switch level {
         case -1:

@@ -490,7 +490,6 @@ struct NeoEditor: UIViewRepresentable {
 
             debounceWorkItem?.cancel()
             debounceWorkItem = DispatchWorkItem { [self] in
-                killallchilds()
                 let fileURL = URL(fileURLWithPath: self.parent.filepath)
 
                 do {

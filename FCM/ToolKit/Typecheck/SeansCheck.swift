@@ -25,7 +25,29 @@ import SwiftUI
 import Darwin
 
 @discardableResult func typecheck(_ ProjectInfo: Project, filePath: String) -> String {
+    let info: [String] = ["\(global_sdkpath)/\(ProjectInfo.SDK)","\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
+    //SDKPath      info[0]
+    //API Text     info[1]
 
-    return typecheckC(["-isysroot", "\(global_sdkpath)/\(ProjectInfo.SDK)", filePath]);
+    let fileManager = FileManager.default
+
+    if !fileManager.fileExists(atPath: info[0]) {
+       return "\(filePath):1:0: error: target SDK is not installed";
+    }
+
+    var apiextension: ext = ext(build:"",build_sub: "",bef: "", aft:"", ign: "")
+    if !info[1].isEmpty {
+        apiextension = api(info[1], ProjectInfo)
+    }
+
+    var args: [String] = []
+    args.append("-D\(ProjectInfo.Macro)")
+    args.append("-isysroot")
+    args.append("\(global_sdkpath)/\(ProjectInfo.SDK)")
+    args.append("-target")
+    args.append("arm64-apple-ios\(ProjectInfo.TG)")
+    args += splitAndTrim(apiextension.build)
+
+    return typecheckC(load(filePath), args, filepath);
 }
 
