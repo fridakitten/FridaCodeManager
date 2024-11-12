@@ -1,7 +1,7 @@
 # Makefile
 SDK_PATH = SDK
 OUTPUT_DIR = Blueprint/FridaCodeManager.app
-VERSION := 1.6
+VERSION := 1.7
 BUILD_PATH := .package/
 SWIFT := $(shell find ./FCM/ -name '*.swift')
 
@@ -15,7 +15,7 @@ else
 SHELL := /bin/sh
 endif
 
-PLF := -LEssentials/lib/prebuild -LEssentials/lib/build -L/var/jb/usr/lib/llvm-16/lib -lclang -lcheck -lzip -lsean
+PLF := -LEssentials/lib/prebuild -LEssentials/lib/build -L/var/jb/usr/lib/llvm-16/lib -lclang-16 -lcheck -lzip -lsean
 
 # Targets
 all: LF := -lroot -lfcm
@@ -71,9 +71,7 @@ package_fs:
 	@find . -type f -name ".DS_Store" -delete
 	@cp -r Blueprint/FridaCodeManager.app/* $(BUILD_PATH)$(JB_PATH)Applications/FridaCodeManager.app
 	@mkdir -p $(BUILD_PATH)DEBIAN
-	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: Full fledged Xcode-like IDE for iOS\nDepends: swift, clang, ldid\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FCCT\nAuthor: FCCT\nSection: Utilities\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
-	@echo "echo "[*] fixing libclang signature"; ldid -e /var/jb/usr/lib/llvm-16/bin/clang > /tmp/signature.xml; ldid -S/tmp/signature.xml /var/jb/usr/lib/llvm-16/lib/libclang.dylib" > $(BUILD_PATH)DEBIAN/preinst
-	@chmod 755 $(BUILD_PATH)DEBIAN/preinst
+	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: Full fledged Xcode-like IDE for iOS\nDepends: swift, clang, ldid, git, libclang1-16\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FCCT\nAuthor: FCCT\nSection: Utilities\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
 	@-rm -rf Product/*
 	@dpkg-deb -b $(BUILD_PATH) Product/FridaCodeManager.deb
 
