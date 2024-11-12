@@ -15,7 +15,7 @@ else
 SHELL := /bin/sh
 endif
 
-PLF := -LEssentials/lib/prebuild -LEssentials/lib/build -L/var/jb/usr/lib/llvm-16/lib -lclang-16 -lcheck -lzip -lsean
+PLF := -LEssentials/lib/prebuild -LEssentials/lib/build -L/var/jb/usr/lib/llvm-14/lib -lclang-14 -lcheck -lzip -lsean
 
 # Targets
 all: LF := -lroot -lfcm
@@ -71,7 +71,7 @@ package_fs:
 	@find . -type f -name ".DS_Store" -delete
 	@cp -r Blueprint/FridaCodeManager.app/* $(BUILD_PATH)$(JB_PATH)Applications/FridaCodeManager.app
 	@mkdir -p $(BUILD_PATH)DEBIAN
-	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: Full fledged Xcode-like IDE for iOS\nDepends: swift, clang, ldid, git, libclang1-16\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FCCT\nAuthor: FCCT\nSection: Utilities\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
+	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: Full fledged Xcode-like IDE for iOS\nDepends: swift, clang-14, ldid, git, libclang1-16\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FCCT\nAuthor: FCCT\nSection: Utilities\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
 	@-rm -rf Product/*
 	@dpkg-deb -b $(BUILD_PATH) Product/FridaCodeManager.deb
 
@@ -95,6 +95,7 @@ ipa:
 
 linkfix:
 	@install_name_tool -add_rpath /var/jb/usr/lib/llvm-16/lib $(OUTPUT_DIR)/swifty
+	@install_name_tool -add_rpath @loader_path $(OUTPUT_DIR)/swifty
 
 clean:
 	@rm -rf $(OUTPUT_DIR)/swifty $(OUTPUT_DIR)/*.dylib .package

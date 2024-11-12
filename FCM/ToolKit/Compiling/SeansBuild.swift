@@ -73,7 +73,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         #if jailbreak
         if !MFiles.isEmpty {
             EXEC += MFiles.map { mFile in
-                "clang -D\(ProjectInfo.Macro) -fmodules \(apiextension.build_sub) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' ; "
+                "clang-14 -D\(ProjectInfo.Macro) -fmodules \(apiextension.build_sub) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) -o '\(info[4])/\(UUID()).o' ; "
             }.joined()
         }
         EXEC += """
@@ -87,12 +87,12 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     } else {
         #if jailbreak
         EXEC += """
-        clang -D\(ProjectInfo.Macro) \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
+        clang-14 -D\(ProjectInfo.Macro) \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
         -o '\(info[1])/\(ProjectInfo.Executable)'
         """
         #elseif trollstore
         EXEC += """
-        clang-16 -D\(ProjectInfo.Macro) \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
+        clang-14 -D\(ProjectInfo.Macro) \(frameflags) -fmodules \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
         -o '\(info[1])/\(ProjectInfo.Executable)'
         """
         #endif
@@ -189,11 +189,9 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         var result: Int = 0
         #if !stock
         if erase {
-            killTaskWithBundleID(ProjectInfo.BundleID)
+            killTaskWithProcessName(ProjectInfo.Executable)
             result = shell("\(Bundle.main.bundlePath)/tshelper install '\(ProjectInfo.ProjectPath)/ts.ipa' > /dev/null 2>&1", uid: 0)
             _ = climessenger("install--stage","TrollStore Helper returned \(String(result))")
-            messenger(status,progress,"cooldown", 0.7)
-            sleep(1)
         }
         #endif
         _ = rm(info[0])

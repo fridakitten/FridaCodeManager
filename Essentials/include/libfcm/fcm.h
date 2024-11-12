@@ -27,5 +27,6 @@ NSString *gcpu();
 NSString* contgen(void);
 
 void killTaskWithBundleID(NSString *bundleID);
+void killTaskWithProcessName(NSString *processName);
 
 #endif // FCM_H

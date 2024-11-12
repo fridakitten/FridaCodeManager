@@ -5,7 +5,7 @@ fi
 mkdir -p .tmp .tmp/procursus .tmp/toolchain .tmp/toolchain/bin .tmp/toolchain/lib
 
 # toolchain packages download #
-packages=("coreutils" "libreadline8" "libiosexec1" "libncursesw6" "libintl8" "libssl3" "libedit0" "libzstd1" "libxar1" "dash" "ld64" "libuuid16" "libtapi" "odcctools" "libllvm16" "libclang-cpp16" "clang-16" "libclang-common-16-dev" "ldid" "zip" "unzip" "libplist3" "shell-cmds" "libc-ares2" "libnghttp2-14" "libidn2-0" "librtmp1" "libgmp10" "libgnutls30" "libhogweed6" "libnettle8" "libssh2-1" "libssl3" "libbrotli1" "libunistring5" "libp11-kit0" "libtasn1-6" "libffi8")
+packages=("coreutils" "libreadline8" "libiosexec1" "libncursesw6" "libintl8" "libssl3" "libedit0" "libzstd1" "libxar1" "dash" "ld64" "libuuid16" "libtapi" "odcctools" "libllvm14" "libclang-cpp14" "clang-14" "libclang-common-14-dev" "ldid" "zip" "unzip" "libplist3" "shell-cmds" "libc-ares2" "libnghttp2-14" "libidn2-0" "librtmp1" "libgmp10" "libgnutls30" "libhogweed6" "libnettle8" "libssh2-1" "libssl3" "libbrotli1" "libunistring5" "libp11-kit0" "libtasn1-6" "libffi8")
 
 for package in "${packages[@]}"; do
     echo -e "\e[38;5;208mdownloading $package\e[0m"
@@ -45,11 +45,11 @@ done
 
 ## Special Stuff ##
 # copy patched llvm to toolchain
-cp $ROOT_LIB/llvm-16/bin/clang-16 $CHAIN_BIN/clang-16
-rm $ROOT_LIB/llvm-16/lib/libLLVM-16.dylib
-cp -rL $ROOT_LIB/llvm-16/lib/*.dylib $CHAIN_LIB
-rm -rf $ROOT_LIB/llvm-16/lib/clang/16.0.0/lib
-cp -r $ROOT_LIB/llvm-16/lib/clang $CHAIN_LIB
+cp $ROOT_LIB/llvm-14/bin/clang-14 $CHAIN_BIN/clang-14
+rm $ROOT_LIB/llvm-14/lib/libLLVM-14.dylib
+cp -rL $ROOT_LIB/llvm-14/lib/*.dylib $CHAIN_LIB
+rm -rf $ROOT_LIB/llvm-14/lib/clang/14.0.0/lib
+cp -r $ROOT_LIB/llvm-14/lib/clang $CHAIN_LIB
 
 ## @RPATH PATCH ##
 echo -e "\e[38;5;208mpatching @rpath\e[0m"
