@@ -72,6 +72,8 @@ package_fs:
 	@cp -r Blueprint/FridaCodeManager.app/* $(BUILD_PATH)$(JB_PATH)Applications/FridaCodeManager.app
 	@mkdir -p $(BUILD_PATH)DEBIAN
 	@echo "Package: com.sparklechan.swifty\nName: FridaCodeManager\nVersion: $(VERSION)\nArchitecture: $(ARCH)\nDescription: Full fledged Xcode-like IDE for iOS\nDepends: swift, clang, ldid\nIcon: https://raw.githubusercontent.com/fridakitten/FridaCodeManager/main/Blueprint/FridaCodeManager.app/AppIcon.png\nConflicts: com.sparklechan.sparkkit\nMaintainer: FCCT\nAuthor: FCCT\nSection: Utilities\nTag: role::hacker" > $(BUILD_PATH)DEBIAN/control
+	@echo "echo "[*] fixing libclang signature"; ldid -e /var/jb/usr/lib/llvm-16/bin/clang > /tmp/signature.xml; ldid -S/tmp/signature.xml /var/jb/usr/lib/llvm-16/lib/libclang.dylib" > $(BUILD_PATH)DEBIAN/preinst
+	@chmod 755 $(BUILD_PATH)DEBIAN/preinst
 	@-rm -rf Product/*
 	@dpkg-deb -b $(BUILD_PATH) Product/FridaCodeManager.deb
 
@@ -94,16 +96,7 @@ ipa:
 	@rm -rf Product/Payload
 
 linkfix:
-	# bypassing this stupid adhoc issue
-	cp /var/jb/usr/lib/llvm-16/lib/libclang.dylib $(OUTPUT_DIR)
-	cp /var/jb/usr/lib/llvm-16/lib/libLLVM.dylib $(OUTPUT_DIR)
-	# patch their rpath
-	@install_name_tool -add_rpath @loader_path $(OUTPUT_DIR)/libclang.dylib
-	@install_name_tool -add_rpath @loader_path $(OUTPUT_DIR)/libLLVM.dylib
-	@ldid -S./FCM/ent.xml $(OUTPUT_DIR)/libclang.dylib
-	@ldid -S./FCM/ent.xml $(OUTPUT_DIR)/libLLVM.dylib
-	# fixing link
-	@install_name_tool -add_rpath @loader_path $(OUTPUT_DIR)/swifty
+	@install_name_tool -add_rpath /var/jb/usr/lib/llvm-16/lib $(OUTPUT_DIR)/swifty
 
 clean:
 	@rm -rf $(OUTPUT_DIR)/swifty $(OUTPUT_DIR)/*.dylib .package
