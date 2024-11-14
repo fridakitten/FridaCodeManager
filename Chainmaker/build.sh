@@ -5,7 +5,7 @@ fi
 mkdir -p .tmp .tmp/procursus .tmp/toolchain .tmp/toolchain/bin .tmp/toolchain/lib
 
 # toolchain packages download #
-packages=("coreutils" "libreadline8" "libiosexec1" "libncursesw6" "libintl8" "libssl3" "libedit0" "libzstd1" "libxar1" "dash" "ld64" "libuuid16" "libtapi" "odcctools" "libllvm14" "libclang-cpp14" "clang-14" "libclang-common-14-dev" "ldid" "zip" "unzip" "libplist3" "shell-cmds" "libc-ares2" "libnghttp2-14" "libidn2-0" "librtmp1" "libgmp10" "libgnutls30" "libhogweed6" "libnettle8" "libssh2-1" "libssl3" "libbrotli1" "libunistring5" "libp11-kit0" "libtasn1-6" "libffi8")
+packages=("coreutils" "libreadline8" "libiosexec1" "libncursesw6" "libintl8" "libssl3" "libedit0" "libzstd1" "libxar1" "dash" "ld64" "libuuid16" "libtapi" "odcctools" "libllvm14" "libclang-cpp14" "libclang1-14" "clang-14" "libclang-common-14-dev" "ldid" "zip" "unzip" "libplist3" "shell-cmds" "libc-ares2" "libnghttp2-14" "libidn2-0" "librtmp1" "libgmp10" "libgnutls30" "libhogweed6" "libnettle8" "libssh2-1" "libssl3" "libbrotli1" "libunistring5" "libp11-kit0" "libtasn1-6" "libffi8")
 
 for package in "${packages[@]}"; do
     echo -e "\e[38;5;208mdownloading $package\e[0m"

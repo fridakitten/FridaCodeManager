@@ -60,7 +60,7 @@ compile_swift:
 sign: linkfix
 sign:
 	@echo "\033[32msigning FridaCodeManager $(Version)\033[0m"
-	@ldid -S./FCM/ent.xml $(OUTPUT_DIR)/swifty
+	@ldid -S./FCM/debug.xml $(OUTPUT_DIR)/swifty
 
 package_fs:
 	@echo "\033[32mpackaging FridaCodeManager\033[0m"
@@ -96,6 +96,7 @@ ipa:
 linkfix:
 	@install_name_tool -add_rpath /var/jb/usr/lib/llvm-16/lib $(OUTPUT_DIR)/swifty
 	@install_name_tool -add_rpath @loader_path $(OUTPUT_DIR)/swifty
+	@install_name_tool -add_rpath @loader_path/toolchain/lib $(OUTPUT_DIR)/swifty
 
 clean:
 	@rm -rf $(OUTPUT_DIR)/swifty $(OUTPUT_DIR)/*.dylib .package

@@ -142,7 +142,7 @@ struct FileList: View {
                         }
                         Section {
                             Button( action: {
-                                share(url: item)
+                                share(url: item, remove: false)
                             }) {
                                 Label("Share", systemImage: "square.and.arrow.up.fill")
                             }

@@ -115,7 +115,7 @@ struct ProjectView: View {
                 DismissAlert {
                     let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
                     if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).ipa") {
-                        share(url: stabURL)
+                        share(url: stabURL, remove: true)
                     }
                 }
             } else { DismissAlert() }
@@ -129,7 +129,7 @@ struct ProjectView: View {
                 DismissAlert {
                     let modname = Project.Executable.replacingOccurrences(of: " ", with: "_")
                     if let stabURL = URL(string: "file://\(global_container)/tmp/\(modname).sproj") {
-                        share(url: stabURL)
+                        share(url: stabURL, remove: true)
                     }
                 }
             } else { DismissAlert() }
@@ -300,28 +300,4 @@ func copyToClipboard(text: String, alert: Bool? = true) {
     if (alert ?? true) {ShowAlert(UIAlertController(title: "Copied", message: "", preferredStyle: .alert))}
     UIPasteboard.general.string = text
     if (alert ?? true) {DismissAlert()}
-}
-
-func share(url: URL) -> Void {
-    let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-    activityViewController.modalPresentationStyle = .popover
-
-    DispatchQueue.main.async {
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            if let rootViewController = windowScene.windows.first?.rootViewController {
-                if let popoverController = activityViewController.popoverPresentationController {
-                    popoverController.sourceView = rootViewController.view
-                    popoverController.sourceRect = CGRect(x: rootViewController.view.bounds.midX,
-                                                      y: rootViewController.view.bounds.midY,
-                                                      width: 0, height: 0)
-                    popoverController.permittedArrowDirections = []
-                }
-                rootViewController.present(activityViewController, animated: true, completion: nil)
-            } else {
-                print("No root view controller found.")
-            }
-        } else {
-            print("No window scene found.")
-        }
-    }
 }

@@ -58,7 +58,7 @@ class LogSystem: ObservableObject {
             DispatchQueue.main.sync {
                 let fileURL: URL = URL(fileURLWithPath: path)
                 print(fileURL.path)
-                share(url: fileURL)
+                share(url: fileURL, remove: true)
             }
         }
     }
@@ -68,13 +68,15 @@ class LogSystem: ObservableObject {
     }
 }
 
-func share(url: URL) -> Void {
+func share(url: URL, remove: Bool = false) -> Void {
     let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
     activityViewController.modalPresentationStyle = .popover
-    activityViewController.completionWithItemsHandler = { activity, success, items, error in
-        do {
-            try FileManager.default.removeItem(at: url)
-        } catch {
+        if remove {
+        activityViewController.completionWithItemsHandler = { activity, success, items, error in
+            do {
+                try FileManager.default.removeItem(at: url)
+            } catch {
+            }
         }
     }
 
