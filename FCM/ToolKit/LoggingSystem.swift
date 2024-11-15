@@ -16,7 +16,7 @@ let mainlogSystem: LogSystem = LogSystem()
 
 class LogSystem: ObservableObject {
     private let loggingPipe = Pipe()
-    @Published private(set) var log: [String] = []
+    @Published private(set) var log: [LogItem] = []
     
     private let logQueue = DispatchQueue(label: "LogSystem.logQueue")
     
@@ -38,7 +38,7 @@ class LogSystem: ObservableObject {
     
     private func addLog(_ item: String) {
         DispatchQueue.main.async {
-            self.log.append(item)
+            self.log.append(LogItem(Message: item))
             if self.log.count > 100 {
                 self.log.removeFirst(self.log.count - 100)
             }
@@ -48,7 +48,15 @@ class LogSystem: ObservableObject {
     func dumpLog() {
         logQueue.async {
             let path: String = "\(NSTemporaryDirectory())\(UUID())-logdump.txt"
-            let logContent = self.log.joined(separator: "")
+            let logContent = {
+                var content: String = ""
+                for item in self.log {
+                    content += item.Message
+                }
+
+                return content
+            }()
+
             do {
                 try logContent.write(toFile: path, atomically: true, encoding: .utf8)
             } catch {

@@ -41,8 +41,7 @@ private func getlevelback(_ level: Int) -> Color {
 }
 
 struct NeoLog: View {
-   @Binding var LogItems: [LogItem]
-   @Binding var LogCache: [LogItem]
+   @StateObject var logsys: LogSystem = mainlogSystem
    @Binding var buildv: Bool
    @Binding var LogViews: [logstruct]
    @State var type: Int = 0
@@ -58,9 +57,9 @@ struct NeoLog: View {
        UIInit(type: 1)
        _buildv = buildv
        errorcache = []
-       _LogItems = LogItems
+       //_LogItems = LogItems
        _LogViews = LogViews
-       _LogCache = LogCache
+       //_LogCache = LogCache
        self.action = action
    }
 
@@ -77,7 +76,7 @@ struct NeoLog: View {
                 } else {
                     ScrollView {
                         Spacer().frame(height: 10)
-                        ForEach(LogCache) { item in
+                        ForEach(logsys.log) { item in
                             HStack {
                                 Text(highlightMessage(item.Message.lineFix()))
                                     .font(.system(size: 10, design: .monospaced))
@@ -88,29 +87,18 @@ struct NeoLog: View {
                 }
             }
             .onAppear {
-                LogPipe.fileHandleForReading.readabilityHandler = { fileHandle in
-                    let logData = fileHandle.availableData
-                    if !logData.isEmpty, let logString = String(data: logData, encoding: .utf8) {
-                        LogItems.append(LogItem(Message: logString))
-                    }
-                }
-
-                setvbuf(stdout, nil, _IOLBF, 0)
-                setvbuf(stderr, nil, _IOLBF, 0)
-
-                dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
-                dup2(LogPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
-
+                // log system is always active
+                mainlogSystem.clearLog()
                 action()
             }
-            .onChange(of: LogItems) { _ in
+            /*.onChange(of: LogItems) { _ in
                 LogCache += LogItems
                 let tmpcache = getlog(logitems: LogItems)
                 LogItems = []
                 withAnimation {
                     LogViews += tmpcache
                 }
-            }
+            }*/
             .navigationTitle("Log")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
