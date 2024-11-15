@@ -41,12 +41,28 @@ import Darwin
     }
 
     var args: [String] = []
+
+    // selected macro
     args.append("-D\(ProjectInfo.Macro)")
+
+    // sdk root
     args.append("-isysroot")
     args.append("\(global_sdkpath)/\(ProjectInfo.SDK)")
+
+    // include paths
+    args.append("-I\(Bundle.main.bundlePath)/include")
+    #if jailbreak
+    args.append("-I\(jbroot)/usr/lib/clang/14.0.0/include")
+    #endif
+
+    // what we are building for
     args.append("-target")
     args.append("arm64-apple-ios\(ProjectInfo.TG)")
+
+    // what the api extension wants to extend
     args += splitAndTrim(apiextension.build)
+
+    // the file path we wanna typecheck
     args.append(filePath)
 
     return typecheckC(args, Content);

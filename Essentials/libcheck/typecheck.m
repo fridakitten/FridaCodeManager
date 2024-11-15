@@ -74,5 +74,9 @@ NSString* typecheckC(NSArray *stringArray, NSString *content) {
         free(args[i]);
     }
 
+    #if debug
+    printf("[libcheck] %s\n", [result UTF8String]);
+    #endif
+
     return result;
 }
