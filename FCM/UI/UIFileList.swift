@@ -263,7 +263,13 @@ struct FileList: View {
                                             DispatchQueue.global(qos: .utility).async {
                                                 guard let username = getGithubUsername(fromToken: token) else { return }
                                                 let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
-                                                _ = shell("cd \(project.ProjectPath); git remote set-url origin \(remoteUrl); git push; git remote set-url origin https://github.com/\(username)/\(project.Executable).git", uid: 501, env: [])
+                                                _ = shell("""
+                                                             cd \(project.ProjectPath);
+                                                             git config --global http.postBuffer 157286400;
+                                                             git remote set-url origin \(remoteUrl);
+                                                             git push;
+                                                             git remote set-url origin https://github.com/\(username)/\(project.Executable).git;
+                                                         """, uid: 501, env: [])
                                             }
                                         }
                                         Button("Commit") {
