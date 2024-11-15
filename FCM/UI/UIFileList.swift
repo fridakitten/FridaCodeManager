@@ -232,11 +232,11 @@ struct FileList: View {
                                                 if result == 0 {
                                                     guard var username = getGithubUsername(fromToken: token) else { return }
                                                     username = username.trimmingCharacters(in: .whitespacesAndNewlines)
-                                                    print(username)
                                                     let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
                                                     shell("""
                                                          cd \(project.ProjectPath);
                                                          git config --global init.defaultBranch master;
+                                                         git config --global http.postBuffer 157286400;
                                                          git init;
                                                          git branch -M master
                                                          git add .;
@@ -263,17 +263,29 @@ struct FileList: View {
                                             DispatchQueue.global(qos: .utility).async {
                                                 guard let username = getGithubUsername(fromToken: token) else { return }
                                                 let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
-                                                _ = shell("""
-                                                             cd \(project.ProjectPath);
-                                                             git config --global http.postBuffer 157286400;
-                                                             git remote set-url origin \(remoteUrl);
-                                                             git push;
-                                                             git remote set-url origin https://github.com/\(username)/\(project.Executable).git;
-                                                         """, uid: 501, env: [])
+                                                shell("""
+                                                         cd \(project.ProjectPath);
+                                                         git config http.postBuffer 157286400;
+                                                         git remote set-url origin \(remoteUrl);
+                                                         git push;
+                                                         git remote set-url origin https://github.com/\(username)/\(project.Executable).git;
+                                                     """, uid: 501, env: [])
                                             }
                                         }
                                         Button("Commit") {
                                             activeSheet = .commit
+                                        }
+                                        Section {
+                                            Menu {
+                                                Button("Reset") {
+                                                    shell("""
+                                                              cd \(project.ProjectPath);
+                                                              git reset --hard;
+                                                          """)
+                                                }
+                                            } label: {
+                                                Text("Advanced")
+                                            }
                                         }
                                     }
                                 } label: {
