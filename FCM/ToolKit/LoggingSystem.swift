@@ -46,24 +46,25 @@ class LogSystem: ObservableObject {
     }
     
     func dumpLog() {
+        let items = self.log
+    
         logQueue.async {
             let path: String = "\(NSTemporaryDirectory())\(UUID())-logdump.txt"
             let logContent = {
                 var content: String = ""
-                for item in self.log {
+                for item in items {
                     content += item.Message
                 }
 
                 return content
             }()
 
-            do {
-                try logContent.write(toFile: path, atomically: true, encoding: .utf8)
-            } catch {
-                print("Failed to write log to \(path): \(error)")
-            }
-            
             DispatchQueue.main.sync {
+                do {
+                    try logContent.write(toFile: path, atomically: true, encoding: .utf8)
+                } catch {
+                    print("Failed to write log to \(path): \(error)")
+                }
                 let fileURL: URL = URL(fileURLWithPath: path)
                 print(fileURL.path)
                 share(url: fileURL, remove: true)
