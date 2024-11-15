@@ -230,9 +230,20 @@ struct FileList: View {
                                             DispatchQueue.global(qos: .utility).async {
                                                 let result = createGitHubRepository(repositoryName: project.Executable, isPrivate: true, githubToken: token)
                                                 if result == 0 {
-                                                    guard let username = getGithubUsername(fromToken: token) else { return }
+                                                    guard var username = getGithubUsername(fromToken: token) else { return }
+                                                    username = username.trimmingCharacters(in: .whitespacesAndNewlines)
+                                                    print(username)
                                                     let remoteUrl = "https://\(username):\(token)@github.com/\(username)/\(project.Executable).git"
-                                                    let result = shell("cd \(project.ProjectPath); git init; git branch -M main; git add .; git commit -m \"Initial Commit\"; git remote add origin \(remoteUrl); git push -u origin main; git remote set-url origin https://github.com/\(username)/\(project.Executable).git", uid: 501, env: [])
+                                                    shell("""
+                                                         cd \(project.ProjectPath);
+                                                         git config --global init.defaultBranch master;
+                                                         git init;
+                                                         git branch -M master
+                                                         git add .;
+                                                         git commit -m \"Initial Commit\";
+                                                         git remote add origin \(remoteUrl);
+                                                         git push --set-upstream origin master
+                                                    """, uid: 501, env: [])
                                                     if result == 0 {
                                                         DispatchQueue.main.sync {
                                                             DismissAlert {
