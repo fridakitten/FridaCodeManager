@@ -59,8 +59,11 @@ struct Settings: View {
                         Label("SDK Hub", systemImage: "arrow.down")
                     }
                     NavigationLink(destination: SFSymbolView()) {
-                    Label("SFSymbols", systemImage: "square.grid.3x3.fill")
-                }
+                        Label("SFSymbols", systemImage: "square.grid.3x3.fill")
+                    }
+                    NavigationLink(destination: DumpLogBundleMain()) {
+                        Label("DumpLog", systemImage: "doc.fill")
+                    }
             }
         }
         .listStyle(InsetGroupedListStyle())
