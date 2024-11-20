@@ -87,18 +87,15 @@ struct NeoLog: View {
                 }
             }
             .onAppear {
-                // log system is always active
                 mainlogSystem.clearLog()
                 action()
             }
-            /*.onChange(of: LogItems) { _ in
-                LogCache += LogItems
-                let tmpcache = getlog(logitems: LogItems)
-                LogItems = []
+            .onChange(of: logsys.log) { _ in
+                let tmpcache = getlog(logitems: logsys.log)
                 withAnimation {
-                    LogViews += tmpcache
+                    LogViews = tmpcache
                 }
-            }*/
+            }
             .navigationTitle("Log")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
