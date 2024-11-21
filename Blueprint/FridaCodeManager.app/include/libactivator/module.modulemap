@@ -1,8 +1,0 @@
-module Activator {
-  umbrella header "libactivator.h"
-
-  link "activator"
-
-  export *
-  module * { export * }
-}

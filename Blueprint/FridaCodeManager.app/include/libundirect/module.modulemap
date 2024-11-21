@@ -1,7 +1,0 @@
-module libundirect {
-  header "libundirect.h"
-
-  link "undirect"
-
-  export *
-}

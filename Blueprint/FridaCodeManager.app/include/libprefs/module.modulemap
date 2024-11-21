@@ -1,8 +1,0 @@
-module Prefs {
-  umbrella header "prefs.h"
-
-  link "prefs"
-
-  export *
-  module * { export * }
-}
