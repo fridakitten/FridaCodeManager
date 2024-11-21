@@ -1,23 +1,12 @@
 # FridaCodeManager
 
-## Notes
-I made this project cause my parents took my mac and I still did wanted to code and AppInstaller iOS was the first person that helped me making this project, without them this would not exist so give him a follow!
+## Purpose
+FridaCodeManager was made to offer a easy way to code, compile and install iOS apps on jailbroken iPhones.
 
 ## Compatibility
-iOS 15.0 - 17.0 was offcially tested on both, roothide and rootless
+The app is fully supported on rootless and roothide jailbroken iOS and iPadOS from version 15.0 up to 17.6.1. It's also partially supported on [Trollstore](https://github.com/opa334/TrollStore) iDevices from version 15.0 up to 17.6.1. A version of FridaCodeManager supporting usual iDevices is in progress.
 
-## Compiling
-Its meant to be compiled on jailbroken iOS devices in terminal,
-compiling it using macos can cause certain anomalies with UI, etc
-
-### General
-You need `swift`,`clang` and `make`. Run `make all` to compile and package it as a .deb
-To compile package for roothide use `make roothide`
-
-### Special
-To compile FCMTS(TrollStore Edition) you must have a rootless jailbroken device for the Chainmaker. You need `swift`,`clang`,`make` and `odcctools`. Use `make trollstore` in that case.
-
-Was successfully compiled on
+## Tested Devices
 </br>
     <table>
         <tr>
@@ -44,17 +33,21 @@ Was successfully compiled on
             <td>iPhone 14 Pro</td>
             <td>iOS 17.0</td>
         </tr>
+        <tr>
+            <td>iPad 7th gen</td>
+            <td>iPadOS 17.6.1</td>
+        </tr>
     </table>
 </br>
 
 ## Credits
-- FridaDEV: [https://github.com/fridakitten](https://github.com/fridakitten)
-- AppInstallerIOS: [https://github.com/AppInstalleriOSGH](https://github.com/AppInstalleriOSGH)
-- meighler: [https://github.com/meighler](https://github.com/meighler)
-- HAHALOSAH: [https://github.com/HAHALOSAH](https://github.com/HAHALOSAH)
-- MudSplasher: [https://github.com/MudSplasher](https://github.com/MudSplasher)
-- Opa334: [https://github.com/Opa334](https://github.com/Opa334)
-- Theos: [https://github.com/theos](https://github.com/theos)
-- RootHideDev: [https://github.com/roothide](https://github.com/roothide)
-- Speedyfriend67: [https://github.com/speedyfriend433](https://github.com/speedyfriend433)
-- Burhan Rana: [https://github.com/burhangee](https://github.com/burhangee)
+- SeanIsNotAConstant: [https://github.com/fridakitten](https://github.com/fridakitten)
+- AppInstalleriOS: [https://github.com/AppInstalleriOSGH](https://github.com/AppInstalleriOSGH)
+- RootHideDev: [https://github.com/roothider](https://github.com/roothider)
+- Manuel Chakravarty: [https://github.com/mchakravarty](https://github.com/mchakravarty)
+- Ayame Yumemi: [https://github.com/ayayame09](https://github.com/ayayame09)
+
+- Opa334: [https://github.com/opa334](https://github.com/opa334)
+- TheOS: [https://github.com/theos](https://github.com/theos)
+
+- Chariz: [https://github.com/chariz](https://github.com/chariz)
