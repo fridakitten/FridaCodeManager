@@ -15,7 +15,7 @@ else
 SHELL := /bin/sh
 endif
 
-PLF := -LEssentials/lib/prebuild -LEssentials/lib/build -L/var/jb/usr/lib/llvm-14/lib -lclang-14 -lcheck -lzip -lsean
+PLF := -LEssentials/lib/prebuild -LEssentials/lib/build -L/var/jb/usr/lib/llvm-16/lib -lclang-16 -lcheck -lzip -lsean
 
 # Targets
 all: LF := -lroot -lfcm

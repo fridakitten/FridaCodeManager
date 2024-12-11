@@ -18,6 +18,14 @@
 
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
+
+  ______    _     _         _____        __ _                           ______                    _       _   _
+ |  ___|  (_)   | |       /  ___|      / _| |                          |  ___|                  | |     | | (_)
+ | |_ _ __ _  __| | __ _  \ `--.  ___ | |_| |___      ____ _ _ __ ___  | |_ ___  _   _ _ __   __| | __ _| |_ _  ___  _ __
+ |  _| '__| |/ _` |/ _` |  `--. \/ _ \|  _| __\ \ /\ / / _` | '__/ _ \ |  _/ _ \| | | | '_ \ / _` |/ _` | __| |/ _ \| '_ \
+ | | | |  | | (_| | (_| | /\__/ / (_) | | | |_ \ V  V / (_| | | |  __/ | || (_) | |_| | | | | (_| | (_| | |_| | (_) | | | |
+ \_| |_|  |_|\__,_|\__,_| \____/ \___/|_|  \__| \_/\_/ \__,_|_|  \___| \_| \___/ \__,_|_| |_|\__,_|\__,_|\__|_|\___/|_| |_|
+ Founded by. Sean Boleslawski, Benjamin Hornbeck and Lucienne Salim in 2023
  */ 
 
 import Foundation
