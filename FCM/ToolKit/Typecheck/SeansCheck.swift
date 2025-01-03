@@ -33,7 +33,7 @@ import SwiftUI
 import Darwin
 
 @discardableResult func typecheck(_ ProjectInfo: Project, filePath: String, Content: String) -> String {
-    let info: [String] = ["\(global_sdkpath)/\(ProjectInfo.SDK)","\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
+    /*let info: [String] = ["\(global_sdkpath)/\(ProjectInfo.SDK)","\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
     //SDKPath      info[0]
     //API Text     info[1]
 
@@ -73,6 +73,6 @@ import Darwin
     // the file path we wanna typecheck
     args.append(filePath)
 
-    return typecheckC(args, Content);
+    return typecheckC(args, Content);*/
+    return ""
 }
-
