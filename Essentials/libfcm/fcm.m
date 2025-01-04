@@ -233,10 +233,10 @@ void killTaskWithProcessName(NSString *processName)
             NSString *executableName = [executablePath lastPathComponent];
 
             if ([executableName isEqualToString:processName]) {
-                NSLog(@"Found process with PID: %d for process name: %@", pid, processName);
+                //NSLog(@"Found process with PID: %d for process name: %@", pid, processName);
 
                 if (kill(pid, SIGKILL) == 0) {
-                    NSLog(@"Successfully killed process with PID: %d", pid);
+                    //NSLog(@"Successfully killed process with PID: %d", pid);
                 } else {
                     perror("kill");
                 }
