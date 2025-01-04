@@ -111,11 +111,11 @@ struct NeoLog: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
-                        Button("Issue Navigator") {
-                            type = 0
-                        }
                         Button("Log") {
                             type = 1
+                        }
+                        Button("Issue Navigator") {
+                            type = 0
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
