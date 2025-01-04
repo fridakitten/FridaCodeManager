@@ -52,7 +52,7 @@ struct NeoLog: View {
    @StateObject var logsys: LogSystem = mainlogSystem
    @Binding var buildv: Bool
    @Binding var LogViews: [logstruct]
-   @State var type: Int = 0
+   @State var type: Int = 1
    let action: () -> Void
 
    init(
