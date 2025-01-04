@@ -16,6 +16,7 @@
 #import <libzip/libzip.h>
 #import <libdycall/dyexec.h>
 #import <libcheck/check.h>
+#import <libserver/server.h>
 
 //sean16 architecture
 #import <libsean/ios.h>

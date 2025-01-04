@@ -180,6 +180,19 @@ struct ProjectView: View {
     }
 }
 
+struct HTML_View: View {
+    @Binding var ProjectInfo: Project
+    @Binding var buildv: Bool
+    
+    var body: some View {
+        ServerView(isPresented: $buildv, url: URL(string: "http://127.0.0.1:333/index.html")) {
+            DispatchQueue.global(qos: .utility).async {
+                startServer(path: "\(ProjectInfo.ProjectPath)")
+            }
+        }
+    }
+}
+
 struct CodeSpace: View {
     @State var ProjectInfo: Project
     @State var buildv: Bool = false
@@ -195,6 +208,8 @@ struct CodeSpace: View {
                        buildView(ProjectInfo: ProjectInfo, buildv: $buildv)
                     case "Sean16":
                        sean16View(ProjectInfo: ProjectInfo, buildv: $buildv)
+                    case "HTML":
+                        HTML_View(ProjectInfo: $ProjectInfo, buildv: $buildv)
                     default:
                        Spacer()
                 }

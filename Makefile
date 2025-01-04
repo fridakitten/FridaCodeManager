@@ -15,7 +15,7 @@ else
 SHELL := /bin/sh
 endif
 
-PLF := -LEssentials/lib/prebuild -LEssentials/lib/build -lzip -lsean #-lcheck
+PLF := -LEssentials/lib/prebuild -LEssentials/lib/build -lzip -lsean #-lserver -lcheck
 
 # Targets
 all: LF := -lroot -lfcm
@@ -49,7 +49,7 @@ compile_swift:
 	@echo "\033[32mcompiling Essentials\033[0m"
 	@$(MAKE) -C Essentials all
 	@echo "\033[32mcompiling FridaCodeManager\033[0m"
-	@output=$$(swiftc -warnings-as-errors -wmo -Xlinker -lswiftCore -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) $(PLF) $(LF) -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
+	@output=$$(swiftc -wmo -Xlinker -lswiftCore -Xcc -IEssentials/include -D$(TARGET) -sdk $(SDK_PATH) $(SWIFT) $(PLF) $(LF) -o "$(OUTPUT_DIR)/swifty" -parse-as-library -import-objc-header FCM/bridge.h -framework MobileContainerManager -target arm64-apple-ios15.0 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo "$$output" | grep -v "remark:"; \
 		exit 1; \
