@@ -89,12 +89,15 @@ struct Home: View {
             VStack {
                 Spacer().frame(height: 10)
                 ScrollView {
-                    Text(changelog)
-                        .font(.system(size: 11))
+                    HStack {
+                        Text(changelog)
+                            .font(.system(size: 11))
+                        Spacer()
+                    }
                 }
                 Spacer()
             }
-            .frame(height: 200)
+            .frame(height: UIScreen.main.bounds.height / 4)
         }
     }
 
