@@ -35,7 +35,7 @@ struct Frida: View {
 
     var credits = {
         var save = [
-            ("SeanIsNotAConstant", "Main Developer", "https://github.com/fridakitten.png"),
+            ("FridaDEV", "Main Developer", "https://github.com/fridakitten.png"),
             ("AppInstaller iOS", "Developer", "https://github.com/AppInstalleriOSGH.png"),
             ("RoothideDev", "Contributor", "https://github.com/roothide.png"),
             ("Manuel Chakravarty", "Contributor", "https://github.com/mchakravarty.png"),
