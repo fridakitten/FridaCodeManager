@@ -49,6 +49,7 @@ struct ProjectView: View {
                             NavigationLink(destination: CodeSpace(ProjectInfo: Project, pathstate: $pathstate, action: $action)) {
                                 HStack {
                                     PubImg(projpath: "\(global_documents)/\(Project.Name)")
+                                        .id(hello)
                                     Spacer().frame(width: 15)
                                     VStack(alignment: .leading) {
                                         Text(Project.Executable)

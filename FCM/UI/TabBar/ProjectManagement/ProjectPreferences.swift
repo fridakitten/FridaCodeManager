@@ -40,7 +40,7 @@ struct ProjPreferences: View {
                 NavigationLink(destination: PrefsInfo(ProjectName: $ProjectName, hello: $hello)) {
                     Label("App Information", systemImage: "list.bullet.rectangle.fill")
                 }
-                NavigationLink(destination: Appeareance(projname: ProjectName,projpath: "\(global_documents)/\(ProjectName)")) {
+                NavigationLink(destination: Appeareance(projname: ProjectName, projpath: "\(global_documents)/\(ProjectName)", iconid: $hello)) {
                     Label("Appearance", systemImage: "paintbrush.fill")
                 }
                 NavigationLink(destination: asksdk(projpath: "\(global_documents)/\(ProjectName)")) {
@@ -127,7 +127,7 @@ struct Appeareance: View {
     @State var restrict: Bool = false
     @State var potrait: Bool = false
     @State var landscape: Bool = false
-    @State var iconid: UUID = UUID()
+    @Binding var iconid: UUID
     var body: some View {
         List {
             ImgView(projpath: projpath,iconid: $iconid)
