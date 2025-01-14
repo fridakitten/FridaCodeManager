@@ -85,14 +85,12 @@ struct NeoLog: View {
                     ScrollView {
                         Spacer().frame(height: 10)
                         ForEach(logsys.log) { item in
-                        if !item.Message.contains("remark: unable") {
                             HStack {
                                 Text(highlightMessage(item.Message.lineFix()))
                                     .font(.system(size: 10, design: .monospaced))
                                 Spacer()
                                 }
                             }
-                        }
                     }
                 }
             }
