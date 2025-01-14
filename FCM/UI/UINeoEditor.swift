@@ -235,7 +235,7 @@ struct NeoEditor: UIViewRepresentable {
         textView.tintColor = config.selection
         textView.textColor = config.standard
         textView.lineLight = config.current.cgColor
-        if current_line_highlighting {
+        if current_line_highlighting && !isPad {
             textView.setupHighlightLayer()
         }
         textView.keyboardType = .asciiCapable
@@ -1242,6 +1242,7 @@ struct NeoEditorSettings: View {
                 }
                 Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
                 Toggle("Line Highlighting", isOn: $current_line_highlighting)
+                    .disabled(isPad)
                 Toggle("Toolbar", isOn: $toolbar)
             }
         }
