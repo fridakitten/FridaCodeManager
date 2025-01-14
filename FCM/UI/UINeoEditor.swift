@@ -457,7 +457,7 @@ struct NeoEditor: UIViewRepresentable {
             self.parent = markdownEditorView
             self.shouldCheck = false
 
-            let dotypecheck = UserDefaults.standard.bool(forKey: "CETypechecking")
+            let dotypecheck = UserDefaults.standard.bool(forKey: "CETypechecking") ?? false
             if dotypecheck {
                 let suffix: String = gsuffix(from: self.parent.filepath)
                 if suffix == "c" || suffix == "cpp" || suffix == "m" || suffix == "mm" || suffix == "swift" {
