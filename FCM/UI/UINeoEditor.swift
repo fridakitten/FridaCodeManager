@@ -178,6 +178,7 @@ struct NeoEditor: UIViewRepresentable {
     @AppStorage("CEToolbar") var enableToolbar: Bool = true
     @AppStorage("CECurrentLineHighlighting") var current_line_highlighting: Bool = false
     @AppStorage("CEHighlightCache") var cachehighlightings: Bool = false
+    @AppStorage("CETypechecking") var dotypecheck: Bool = false
 
     init(
         isPresented: Binding<Bool>,
@@ -253,26 +254,28 @@ struct NeoEditor: UIViewRepresentable {
 
         var claimed: [Int] = []
 
-        textView.setLayoutCompletionHandler {
-            let errorcache = errorcache
-            for item in errorcache {
-                if !claimed.contains(item.line) {
-                    if item.file == filepath {
-                        switch item.level {
-                            case 0:
-                                textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
-                                claimed.append(item.line)
-                                break
-                            case 1:
-                                textView.highlightLine(at: item.line - 1, with: UIColor.systemYellow, with: item.description, with: "exclamationmark.triangle.fill")
-                                claimed.append(item.line)
-                                break
-                            case 2:
-                                textView.highlightLine(at: item.line - 1, with: UIColor.systemRed, with: item.description, with: "xmark.circle.fill")
-                                claimed.append(item.line)
-                                break
-                            default:
-                                break
+        if dotypecheck {
+            textView.setLayoutCompletionHandler {
+                let errorcache = errorcache
+                for item in errorcache {
+                    if !claimed.contains(item.line) {
+                        if item.file == filepath {
+                            switch item.level {
+                                case 0:
+                                    textView.highlightLine(at: item.line - 1, with: UIColor.systemBlue, with: item.description, with: "info.circle.fill")
+                                    claimed.append(item.line)
+                                    break
+                                case 1:
+                                    textView.highlightLine(at: item.line - 1, with: UIColor.systemYellow, with: item.description, with: "exclamationmark.triangle.fill")
+                                    claimed.append(item.line)
+                                    break
+                                case 2:
+                                    textView.highlightLine(at: item.line - 1, with: UIColor.systemRed, with: item.description, with: "xmark.circle.fill")
+                                    claimed.append(item.line)
+                                    break
+                                default:
+                                    break
+                            }
                         }
                     }
                 }
@@ -454,9 +457,12 @@ struct NeoEditor: UIViewRepresentable {
             self.parent = markdownEditorView
             self.shouldCheck = false
 
-            let suffix: String = gsuffix(from: self.parent.filepath)
-            if suffix == "c" || suffix == "cpp" || suffix == "m" || suffix == "mm" || suffix == "swift" {
-                shouldCheck = true
+            let dotypecheck = UserDefaults.standard.bool(forKey: "CETypechecking")
+            if dotypecheck {
+                let suffix: String = gsuffix(from: self.parent.filepath)
+                if suffix == "c" || suffix == "cpp" || suffix == "m" || suffix == "mm" || suffix == "swift" {
+                    self.shouldCheck = true
+                }
             }
         }
 
@@ -496,12 +502,13 @@ struct NeoEditor: UIViewRepresentable {
 
                 DispatchQueue.global(qos: .userInitiated).async {
                     let project = self.parent.project
-                    let lines = extractLines(from: typecheck(project, filePath: self.parent.filepath, Content: text))
-                    var items: [LogItem] = []
-                    for item in lines {
-                        items.append(LogItem(Message: item))
+                    DispatchQueue.main.sync {
+                        mainlogSystem.clearLog()
                     }
-                    errorcache = getlog(logitems: items)
+                    typecheck(project)
+                    DispatchQueue.main.sync {
+                        errorcache = getlog(logitems: mainlogSystem.log)
+                    }
 
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
