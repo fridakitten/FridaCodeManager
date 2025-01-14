@@ -18,61 +18,57 @@
 
  You should have received a copy of the GNU General Public License 
  along with FridaCodeManager. If not, see <https://www.gnu.org/licenses/>. 
-
-  ______    _     _         _____        __ _                           ______                    _       _   _
- |  ___|  (_)   | |       /  ___|      / _| |                          |  ___|                  | |     | | (_)
- | |_ _ __ _  __| | __ _  \ `--.  ___ | |_| |___      ____ _ _ __ ___  | |_ ___  _   _ _ __   __| | __ _| |_ _  ___  _ __
- |  _| '__| |/ _` |/ _` |  `--. \/ _ \|  _| __\ \ /\ / / _` | '__/ _ \ |  _/ _ \| | | | '_ \ / _` |/ _` | __| |/ _ \| '_ \
- | | | |  | | (_| | (_| | /\__/ / (_) | | | |_ \ V  V / (_| | | |  __/ | || (_) | |_| | | | | (_| | (_| | |_| | (_) | | | |
- \_| |_|  |_|\__,_|\__,_| \____/ \___/|_|  \__| \_/\_/ \__,_|_|  \___| \_| \___/ \__,_|_| |_|\__,_|\__,_|\__|_|\___/|_| |_|
- Founded by. Sean Boleslawski, Benjamin Hornbeck and Lucienne Salim in 2023
  */
 
 import Foundation
 import SwiftUI
 import Darwin
 
-@discardableResult func typecheck(_ ProjectInfo: Project, filePath: String, Content: String) -> String {
-    /*let info: [String] = ["\(global_sdkpath)/\(ProjectInfo.SDK)","\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
-    //SDKPath      info[0]
-    //API Text     info[1]
+func typecheck(_ ProjectInfo: Project) -> Void {
+    let info: [String] = ["\(ProjectInfo.ProjectPath)/Payload","\(ProjectInfo.ProjectPath)/Payload/\(ProjectInfo.Executable).app","\(ProjectInfo.ProjectPath)/Resources","\(global_sdkpath)/\(ProjectInfo.SDK)","\(ProjectInfo.ProjectPath)/clang","\(ProjectInfo.ProjectPath)/bridge.h","\(ProjectInfo.ProjectPath)/entitlements.plist","\(load("\(ProjectInfo.ProjectPath)/api.api"))"]
+    //PayloadPath  info[0]
+    //AppPath      info[1]
+    //Resources    info[2]
+    //SDKPath      info[3]
+    //ClangPath    info[4]
+    //ClangBridge  info[5]
+    //Entitlements info[6]
+    //API          info[7]
 
     let fileManager = FileManager.default
 
-    if !fileManager.fileExists(atPath: info[0]) {
-       return "\(filePath):1:0: error: target SDK is not installed";
+    if !fileManager.fileExists(atPath: info[3]) {
+       return
     }
+
+    //define build bash environment
+    let bashenv: [String] = ["SDKROOT=\(info[3])","CPATH=\(Bundle.main.bundlePath)/include","LIBRARY_PATH=\(info[3])/usr/lib","FRAMEWORK_PATH=/System/Library/Frameworks:/System/Library/PrivateFrameworks","HOME=\(global_container)/.cache/.\(ProjectInfo.SDK)"]
 
     var apiextension: ext = ext(build:"",build_sub: "",bef: "", aft:"", ign: "")
-    if !info[1].isEmpty {
-        apiextension = api(info[1], ProjectInfo)
+    if !info[7].isEmpty {
+        apiextension = api(info[7], ProjectInfo)
     }
 
-    var args: [String] = []
+    //finding code files
+    let (MFiles, AFiles, SwiftFiles) = (FindFilesStack(ProjectInfo.ProjectPath, [".m", ".c", ".mm", ".cpp"], splitAndTrim(apiextension.ign) + ["Resources"]), FindFilesStack(ProjectInfo.ProjectPath, [".a"], splitAndTrim(apiextension.ign) + ["Resources"]), FindFilesStack(ProjectInfo.ProjectPath, [".swift"], splitAndTrim(apiextension.ign) + ["Resources"]))
 
-    // selected macro
-    args.append("-D\(ProjectInfo.Macro)")
+    var EXEC = ""
+    if !SwiftFiles.isEmpty {
+        if !MFiles.isEmpty {
+            EXEC += MFiles.map { mFile in
+                "clang -D\(ProjectInfo.Macro) -fmodules -fsyntax-only \(apiextension.build_sub) -target arm64-apple-ios\(ProjectInfo.TG) -c \(ProjectInfo.ProjectPath)/\(mFile) \(AFiles.joined(separator: " ")) ; "
+            }.joined()
+        }
+        EXEC += """
+        swiftc -typecheck -D\(ProjectInfo.Macro) \(apiextension.build) \(SwiftFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \
+        \(FileManager.default.fileExists(atPath: info[5]) ? "-import-objc-header '\(info[5])'" : "") -parse-as-library -target arm64-apple-ios\(ProjectInfo.TG)
+        """
+    } else {
+        EXEC += "clang -D\(ProjectInfo.Macro) -fmodules -fsyntax-only \(apiextension.build) -target arm64-apple-ios\(ProjectInfo.TG) \(MFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " ")) \(AFiles.map { "\(ProjectInfo.ProjectPath)/\($0)" }.joined(separator: " "))"
+    }
 
-    // sdk root
-    args.append("-isysroot")
-    args.append("\(global_sdkpath)/\(ProjectInfo.SDK)")
+    let (CDEXEC) = ("cd '\(ProjectInfo.ProjectPath)'")
 
-    // include paths
-    args.append("-I\(Bundle.main.bundlePath)/include")
-    #if jailbreak
-    args.append("-I\(jbroot)/usr/lib/clang/14.0.0/include")
-    #endif
-
-    // what we are building for
-    args.append("-target")
-    args.append("arm64-apple-ios\(ProjectInfo.TG)")
-
-    // what the api extension wants to extend
-    args += splitAndTrim(apiextension.build)
-
-    // the file path we wanna typecheck
-    args.append(filePath)
-
-    return typecheckC(args, Content);*/
-    return ""
+    //typechecking
+    _ = climessenger("","","\(CDEXEC) ; \(EXEC)", nil, bashenv)
 }
