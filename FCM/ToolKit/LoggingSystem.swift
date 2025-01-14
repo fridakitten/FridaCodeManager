@@ -36,7 +36,14 @@ class LogSystem: ObservableObject {
         dup2(loggingPipe.fileHandleForWriting.fileDescriptor, STDERR_FILENO)
     }
     
-    private func addLog(_ item: String) {
+    private func addLog(_ unfiltered_item: String) {
+        var items = unfiltered_item.split(separator: "\n")
+        var item: String = ""
+        for line in items {
+            if !line.contains("remark:") {
+                item.append("\(line)\n")
+            }
+        }
         DispatchQueue.main.async {
             self.log.append(LogItem(Message: item))
             if self.log.count > 100 {
