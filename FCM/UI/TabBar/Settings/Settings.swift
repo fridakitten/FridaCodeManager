@@ -72,11 +72,14 @@ struct Settings: View {
                     NavigationLink(destination: DumpLogBundleMain()) {
                         Label("DumpLog", systemImage: "doc.fill")
                     }
+                }
+                NavigationLink(destination: ExperimentalSettingsBundle()) {
+                    Label("Experimental", systemImage: "exclamationmark.triangle.fill")
+                }
             }
-        }
-        .listStyle(InsetGroupedListStyle())
-        .navigationTitle("Settings")
-        .navigationBarTitleDisplayMode(.inline)
+            .listStyle(InsetGroupedListStyle())
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
         }
         .navigationViewStyle(.stack)
     }
