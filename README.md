@@ -46,7 +46,7 @@ The app is fully supported on rootless and roothide jailbroken iOS and iPadOS fr
 
 ## Credits
 #### Main
-- SeanIsNotAConstant: [https://github.com/fridakitten](https://github.com/fridakitten)
+- FridaDEV: [https://github.com/fridakitten](https://github.com/fridakitten)
 - AppInstalleriOS: [https://github.com/AppInstalleriOSGH](https://github.com/AppInstalleriOSGH)
 - RootHideDev: [https://github.com/roothider](https://github.com/roothider)
 - Manuel Chakravarty: [https://github.com/mchakravarty](https://github.com/mchakravarty)
