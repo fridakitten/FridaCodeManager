@@ -52,9 +52,6 @@ struct Settings: View {
                     NavigationLink(destination: NeoEditorSettings()) {
                         Label("Code Editor", systemImage: "doc.plaintext.fill")
                     }
-                    NavigationLink(destination: GitHubLoginView()) {
-                        Label("GitHub", systemImage: "doc.plaintext.fill")
-                    }
                     NavigationLink(destination: AuthorSettings()) {
                         Label("Author", systemImage: "person.fill")
                     }
@@ -68,9 +65,6 @@ struct Settings: View {
                     }
                     NavigationLink(destination: SFSymbolView()) {
                         Label("SFSymbols", systemImage: "square.grid.3x3.fill")
-                    }
-                    NavigationLink(destination: DumpLogBundleMain()) {
-                        Label("DumpLog", systemImage: "doc.fill")
                     }
                 }
                 NavigationLink(destination: ExperimentalSettingsBundle()) {

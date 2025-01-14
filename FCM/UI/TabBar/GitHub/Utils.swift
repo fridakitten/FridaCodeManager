@@ -1,26 +1,6 @@
 import Foundation
 import SwiftUI
 
-struct GitHubLoginView: View {
-    @AppStorage("GIT_ENABLED") var enabled: Bool = false
-    @AppStorage("GIT_TOKEN") var token: String = ""
-
-    var body: some View {
-        List {
-            Section {
-                Toggle("Enabled", isOn: $enabled)
-            }
-            if enabled {
-                Section {
-                    TextField("Token", text: $token)
-                }
-            }
-        }
-        .navigationTitle("GitHub")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
 func createGitHubRepository(repositoryName: String, isPrivate: Bool, githubToken: String) -> Int {
     guard let url = URL(string: "https://api.github.com/user/repos") else { return 1 }
     var request = URLRequest(url: url)

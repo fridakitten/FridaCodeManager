@@ -1211,7 +1211,6 @@ struct NeoEditorSettings: View {
     @AppStorage("CEFontSize") var font: Double = 13.0
     @AppStorage("CEToolbar") var toolbar: Bool = true
     @AppStorage("CECurrentLineHighlighting") var current_line_highlighting: Bool = false
-    @AppStorage("CEHighlightCache") var cachehighlightings: Bool = false
     var body: some View {
         List {
             Section(header: Text("Themes")) {
@@ -1235,11 +1234,8 @@ struct NeoEditorSettings: View {
                     Slider(value: $render, in: 0...1)
                 }
                 Stepper("Font Size: \(String(Int(font)))", value: $font, in: 0...20)
+                Toggle("Line Highlighting", isOn: $current_line_highlighting)
                 Toggle("Toolbar", isOn: $toolbar)
-            }
-            Section(header: Text("Experimental")) {
-                Toggle("Caret Line Highlighting", isOn: $current_line_highlighting)
-                Toggle("Cache Highlightings", isOn: $cachehighlightings)
             }
         }
         .navigationTitle("Code Editor")
