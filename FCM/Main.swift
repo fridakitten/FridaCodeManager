@@ -34,6 +34,12 @@ import SwiftUI
 struct MyApp: App {
     init() {
         UIInit(type: 0)
+        let updfix = UserDefaults.standard.bool(forKey: "UPDFIX_001") ?? false
+        if !updfix {
+            setTheme(0)
+            storeTheme()
+            UserDefaults.standard.set(true, forKey: "UPDFIX_001")
+        }
     }
 
     var body: some Scene {
