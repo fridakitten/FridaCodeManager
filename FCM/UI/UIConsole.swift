@@ -192,7 +192,11 @@ struct LogItem: Identifiable, Equatable {
 
 extension String {
    func lineFix() -> String {
-       return String(self.last == "\n" ? String(self.dropLast()) : self)
+       if self.isEmpty {
+           return self
+       } else {
+           return String(self.last == "\n" ? String(self.dropLast()) : self)
+       }
    }
 }
 
