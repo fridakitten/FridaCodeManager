@@ -39,7 +39,7 @@ let global_sdkpath = "\(global_container)/.sdk"
 let global_sdkpath = "\(global_documents)/.sdk"
 #endif
 
-let changelog: String = "v2.0.alpha_1 \"iPad + Code Editor Update\"\n\nApp\n-> added new schemes to pick from\n-> fixed appeareance for iPad devices\n-> fixed exporting items on iPad\n-> fixed popup on iPad\n\nCode Editor\n-> a brand new super fast highlighting engine\n-> tab now actually inserts text\n-> typechecking that makes you feel like being in XCode\n-> tools for you to find certain things faster in code editor\n\nProject Management\n-> added share/import button inside of projects\n"
+let changelog: String = "v2.0.alpha_1 \"iPad + Code Editor Update\"\n\nApp\n-> added new schemes to pick from\n-> fixed appeareance for iPad devices\n-> fixed exporting items on iPad\n-> fixed popup on iPad\n\nCode Editor\n-> a brand new super fast highlighting engine\n-> tab now actually inserts text\n-> typechecking that makes you feel like being in XCode\n-> tools for you to find certain things faster in code editor\n\nProject Management\n-> added share/import button inside of projects\n->added GitHub repository management\n"
 let global_version: String = "v2.0.alpha_1"
 
 // compatibiloty checks
