@@ -74,7 +74,7 @@ struct Home: View {
     }
 
     private func createProject_trigger() -> Void {
-        if AppName != "", BundleID != "" {
+        if AppName != "", BundleID != "", isBashSafe(filename: AppName), isBashSafe(filename: BundleID) {
             haptfeedback(1)
             showProj = false
             _ = MakeApplicationProject(AppName, BundleID, type: type)
@@ -160,6 +160,19 @@ struct Home: View {
             print("Error importing file: \(error.localizedDescription)")
         }
     }
+}
+
+func isBashSafe(filename: String) -> Bool {
+    let unsafeCharacters = [" ", ";", "&", "|", "<", ">", "`", "$", "(", ")", "{", "}", "[", "]", "\"", "'", "\\", "\n", "\t"]
+    for char in unsafeCharacters {
+        if filename.contains(char) {
+            return false
+        }
+    }
+    if filename.range(of: "[^\\x20-\\x7E]", options: .regularExpression) != nil {
+        return false
+    }
+    return true
 }
 
 extension UTType {
