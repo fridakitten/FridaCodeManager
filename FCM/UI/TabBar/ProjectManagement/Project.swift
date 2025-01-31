@@ -55,67 +55,17 @@ struct Project: Identifiable, Equatable {
     }
 }
 
-/*func GetProjects() -> [Project] {
-    do {
-        var Projects: [Project] = []
-
-        for Item in try FileManager.default.contentsOfDirectory(atPath: global_documents) {
-            if Item == "Inbox" || Item == "savedLayouts.json" || Item == ".sdk" || Item == ".cache" || Item == "virtualFS.dat" {
-                continue
-            }
-
-            do {
-                let infoPlistPath = "\(global_documents)/\(Item)/Resources/Info.plist"
-                let dontTouchMePlistPath = "\(global_documents)/\(Item)/Resources/DontTouchMe.plist"
-
-                var BundleID = "Corrupted"
-                var Version = "Unknown"
-                var Executable = "Unknown"
-                var Macro = "stable"
-                var TG = "Unknown"
-                var SDK = "Unknown"
-                var TYPE = "Applications"
-
-                if let Info = NSDictionary(contentsOfFile: infoPlistPath) {
-                    if let extractedBundleID = Info["CFBundleIdentifier"] as? String {
-                        BundleID = extractedBundleID
-                    }
-                    if let extractedVersion = Info["CFBundleVersion"] as? String {
-                        Version = extractedVersion
-                    }
-                    if let extractedExecutable = Info["CFBundleExecutable"] as? String {
-                        Executable = extractedExecutable
-                    }
-                    if let extractedTG = Info["MinimumOSVersion"] as? String {
-                        TG = extractedTG
-                    }
-                }
-
-                if let Info2 = NSDictionary(contentsOfFile: dontTouchMePlistPath) {
-                    if let extractedSDK = Info2["SDK"] as? String {
-                        SDK = extractedSDK
-                    }
-                    if let extractedTYPE = Info2["TYPE"] as? String {
-                        TYPE = extractedTYPE
-                    }
-                    if let extractedMacro = Info2["CMacro"] as? String {
-                        Macro = extractedMacro
-                    }
-                }
-                Projects.append(Project(Name: Item, BundleID: BundleID, Version: Version, ProjectPath: "\(global_documents)/\(Item)", Executable: Executable, Macro: Macro, SDK: SDK, TG: TG, TYPE: TYPE))
-            } catch {
-                print("Failed to process item: \(Item), error: \(error)")
-                Projects.append(Project(Name: "Corrupted", BundleID: "Corrupted", Version: "Unknown", ProjectPath: "\(global_documents)/\(Item)", Executable: "Unknown", Macro: "", SDK: "Unknown", TG: "Unknown", TYPE: "Unknown"))
-            }
-        }
-        return Projects
-    } catch {
-        print(error)
-        return []
-    }
-}*/
-
 func MakeApplicationProject(_ Name: String, _ BundleID: String, type: Int) -> Int {
+    let mode: Int = UserDefaults.standard.integer(forKey: "tabmode")
+    let spacing: Int = UserDefaults.standard.integer(forKey: "tabspacing")
+    let spcstr: String = {
+        if mode == 0 {
+            return "\t"
+        } else {
+            return String(repeating: " ", count: spacing)
+        }
+    }()
+
     let v2uuid: UUID = UUID()
     let SDK: String = UserDefaults.standard.string(forKey: "sdk") ?? "iPhoneOS15.6.sdk"
     let TYPE: String = {
