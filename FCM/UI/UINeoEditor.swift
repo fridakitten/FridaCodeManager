@@ -291,8 +291,15 @@ struct NeoEditor: UIViewRepresentable {
 
     func setupToolbar(textView: UITextView) {
         toolbar.sizeToFit()
+
+        let mode: Int = UserDefaults.standard.integer(forKey: "tabmode")
+        let spacing: Int = UserDefaults.standard.integer(forKey: "tabspacing")
         let tabButton = ClosureButton(title: "Tab") {
-            insertTextAtCurrentPosition(textView: textView, newText: "\t")
+            if mode == 0 {
+                insertTextAtCurrentPosition(textView: textView, newText: "\t")
+            } else {
+                insertTextAtCurrentPosition(textView: textView, newText: String(repeating: " ", count: spacing))
+            }
         }
 
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
