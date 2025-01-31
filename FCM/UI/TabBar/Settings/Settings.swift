@@ -52,6 +52,9 @@ struct Settings: View {
                     NavigationLink(destination: NeoEditorSettings()) {
                         Label("Code Editor", systemImage: "doc.plaintext.fill")
                     }
+                    NavigationLink(destination: SpacingSettingsBundle()) {
+                        Label("Spacing", systemImage: "text.word.spacing")
+                    }
                     NavigationLink(destination: AuthorSettings()) {
                         Label("Author", systemImage: "person.fill")
                     }

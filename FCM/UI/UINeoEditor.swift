@@ -502,13 +502,9 @@ struct NeoEditor: UIViewRepresentable {
 
                 DispatchQueue.global(qos: .userInitiated).async {
                     let project = self.parent.project
-                    DispatchQueue.main.sync {
-                        mainlogSystem.clearLog()
-                    }
+                    mainlogSystem.clearLog()
                     typecheck(project)
-                    DispatchQueue.main.sync {
-                        errorcache = getlog(logitems: mainlogSystem.log)
-                    }
+                    errorcache = getlog(logitems: mainlogSystem.log)
 
                     DispatchQueue.main.async { [self] in
                         for item in textView.highlightTMPLayer {
