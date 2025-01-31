@@ -34,11 +34,17 @@ import SwiftUI
 struct MyApp: App {
     init() {
         UIInit(type: 0)
-        let updfix = UserDefaults.standard.bool(forKey: "UPDFIX_001")
-        if !updfix {
+
+        if !UserDefaults.standard.bool(forKey: "UPDFIX_001") {
             setTheme(0)
             storeTheme()
             UserDefaults.standard.set(true, forKey: "UPDFIX_001")
+        }
+
+        if !UserDefaults.standard.bool(forKey: "UPDFIX_002") {
+            UserDefaults.standard.set(0, forKey: "tabmode")
+            UserDefaults.standard.set(4, forKey: "tabspacing")
+            UserDefaults.standard.set(true, forKey: "UPDFIX_002")
         }
     }
 
