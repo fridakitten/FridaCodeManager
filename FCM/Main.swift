@@ -34,7 +34,7 @@ import SwiftUI
 struct MyApp: App {
     init() {
         UIInit(type: 0)
-        let updfix = UserDefaults.standard.bool(forKey: "UPDFIX_001") ?? false
+        let updfix = UserDefaults.standard.bool(forKey: "UPDFIX_001")
         if !updfix {
             setTheme(0)
             storeTheme()
