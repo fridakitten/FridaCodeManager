@@ -43,6 +43,11 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
     //Entitlements info[6]
     //API Text     info[7]
 
+    if !isBashSafe(filename: ProjectInfo.Executable) {
+        print("Error: melicious project detected")
+        return 1;
+    }
+
     let fileManager = FileManager.default
 
     if !fileManager.fileExists(atPath: info[3]) {
