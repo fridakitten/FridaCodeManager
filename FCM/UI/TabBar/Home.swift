@@ -163,7 +163,7 @@ struct Home: View {
 }
 
 func isBashSafe(filename: String) -> Bool {
-    let unsafeCharacters = [" ", ";", "&", "|", "<", ">", "`", "$", "(", ")", "{", "}", "[", "]", "\"", "'", "\\", "\n", "\t"]
+    let unsafeCharacters = [" ", ";", "&", "|", "<", ">", "`", "$", "(", ")", "{", "}", "[", "]", "/", "\"", "'", "\\", "\n", "\t", "\""]
     for char in unsafeCharacters {
         if filename.contains(char) {
             return false
