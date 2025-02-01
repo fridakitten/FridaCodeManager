@@ -618,6 +618,20 @@ struct NeoEditor: UIViewRepresentable {
             guard let textView = textView as? CustomTextView else { return }
             textView.disableHighlightLayer()
         }
+
+        func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+            guard let textView = textView as? CustomTextView else { return true}
+            let mode: Int = UserDefaults.standard.integer(forKey: "tabmode")
+            if (mode != 1) { // If the current mode is tab, accept any modification
+                return true;
+            }
+            if (!text.contains("\t")) { // If the replacement doesn't contain tabs, accept it
+                return true;
+            }
+            let spacing: Int = UserDefaults.standard.integer(forKey: "tabspacing")
+            parent.insertTextAtCurrentPosition(textView: textView, newText: String(repeating: " ", count: spacing))
+            return false
+        }
     }
 }
 
