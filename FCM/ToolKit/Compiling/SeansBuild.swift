@@ -219,7 +219,7 @@ func build(_ ProjectInfo: Project,_ erase: Bool,_ status: Binding<String>?,_ pro
         #endif
     } else {
         shell("ldid -S'\(info[6])' '\(info[1])/\(ProjectInfo.Executable)'")
-        let result = shell("\(info[1])/\(ProjectInfo.Executable)")
+        let result = shell("\"\(info[1])/\(ProjectInfo.Executable)\"")
         print("[*] Binary returned \(result)\n")
         _ = rm(info[0])
         _ = rm(info[4])
