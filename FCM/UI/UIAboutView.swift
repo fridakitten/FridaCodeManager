@@ -38,6 +38,8 @@ struct Frida: View {
             ("FridaDEV", "Main Developer", "https://github.com/fridakitten.png"),
             ("AppInstaller iOS", "Developer", "https://github.com/AppInstalleriOSGH.png"),
             ("RoothideDev", "Contributor", "https://github.com/roothide.png"),
+            ("Lorenzo Ferron", "Contributor", "https://github.com/miticollo.png"),
+            ("Paolo Forni", "Contributor", "https://github.com/Pe13.png"),
             ("Manuel Chakravarty", "Contributor", "https://github.com/mchakravarty.png"),
             ("Ayame Yumemi", "Icon Designer", "https://github.com/ayayame09.png")
         ]
