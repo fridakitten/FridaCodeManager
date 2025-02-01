@@ -620,17 +620,33 @@ struct NeoEditor: UIViewRepresentable {
         }
 
         func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-            guard let textView = textView as? CustomTextView else { return true}
+            guard let textView = textView as? CustomTextView else { return true }
+
             let mode: Int = UserDefaults.standard.integer(forKey: "tabmode")
-            if (mode != 1) { // If the current mode is tab, accept any modification
-                return true;
+            if text.contains("\n") {
+                let tabchar: String = {
+                    if mode != 1 {
+                        return "\t"
+                    } else {
+                        let spacing: Int = UserDefaults.standard.integer(forKey: "tabspacing")
+                        return String(repeating: " ", count: spacing)
+                    }
+                }()
+                let spacing: Int = UserDefaults.standard.integer(forKey: "tabspacing")
+                guard let cur_line_text = currentLine(in: textView) else { return false }
+                let count = countConsecutiveOccurrences(of: tabchar, in: cur_line_text)
+                parent.insertTextAtCurrentPosition(textView: textView, newText: "\n\(String(repeating: tabchar, count: count))")
+                return false
             }
-            if (!text.contains("\t")) { // If the replacement doesn't contain tabs, accept it
-                return true;
+            if mode != 1 {
+                return true
+            } else if text.contains("\t") { // Fixed incorrect condition
+                let spacing: Int = UserDefaults.standard.integer(forKey: "tabspacing")
+                parent.insertTextAtCurrentPosition(textView: textView, newText: String(repeating: " ", count: spacing))
+                return false
             }
-            let spacing: Int = UserDefaults.standard.integer(forKey: "tabspacing")
-            parent.insertTextAtCurrentPosition(textView: textView, newText: String(repeating: " ", count: spacing))
-            return false
+
+            return true // Ensure a valid return path
         }
     }
 }

@@ -63,3 +63,40 @@ func visualRangeRect(in textView: UITextView, for textRange: NSRange) -> CGRect?
 
     return rect
 }
+
+func currentLine(in textView: UITextView) -> String? {
+    guard let text = textView.text, let selectedRange = textView.selectedTextRange else {
+        return nil
+    }
+    
+    let caretPosition = selectedRange.start
+    let textBeforeCaret = text[..<text.index(text.startIndex, offsetBy: textView.offset(from: textView.beginningOfDocument, to: caretPosition))]
+    
+    if let lastNewlineIndex = textBeforeCaret.lastIndex(of: "\n") {
+        let lineStartIndex = text.index(after: lastNewlineIndex)
+        let line = text[lineStartIndex...].prefix { $0 != "\n" }
+        return String(line)
+    } else {
+        return String(textBeforeCaret) // If no newline, return everything before caret
+    }
+}
+
+func countConsecutiveOccurrences(of word: String, in text: String) -> Int {
+    guard !word.isEmpty, text.hasPrefix(word) else {
+        return 0
+    }
+    
+    var count = 0
+    var index = text.startIndex
+
+    while text[index...].hasPrefix(word) {
+        count += 1
+        index = text.index(index, offsetBy: word.count)
+
+        if index >= text.endIndex {
+            break
+        }
+    }
+    
+    return count
+}
