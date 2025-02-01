@@ -58,9 +58,6 @@ struct Settings: View {
                     NavigationLink(destination: AuthorSettings()) {
                         Label("Author", systemImage: "person.fill")
                     }
-                    NavigationLink(destination: Cleaner()) {
-                        Label("Cleaner", systemImage: "trash.fill")
-                    }
                 }
                 Section(header: Text("Additional Tools")) {
                     NavigationLink(destination: SDKDownload()) {
@@ -68,6 +65,9 @@ struct Settings: View {
                     }
                     NavigationLink(destination: SFSymbolView()) {
                         Label("SFSymbols", systemImage: "square.grid.3x3.fill")
+                    }
+                    NavigationLink(destination: Cleaner()) {
+                        Label("Cleaner", systemImage: "trash.fill")
                     }
                 }
                 NavigationLink(destination: ExperimentalSettingsBundle()) {
