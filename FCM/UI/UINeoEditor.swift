@@ -623,6 +623,9 @@ struct NeoEditor: UIViewRepresentable {
             guard let textView = textView as? CustomTextView else { return true }
 
             let mode: Int = UserDefaults.standard.integer(forKey: "tabmode")
+            if textView.didPasted {
+                return true
+            }
             if text.contains("\n") {
                 let tabchar: String = {
                     if mode != 1 {
@@ -640,13 +643,13 @@ struct NeoEditor: UIViewRepresentable {
             }
             if mode != 1 {
                 return true
-            } else if text.contains("\t") { // Fixed incorrect condition
+            } else if text.contains("\t") {
                 let spacing: Int = UserDefaults.standard.integer(forKey: "tabspacing")
                 parent.insertTextAtCurrentPosition(textView: textView, newText: String(repeating: " ", count: spacing))
                 return false
             }
 
-            return true // Ensure a valid return path
+            return true
         }
     }
 }
