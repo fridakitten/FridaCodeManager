@@ -39,8 +39,8 @@ let global_sdkpath = "\(global_container)/.sdk"
 let global_sdkpath = "\(global_documents)/.sdk"
 #endif
 
-let changelog: String = "v2.0.alpha_3 \"iPad + Code Editor Update\"\n\nApp\n-> moved \"Cleaner\" to additional tools\n-> added missing credits\n-> improved + fixed bash-safety-check\n-> fixed support for multiline word Utility names\n\nCode Editor\n-> added auto tabbing"
-let global_version: String = "v2.0.alpha_3"
+let changelog: String = "v2.0.alpha_4 \"iPad + Code Editor Update\"\n\nCodeEditor\n-> fixed copy/paste of code\n-> fixed a faulty highlighting rule\n"
+let global_version: String = "v2.0.alpha_4"
 
 // compatibiloty checks
 let isiOS16: Bool = ProcessInfo.processInfo.isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 16, minorVersion: 0, patchVersion: 0))
