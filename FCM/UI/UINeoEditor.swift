@@ -1035,7 +1035,7 @@ func grule(_ isaythis: String) -> [HighlightRule] {
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\b(struct|class|extension)\\s)\\w+", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color2)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b(-?\\d+(\\.\\d+)?)\\b", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color4)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "(?<=\\b(func|let|var)\\s)\\w+", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color8)
-                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "\\b\\w+(?=(\\())", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color7)
+                ]), HighlightRule(pattern: try! NSRegularExpression(pattern: #"\b\w+(?=\s*[\{\(])"#, options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color7)
                 ]), HighlightRule(pattern: try! NSRegularExpression(pattern: "@\\w+[^()]", options: []), formattingRules: [ TextFormattingRule(key: .foregroundColor, value: color7)])
             ]
         case "c", "h", "m",  "mm", "cpp":
